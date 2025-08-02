@@ -1,0 +1,29 @@
+{
+  "name": "side-document",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^6.0.0",
+    "@tsconfig/svelte": "^5.0.4",
+    "autoprefixer": "^10.4.21",
+    "cssnano": "^7.1.0",
+    "postcss": "^8.5.6",
+    "postcss-load-config": "^6.0.1",
+    "svelte": "^5.35.5",
+    "svelte-check": "^4.2.2",
+    "typescript": "~5.8.3",
+    "vite": "^7.0.4"
+  },
+  "browserslist": [
+    "last 2 version",
+    "iOS >= 8.1",
+    "Android >= 4.4"
+  ]
+}
