@@ -16,22 +16,45 @@
     }
 
     let { option }: { option: SideDocumentOption } = $props();
-    if (!option) {
-        option = SideDocument.defaultOption;
-    }
     setContext("option", option);
+
+    $effect(() => {
+        documentDrawerState.isVisibleToggleButton =
+            option.enableToggleButton ?? true;
+    });
+
+    // トグルボタンの位置クラスを計算
+    let toggleButtonPositionClass = $derived.by(() => {
+        const position = option.toggleButtonPosition || "bottom-right";
+        return position;
+    });
+
+    // ツールチップの位置を計算
+    let tooltipPosition = $derived.by(() => {
+        const position = option.toggleButtonPosition || "bottom-right";
+
+        if (position.startsWith("top")) {
+            return "bottom";
+        } else if (position.startsWith("bottom")) {
+            return "top";
+        } else if (position.endsWith("left")) {
+            return "right";
+        } else {
+            return "left";
+        }
+    });
 
     let containerElement: HTMLDivElement | null = $state(null);
 
     // ドキュメントのDrawerの状態を管理するためのコンテキスト
     let documentDrawerState: SideDocumentDrawerState = $state({
         isOpened: false,
-        isVisibleToggleButton: true,
+        isVisibleToggleButton: option.enableToggleButton ?? true,
     });
     setContext("documentDrawerState", documentDrawerState);
 
     // svelte-ignore non_reactive_update
-    let documentPanel: SideDocumentDrawer;
+    let documentDrawer: SideDocumentDrawer;
 
     onMount(() => {
         documentDrawerState.isOpened = false;
@@ -39,13 +62,31 @@
 
     // onDestroy(() => {});
 
-    function toggleDocumentDrawer() {
+    export function toggleDrawer() {
         if (documentDrawerState.isOpened) {
-            documentPanel.closePanel();
+            documentDrawer.close();
         } else {
-            documentDrawerState.isOpened = true;
+            documentDrawer.open();
         }
     }
+
+    export function openDrawer(frameSrc?: string) {
+        if (documentDrawer) {
+            documentDrawer.open(frameSrc);
+        } else {
+            console.warn("SideDocumentDrawer is not initialized. Call init() before open().");
+        }
+    }
+
+    export function closeDrawer() {
+        if (documentDrawer) {
+            documentDrawer.close();
+        } else {
+            console.warn("SideDocumentDrawer is not initialized. Call init() before close().");
+        }
+    }
+
+
 </script>
 
 <div
@@ -57,7 +98,7 @@
 >
     <!-- ドキュメント　メインコンポーネント -->
     {#if containerElement}
-        <SideDocumentDrawer bind:this={documentPanel} {containerElement} />
+        <SideDocumentDrawer bind:this={documentDrawer} {containerElement} />
     {/if}
 
     {#if documentDrawerState.isVisibleToggleButton}
@@ -65,19 +106,19 @@
             <!-- トグルボタン -->
             <button
                 type="button"
-                class="sd-open-button"
+                class="sd-toggle-button {toggleButtonPositionClass}"
                 data-sd-component-tooltip={documentDrawerState.isOpened
                     ? str(option.i18nText, "toggleButtonCloseTooltip")
                     : str(option.i18nText, "toggleButtonOpenTooltip")}
-                data-sd-component-tooltip-position="top"
-                onclick={toggleDocumentDrawer}
+                data-sd-component-tooltip-position={tooltipPosition}
+                on:click={toggleDrawer}
                 aria-label={documentDrawerState.isOpened
                     ? str(option.i18nText, "toggleButtonCloseTooltip")
                     : str(option.i18nText, "toggleButtonOpenTooltip")}
             >
                 {#if documentDrawerState.isOpened}
                     <svg
-                        class="sd-open-button-icon"
+                        class="sd-toggle-button-icon"
                         aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
@@ -96,6 +137,8 @@
                 {:else}
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
+                        class="sd-toggle-button-icon"
+                        aria-hidden="true"
                         width="24"
                         height="24"
                         viewBox="0 0 24 24"
@@ -119,10 +162,8 @@
 </div>
 
 <style lang="postcss">
-    .sd-open-button {
+    .sd-toggle-button {
         position: fixed;
-        bottom: 25px;
-        right: 25px;
         background: var(--sd-primary-color, #236ad4);
         color: white;
         width: 50px;
@@ -138,14 +179,36 @@
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         transition: transform 0.12s cubic-bezier(0.4, 2, 0.6, 1);
     }
-    .sd-open-button:active {
+
+    /* 位置クラス */
+    .sd-toggle-button.top-left {
+        top: 25px;
+        left: 25px;
+    }
+
+    .sd-toggle-button.top-right {
+        top: 25px;
+        right: 25px;
+    }
+
+    .sd-toggle-button.bottom-left {
+        bottom: 25px;
+        left: 25px;
+    }
+
+    .sd-toggle-button.bottom-right {
+        bottom: 25px;
+        right: 25px;
+    }
+
+    .sd-toggle-button:active {
         transform: scale(0.92);
     }
-    .sd-open-button:hover {
+    .sd-toggle-button:hover {
         opacity: 0.9;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
-    .sd-open-button-icon {
+    .sd-toggle-button-icon {
         width: 28px;
         height: 28px;
         display: block;

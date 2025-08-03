@@ -49,17 +49,29 @@
     /**
      * ドキュメントパネルの幅
      */
-    let drawerWidth = $state(option.drawerWidth || 320);
+    let drawerWidthPx = $derived.by(() => {
+        if (option.drawerWidthUnit) {
+            return calculateInitialWidthInPx();
+        }
+
+        return Math.max(option.drawerWidth || 320, 320);
+    });
+
     /**
      * ドキュメントパネルのトグル状態
      */
-    let drawerToggleClass: "close" | "open" = $state("close");
+    let drawerToggleClass: "close" | "open" = $derived.by(() => {
+        return documentPanelState.isOpened ? "open" : "close";
+    });
+
     /**
      * ドキュメントパネルの位置
      */
-    let drawerPositionClass: "right" | "left" = $state(
-        option.documentDrawerPosition || "left",
-    );
+    let drawerPositionClass: "right" | "left" = $derived.by(() => {
+        const position = option.documentDrawerPosition || "left";
+        return position;
+    });
+
     /**
      * ドキュメントパネルのリサイズ状態
      */
@@ -71,7 +83,32 @@
     /**
      * ドキュメントパネルのリサイズ開始時の幅
      */
-    let startWidth = $state(option.drawerWidth || 320);
+    let startWidthPx = $state(calculateInitialWidthInPx());
+
+    /**
+     * 初期幅をpx単位に変換して取得する関数
+     */
+    function calculateInitialWidthInPx(): number {
+        // 初期値のデフォルト
+        const defaultWidth = 320;
+
+        // オプションが無い場合はデフォルト値
+        if (!option || !option.drawerWidth) {
+            return defaultWidth;
+        }
+
+        // 単位に応じて変換
+        const unit = option.drawerWidthUnit || "px";
+        const width = option.drawerWidth;
+
+        if (unit === "px") {
+            return Math.max(width, 100); // 最小幅は100px
+        } else if (unit === "%") {
+            // パーセント値をピクセルに変換
+            return Math.max((width * window.innerWidth) / 100, 100);
+        }
+        return defaultWidth;
+    }
 
     onMount(() => {
         if (option.closeOnOutsideClick) {
@@ -85,21 +122,13 @@
         window.removeEventListener("mousedown", onClickOutside);
     });
 
-    export function closePanel() {
-        documentPanelState.isOpened = false;
-    }
-
-    export function openPanel() {
-        documentPanelState.isOpened = true;
-    }
-
     /**
      * ドキュメントパネルのリサイズバーをマウスダウンしたときのイベントハンドラ
      */
     function onResizeBarMouseDown(event: MouseEvent) {
         isResizing = true;
         startX = event.clientX;
-        startWidth = drawerWidth;
+        startWidthPx = drawerWidthPx;
         window.addEventListener("mousemove", onMouseMove);
         window.addEventListener("mouseup", onMouseUp);
     }
@@ -112,9 +141,9 @@
         if (!isResizing) return;
         const dx = event.clientX - startX;
         if (drawerPositionClass === "left") {
-            drawerWidth = Math.max(320, startWidth + dx);
+            drawerWidthPx = Math.max(320, startWidthPx + dx);
         } else {
-            drawerWidth = Math.max(320, startWidth - dx);
+            drawerWidthPx = Math.max(320, startWidthPx - dx);
         }
     }
 
@@ -194,14 +223,36 @@
 
         // ドロワー内でなく、かつShadow DOM内でもない場合のみ閉じる
         if (!isInsideDrawer && !insideShadowRoot) {
-            closePanel();
+            close();
         }
+    }
+
+    export function open(frameSrc?: string) {
+        if (frameSrc) {
+            isVisibleFrame = true;
+            isLoading = true;
+            frameSrc = frameSrc;
+        } else {
+            console.warn("Frame source is not provided.");
+        }
+
+        documentPanelState.isOpened = true;
+    }
+
+    export function close() {
+        documentPanelState.isOpened = false;
+    }
+
+    export function setFrameSrc(src: string) {
+        frameSrc = src;
+        isVisibleFrame = true;
+        isLoading = true;
     }
 </script>
 
 <div
     class="sd-drawer {drawerToggleClass} {drawerPositionClass}"
-    style="--panel-width: {drawerWidth}px; "
+    style="--drawer-width: {drawerWidthPx}px; "
     class:panel-hidden={!documentPanelState.isOpened}
 >
     <!-- セパレーター-->
@@ -262,15 +313,15 @@
         class="sd-drawer-button-container {drawerPositionClass} {drawerToggleClass}"
         style="top:0.5rem; z-index: 1000;
                 {drawerPositionClass === 'left'
-            ? `left: calc(${drawerWidth}px + 5px); right: auto;`
-            : `right: calc(${drawerWidth}px + 5px); left: auto;`}
+            ? `left: calc(${drawerWidthPx}px + 5px); right: auto;`
+            : `right: calc(${drawerWidthPx}px + 5px); left: auto;`}
         "
         in:fade={{ duration: 0, delay: 300 }}
         out:fade={{ duration: 0, delay: 0 }}
     >
         <button
             type="button"
-            on:click={() => closePanel()}
+            on:click={() => close()}
             aria-label={str(option.i18nText, "closeButtonTooltip")}
             data-sd-component-tooltip={str(
                 option.i18nText,
@@ -382,7 +433,7 @@
         display: flex;
         top: 0;
         height: 100vh;
-        width: var(--panel-width, 320px);
+        width: var(--drawer-width, 320px);
         background: #fff;
         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
         z-index: var(--sd-drawer-z-index, 1000);
@@ -411,10 +462,10 @@
         right: 0;
     }
     .sd-drawer.left.close {
-        left: calc(-1 * var(--panel-width, 320px));
+        left: calc(-1 * var(--drawer-width, 320px));
     }
     .sd-drawer.right.close {
-        right: calc(-1 * var(--panel-width, 320px));
+        right: calc(-1 * var(--drawer-width, 320px));
     }
 
     .sd-resize-bar-container {
@@ -462,11 +513,11 @@
     }
 
     .sd-drawer-button-container.left {
-        left: calc(var(--panel-width, 320px) + 5px);
+        left: calc(var(--drawer-width, 320px) + 5px);
         right: auto;
     }
     .sd-drawer-button-container.right {
-        right: calc(var(--panel-width, 320px) + 5px);
+        right: calc(var(--drawer-width, 320px) + 5px);
         left: auto;
     }
     .sd-drawer-button {

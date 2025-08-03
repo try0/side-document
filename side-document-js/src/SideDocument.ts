@@ -1,4 +1,4 @@
-import { mount } from "svelte";
+import { mount, unmount } from "svelte";
 import SideDocumentContainer from "./lib/SideDocumentContainer.svelte";
 import type { SideDocumentI18NText, SideDocumentOption } from "./types";
 
@@ -19,10 +19,15 @@ export class SideDocument {
         resizeBarTooltip: 'サイズを変更',
         documentTitle: "ドキュメント"
     };
+
     /**
      * デフォルトのオプション
      */
     public static defaultOption: SideDocumentOption = {
+        /**
+         * コンテナセレクター
+         */
+        containerSelector: undefined,
         /**
          * トグルボタンを有効にするか
          */
@@ -30,7 +35,7 @@ export class SideDocument {
         /**
          * トグルボタンの位置
          */
-        toggleButtonPosition: 'bottom',
+        toggleButtonPosition: 'bottom-right',
         /**
          * ドキュメントのDrawerの位置
          */
@@ -39,6 +44,10 @@ export class SideDocument {
          * ドキュメントDrawerの幅
          */
         drawerWidth: 320,
+        /**
+         * ドキュメントDrawerの幅の単位
+         */
+        drawerWidthUnit: 'px',
         /**
          * ドキュメントDrawerのリサイズを可能にするか
          */
@@ -100,26 +109,84 @@ export class SideDocument {
         return container;
     }
 
-    public setOption(option: SideDocumentOption): void {
-        this.option = { ...this.option, ...option };
+    /**
+     * オプションを更新します。
+     * 
+     * @param option 
+     */
+    public update(option: SideDocumentOption | null = null): void {
+        if (option) {
+            this.option = Object.assign({}, SideDocument.defaultOption, this.option, option);
+        }
+
+        if (this.documentContainer) {
+            unmount(this.documentContainer);
+        }
+
+        this.init();
     }
 
-
+    /**
+     * SideDocumentを初期化します。
+     * 
+     * @returns void
+     */
     public init(): void {
         console.log("SideDocument initialized");
+
+        if (this.option.containerSelector) {
+            this.container = document.querySelector(this.option.containerSelector) as HTMLDivElement;
+            if (!this.container) {
+                console.warn(`Container with selector "${this.option.containerSelector}" not found. Creating a new container.`);
+            }
+        }
+
         if (!this.container) {
             this.container = this.createContainer();
-        } else {
-            this.container.shadowRoot!.innerHTML = '';
         }
 
         this.documentContainer = mount(SideDocumentContainer, {
-            target: this.container.shadowRoot!,
+            target: this.container.shadowRoot ? this.container.shadowRoot : this.container,
             props: {
                 option: this.option,
             },
         });
 
+    }
+
+    /**
+     * Drawerを開きます。
+     * 
+     * @param frameSrc 
+     */
+    public openDrawer(frameSrc?: string): void {
+        if (this.documentContainer) {
+            this.documentContainer.openDrawer(frameSrc);
+        } else {
+            console.warn("SideDocument is not initialized. Call init() before open().");
+        }
+    }
+
+    /**
+     * Drawerを閉じます。
+     */
+    public closeDrawer(): void {
+        if (this.documentContainer) {
+            this.documentContainer.closeDrawer();
+        } else {
+            console.warn("SideDocument is not initialized. Call init() before close().");
+        }
+    }
+
+    /**
+     * Drawerの展開を切り替えます。
+     */
+    public toggleDrawer(): void {
+        if (this.documentContainer) {
+            this.documentContainer.toggleDrawer();
+        } else {
+            console.warn("SideDocument is not initialized. Call init() before toggle().");
+        }
     }
 
 }

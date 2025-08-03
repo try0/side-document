@@ -5,36 +5,44 @@
  */
 export interface SideDocumentOption {
     /**
- * トグルボタンを有効にするか
- */
+     * コンテナセレクター
+     */
+    containerSelector?: string;
+    /**
+    * トグルボタンを有効にするか
+    */
     enableToggleButton?: boolean | null;
     /**
- * トグルボタンの位置
- */
-    toggleButtonPosition?: 'top' | 'bottom';
+    * トグルボタンの位置
+    */
+    toggleButtonPosition?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
     /**
- * ドキュメントのDrawerの位置
- */
+     * ドキュメントのDrawerの位置
+     */
     documentDrawerPosition?: 'left' | 'right';
     /**
-  * ドキュメントDrawerの幅
-  */
-    drawerWidth?: number;
+     * ドキュメントDrawerの初期幅
+     */
+    drawerWidth: number;
     /**
-  * ドキュメントDrawerのリサイズを可能にするか
-  */
+     * ドキュメントDrawerの幅の単位
+     */
+    drawerWidthUnit?: 'px' | '%';
+    /**
+     * ドキュメントDrawerのリサイズを可能にするか
+     */
     resizable?: boolean;
     /**
- * ドキュメントDrawerを外部クリックで閉じるか
- */
+     * ドキュメントDrawerを外部クリックで閉じるか
+     */
     refreshFrameOnClose?: boolean;
     /**
-  * ドキュメントDrawerを閉じたときにフレームをリフレッシュするか
-  */
+     * ドキュメントDrawerを閉じたときにフレームをリフレッシュするか
+     */
     closeOnOutsideClick?: boolean;
     /**
-* 初期ページのURL
-*/
+     * 初期ページのURL
+     */
     defaultSrc?: string;
     /**
      * プライマリカラー
