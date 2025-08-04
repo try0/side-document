@@ -4,14 +4,16 @@
     import { SideDocument } from "./SideDocument";
 
     // 開発用Appコンポーネント
-   
+
     let option = $state(Object.assign({}, SideDocument.defaultOption));
+    option.defaultSrc = "../public/sample.html"; // 初期ページURLを設定
     let app = new SideDocument(option);
 
+    let updatingId: number | null = null;
     let preOption = $state(Object.assign({}, SideDocument.defaultOption));
     $effect(() => {
         let upd = false;
-        if (option.documentDrawerPosition !== preOption.documentDrawerPosition) {
+        if (option.drawerPosition !== preOption.drawerPosition) {
             upd = true;
         }
 
@@ -32,10 +34,29 @@
         }
         if (option.closeOnOutsideClick !== preOption.closeOnOutsideClick) {
             upd = true;
-        }   
+        }
+
+        if (option.primaryColor !== preOption.primaryColor) {
+            upd = true;
+        }
+
+        if (option.defaultSrc !== preOption.defaultSrc) {
+            upd = true;
+        }
+
+        if (option.toggleButtonFollowsDrawerPosition !== preOption.toggleButtonFollowsDrawerPosition) {
+            upd = true;
+        }
+
         if (upd) {
-            app.update(option);
-            preOption = Object.assign({}, option);
+            if (updatingId) {
+                clearTimeout(updatingId);
+            }
+            updatingId = window.setTimeout(() => {
+                app.update(option);
+                preOption = Object.assign({}, option);
+                updatingId = null;
+            }, 200);
         }
     });
 
@@ -44,220 +65,534 @@
         app.init();
     });
 
-    onDestroy(() => {
-
-    });
+    onDestroy(() => {});
 
     // トグルボタン位置のオプション
     const positionOptions = [
-        { value: "top-left", label: "Top Left" },
-        { value: "top-right", label: "Top Right" },
-        { value: "bottom-left", label: "Bottom Left" },
-        { value: "bottom-right", label: "Bottom Right" },
+        { value: "top-left", label: "左上" },
+        { value: "top-right", label: "右上" },
+        { value: "bottom-left", label: "左下" },
+        { value: "bottom-right", label: "右下" },
     ];
 </script>
 
-<main >
+<main class="app-container">
     <div>
         <h1>Side Document Example</h1>
-        <p>This is a simple example of using Side Document.</p>
+        <p>使い方とサンプル</p>
     </div>
 
-    <div class="settings-panel">
-        <div class="setting-group">
-            <h2>Toggle Button Settings</h2>
+    <div class="container">
+        <!-- 左側：設定パネル -->
+        <div class="settings-panel">
+            <h2 class="panel-title">Settings</h2>
 
-            <label class="setting-item">
-                <input
-                    type="checkbox"
-                    bind:checked={option.enableToggleButton}
-                />
-                <span>Enable Toggle Button</span>
-            </label>
+            <!-- トグルボタン設定 -->
+            <div class="setting-group">
+                <div class="setting-header">Toggle Button</div>
 
-            <div class="setting-item">
-                <span>Button Position:</span>
-                <div class="position-selectors">
-                    {#each positionOptions as pos}
-                        <label class="position-option">
+                <div class="setting-content">
+                    <div class="setting-row">
+                        <div class="setting-label">
+                            <code>enableToggleButton</code>
+                            <div class="label-description">表示する</div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input
+                                    type="checkbox"
+                                    bind:checked={option.enableToggleButton}
+                                />
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-label">
+                            <code>toggleButtonPosition</code>
+                            <div class="label-description">ボタンの位置</div>
+                        </div>
+                        <div class="setting-control radio-group">
+                            {#each positionOptions as pos}
+                                <label class="radio-option">
+                                    <input
+                                        type="radio"
+                                        name="position"
+                                        value={pos.value}
+                                        bind:group={option.toggleButtonPosition}
+                                    />
+                                    <span>{pos.label}</span>
+                                </label>
+                            {/each}
+                        </div>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-label">
+                            <code>toggleButtonFollowsDrawerPosition</code>
+                            <div class="label-description">
+                                Drawer位置にトグルボタン位置を追従させる
+                            </div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input
+                                    type="checkbox"
+                                    bind:checked={
+                                        option.toggleButtonFollowsDrawerPosition
+                                    }
+                                />
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ドロワー設定 -->
+            <div class="setting-group">
+                <div class="setting-header">Drawer</div>
+
+                <div class="setting-content">
+                    <div class="setting-row">
+                        <div class="setting-label">
+                            <code>drawerPosition</code>
+                            <div class="label-description">Drawerの位置</div>
+                        </div>
+                        <div class="setting-control radio-group">
+                            <label class="radio-option">
+                                <input
+                                    type="radio"
+                                    name="drawer-position"
+                                    value="left"
+                                    bind:group={option.drawerPosition}
+                                />
+                                <span>左</span>
+                            </label>
+                            <label class="radio-option">
+                                <input
+                                    type="radio"
+                                    name="drawer-position"
+                                    value="right"
+                                    bind:group={option.drawerPosition}
+                                />
+                                <span>右</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-label">
+                            <code>drawerWidth</code>
+                            <div class="label-description">初期サイズ</div>
+                        </div>
+                        <div class="setting-control size-input-group">
                             <input
-                                type="radio"
-                                name="position"
-                                value={pos.value}
-                                bind:group={option.toggleButtonPosition}
+                                type="number"
+                                min={option.drawerWidthUnit === "px" ? 100 : 10}
+                                max={option.drawerWidthUnit === "px"
+                                    ? 800
+                                    : option.drawerWidthUnit === "%"
+                                      ? 80
+                                      : 320}
+                                bind:value={option.drawerWidth}
+                                class="width-input"
                             />
-                            <span>{pos.label}</span>
-                        </label>
-                    {/each}
+                            <span class="unit-text"
+                                >{option.drawerWidthUnit}</span
+                            >
+                        </div>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-label">
+                            <code>drawerWidthUnit</code>
+                            <div class="label-description">
+                                初期サイズの単位
+                            </div>
+                        </div>
+                        <div class="setting-control unit-selector">
+                            <label class="radio-option">
+                                <input
+                                    type="radio"
+                                    name="width-unit"
+                                    value="px"
+                                    bind:group={option.drawerWidthUnit}
+                                    on:change={() => {
+                                        if (option.drawerWidth > 800) {
+                                            option.drawerWidth = 800;
+                                        }
+                                    }}
+                                />
+                                <span>px</span>
+                            </label>
+                            <label class="radio-option">
+                                <input
+                                    type="radio"
+                                    name="width-unit"
+                                    value="%"
+                                    bind:group={option.drawerWidthUnit}
+                                    on:change={() => {
+                                        if (option.drawerWidth > 80) {
+                                            option.drawerWidth = 80;
+                                        }
+                                    }}
+                                />
+                                <span>%</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-label">
+                            <code>resizable</code>
+                            <div class="label-description">
+                                リサイズを有効にする
+                            </div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input
+                                    type="checkbox"
+                                    bind:checked={option.resizable}
+                                />
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-label">
+                            <code>defaultSrc</code>
+                            <div class="label-description">
+                                デフォルトドキュメントURL
+                            </div>
+                        </div>
+                        <div class="setting-control full-width">
+                            <input
+                                type="text"
+                                bind:value={option.defaultSrc}
+                                placeholder="https://example.com/docs"
+                                class="url-input"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 動作設定 -->
+            <div class="setting-group">
+                <div class="setting-header">Behavior</div>
+
+                <div class="setting-content">
+                    <div class="setting-row">
+                        <div class="setting-label">
+                            <code>closeOnOutsideClick</code>
+                            <div class="label-description">
+                                外部クリックで閉じる
+                            </div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input
+                                    type="checkbox"
+                                    bind:checked={option.closeOnOutsideClick}
+                                />
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- スタイリング設定 -->
+            <div class="setting-group">
+                <div class="setting-header">Styling</div>
+
+                <div class="setting-content">
+                    <div class="setting-row">
+                        <div class="setting-label">
+                            <code>primaryColor</code>
+                            <div class="label-description">
+                                プライマリカラー
+                            </div>
+                        </div>
+                        <div class="setting-control color-picker-control">
+                            <input
+                                type="color"
+                                bind:value={option.primaryColor}
+                                class="color-picker"
+                            />
+                            <input
+                                type="text"
+                                bind:value={option.primaryColor}
+                                class="color-text"
+                                placeholder="#236ad4"
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="setting-group">
-            <h2>Drawer Settings</h2>
+        <!-- 右側：機能パネル -->
+        <div class="functions-panel">
+            <h2 class="panel-title">Functions</h2>
 
-            <div class="setting-item">
-                <span>Drawer Position:</span>
-                <div class="position-selectors">
-                    <label class="position-option">
-                        <input
-                            type="radio"
-                            name="drawer-position"
-                            value="left"
-                            bind:group={option.documentDrawerPosition}
-                        />
-                        <span>Left</span>
-                    </label>
-                    <label class="position-option">
-                        <input
-                            type="radio"
-                            name="drawer-position"
-                            value="right"
-                            bind:group={option.documentDrawerPosition}
-                        />
-                        <span>Right</span>
-                    </label>
+            <div class="function-group">
+                <div class="function-header">Drawer Control</div>
+
+                <div class="function-content">
+                    <button
+                        class="function-button"
+                        on:click={() => app.openDrawer()}
+                    >
+                        <div class="function-name">openDrawer()</div>
+                        <div class="function-description">Drawerを開く</div>
+                    </button>
+
+                    <button
+                        class="function-button"
+                        on:click={() => app.closeDrawer()}
+                    >
+                        <div class="function-name">closeDrawer()</div>
+                        <div class="function-description">Drawerを閉じる</div>
+                    </button>
+
+                    <button
+                        class="function-button"
+                        on:click={() => app.toggleDrawer()}
+                    >
+                        <div class="function-name">toggleDrawer()</div>
+                        <div class="function-description">
+                            Drawerを切り替える
+                        </div>
+                    </button>
                 </div>
-            </div>
-
-            <div class="setting-item">
-                <span>Initial Width ({option.drawerWidthUnit}):</span>
-                <input
-                    type="number"
-                    min={option.drawerWidthUnit === "px" ? 100 : 10}
-                    max={option.drawerWidthUnit === "px"
-                        ? 800
-                        : option.drawerWidthUnit === "%"
-                          ? 100
-                          : 100}
-                    bind:value={option.drawerWidth}
-                    class="width-input"
-                />
-            </div>
-
-            <div class="setting-item width-unit-container">
-                <span>Width Unit:</span>
-                <div class="position-selectors">
-                    <label class="position-option">
-                        <input
-                            type="radio"
-                            name="width-unit"
-                            value="px"
-                            bind:group={option.drawerWidthUnit}
-                            on:change={() => {
-                                if (
-                                    option.drawerWidthUnit === "%" &&
-                                    option.drawerWidth > 100
-                                ) {
-                                    option.drawerWidth = 100;
-                                }
-                            }}
-                        />
-                        <span>px</span>
-                    </label>
-                    <label class="position-option">
-                        <input
-                            type="radio"
-                            name="width-unit"
-                            value="%"
-                            bind:group={option.drawerWidthUnit}
-                            on:change={() => {
-                                if (option.drawerWidth > 100) {
-                                    option.drawerWidth = 100;
-                                }
-                            }}
-                        />
-                        <span>%</span>
-                    </label>
-                </div>
-            </div>
-
-            <label class="setting-item">
-                <input type="checkbox" bind:checked={option.resizable} />
-                <span>Enable Resizing</span>
-            </label>
-        </div>
-
-        <div class="setting-group">
-            <h2>Behavior Settings</h2>
-
-            <label class="setting-item">
-                <input
-                    type="checkbox"
-                    bind:checked={option.closeOnOutsideClick}
-                />
-                <span>Close on Outside Click</span>
-            </label>
-        </div>
-
-
-        
-        <div class="setting-group">
-            <h2>Functions</h2>
-
-            <div>
-                <button on:click={() => app.openDrawer()}>Open Drawer</button>
-                <button on:click={() => app.closeDrawer()}>Close Drawer</button>
-                <button on:click={() => app.toggleDrawer()}>
-                    Toggle Drawer
-                </button>
             </div>
         </div>
     </div>
+
+    <!-- SideDocumentコンポーネント -->
+    <!-- <SideDocumentContainer {option} /> -->
 </main>
 
 <style>
-    .settings-panel {
-        background-color: #f5f5f5;
-        border-radius: 8px;
+    .app-container {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
         padding: 20px;
-        margin: 20px 0;
-        max-width: 600px;
     }
 
-    .setting-group {
+    .container {
+        /* display: flex; */
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .panel-title {
+        font-size: 1.5rem;
         margin-bottom: 20px;
+        color: #333;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
     }
 
-    .setting-group h2 {
-        font-size: 1.2rem;
-        margin-bottom: 10px;
+    /* 設定パネル */
+    .settings-panel,
+    .functions-panel {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        flex: 1;
+        min-width: 350px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .setting-group,
+    .function-group {
+        margin-bottom: 25px;
+        border: 1px solid #e6e6e6;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .setting-header,
+    .function-header {
+        background-color: #f0f0f0;
+        padding: 12px 15px;
+        font-weight: bold;
         color: #333;
     }
 
-    .setting-item {
+    .setting-content,
+    .function-content {
+        padding: 15px;
+        background-color: #fff;
+    }
+
+    .setting-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .setting-row:last-child {
+        border-bottom: none;
+    }
+
+    .setting-label {
+        font-size: 14px;
+        color: #555;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    code {
+        font-family: monospace;
+        font-size: 13px;
+        color: #0066cc;
+        font-weight: 500;
+    }
+
+    .label-description {
+        color: #555;
+        font-size: 14px;
+    }
+
+    .setting-control {
         display: flex;
         align-items: center;
-        margin-bottom: 12px;
     }
 
-    .setting-item input[type="checkbox"] {
-        margin-right: 8px;
-    }
-
-    .position-selectors {
+    /* ラジオボタングループ */
+    .radio-group {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 8px;
-        margin-left: 8px;
+        gap: 15px;
     }
 
-    .position-option {
+    .radio-option {
         display: flex;
         align-items: center;
         cursor: pointer;
     }
 
-    .position-option input {
-        margin-right: 4px;
+    .radio-option input {
+        margin-right: 5px;
+    }
+
+    /* サイズ入力 */
+    .size-input-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     .width-input {
-        margin-left: 8px;
-        width: 80px;
-        padding: 4px;
+        width: 70px;
+        padding: 6px;
         border: 1px solid #ccc;
         border-radius: 4px;
+    }
+
+    .unit-text {
+        color: #666;
+        font-size: 14px;
+    }
+
+    .unit-selector {
+        display: flex;
+        gap: 15px;
+    }
+
+    /* トグルスイッチ */
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+    }
+
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        border-radius: 20px;
+        transition: 0.3s;
+    }
+
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        border-radius: 50%;
+        transition: 0.3s;
+    }
+
+    input:checked + .toggle-slider {
+        background-color: #2196f3;
+    }
+
+    input:checked + .toggle-slider:before {
+        transform: translateX(20px);
+    }
+
+    /* 機能ボタン */
+    .function-button {
+        display: flex;
+        flex-direction: column;
+        padding: 12px 15px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-bottom: 10px;
+        text-align: left;
+    }
+
+    .function-button:hover {
+        background-color: #f5f5f5;
+        border-color: #ccc;
+    }
+
+    .function-button:last-child {
+        margin-bottom: 0;
+    }
+
+    .function-name {
+        font-family: monospace;
+        font-size: 14px;
+        color: #0066cc;
+        margin-bottom: 5px;
+    }
+
+    .function-description {
+        font-size: 13px;
+        color: #555;
+    }
+
+    input[type="text"] {
+        width: 20rem;
     }
 </style>

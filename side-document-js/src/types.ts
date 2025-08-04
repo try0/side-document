@@ -17,9 +17,13 @@ export interface SideDocumentOption {
     */
     toggleButtonPosition?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
     /**
+     * トグルボタンがドキュメントのDrawerの位置に従うか
+     */
+    toggleButtonFollowsDrawerPosition ?: boolean;
+    /**
      * ドキュメントのDrawerの位置
      */
-    documentDrawerPosition?: 'left' | 'right';
+    drawerPosition?: 'left' | 'right';
     /**
      * ドキュメントDrawerの初期幅
      */

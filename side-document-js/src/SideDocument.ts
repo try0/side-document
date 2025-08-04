@@ -39,7 +39,7 @@ export class SideDocument {
         /**
          * ドキュメントのDrawerの位置
          */
-        documentDrawerPosition: 'right',
+        drawerPosition: 'right',
         /**
          * ドキュメントDrawerの幅
          */
@@ -55,7 +55,7 @@ export class SideDocument {
         /**
          * ドキュメントDrawerを外部クリックで閉じるか
          */
-        closeOnOutsideClick: true,
+        closeOnOutsideClick: false,
         /**
          * ドキュメントDrawerを閉じたときにフレームをリフレッシュするか
          */
@@ -63,7 +63,7 @@ export class SideDocument {
         /**
          * 初期ページのURL
          */
-        defaultSrc: 'https://try0.github.io/mkdocs-toc-md/sample/site/mkdocs-toc-md.html#usage',
+        defaultSrc: '',
         /**
          * プライマリカラー
          */
@@ -114,13 +114,13 @@ export class SideDocument {
      * 
      * @param option 
      */
-    public update(option: SideDocumentOption | null = null): void {
+    public async update(option: SideDocumentOption | null = null): Promise<void> {
         if (option) {
             this.option = Object.assign({}, SideDocument.defaultOption, this.option, option);
         }
 
         if (this.documentContainer) {
-            unmount(this.documentContainer);
+            await unmount(this.documentContainer);
         }
 
         this.init();
@@ -148,7 +148,7 @@ export class SideDocument {
         this.documentContainer = mount(SideDocumentContainer, {
             target: this.container.shadowRoot ? this.container.shadowRoot : this.container,
             props: {
-                option: this.option,
+                initOption: this.option,
             },
         });
 

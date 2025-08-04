@@ -15,7 +15,8 @@
         isVisibleToggleButton: boolean;
     }
 
-    let { option }: { option: SideDocumentOption } = $props();
+    let { initOption }: { initOption: SideDocumentOption } = $props();
+    let option = $state(initOption);
     setContext("option", option);
 
     $effect(() => {
@@ -25,14 +26,23 @@
 
     // トグルボタンの位置クラスを計算
     let toggleButtonPositionClass = $derived.by(() => {
+        if (option.toggleButtonFollowsDrawerPosition && option.drawerPosition) {
+            // drawerPositionが"left"なら"bottom-left"、"right"なら"bottom-right"
+            if (option.toggleButtonPosition?.startsWith("bottom")) {
+                return option.drawerPosition === "left" ? "bottom-left" : "bottom-right";
+            } else if (option.toggleButtonPosition?.startsWith("top")) {
+                return option.drawerPosition === "left" ? "top-left" : "top-right";
+            }
+        }
+        // 通常はoption.toggleButtonPosition
         const position = option.toggleButtonPosition || "bottom-right";
         return position;
     });
 
     // ツールチップの位置を計算
     let tooltipPosition = $derived.by(() => {
-        const position = option.toggleButtonPosition || "bottom-right";
-
+        // toggleButtonPositionClassを参照
+        const position = toggleButtonPositionClass;
         if (position.startsWith("top")) {
             return "bottom";
         } else if (position.startsWith("bottom")) {
@@ -97,9 +107,9 @@
     --sd-toggle-button-z-index: {option.toggleButtonZIndex || 1001};"
 >
     <!-- ドキュメント　メインコンポーネント -->
-    {#if containerElement}
+
         <SideDocumentDrawer bind:this={documentDrawer} {containerElement} />
-    {/if}
+
 
     {#if documentDrawerState.isVisibleToggleButton}
         <div>
@@ -107,10 +117,10 @@
             <button
                 type="button"
                 class="sd-toggle-button {toggleButtonPositionClass}"
-                data-sd-component-tooltip={documentDrawerState.isOpened
+                data-sd-c-tooltip={documentDrawerState.isOpened
                     ? str(option.i18nText, "toggleButtonCloseTooltip")
                     : str(option.i18nText, "toggleButtonOpenTooltip")}
-                data-sd-component-tooltip-position={tooltipPosition}
+                data-sd-c-tooltip-position={tooltipPosition}
                 on:click={toggleDrawer}
                 aria-label={documentDrawerState.isOpened
                     ? str(option.i18nText, "toggleButtonCloseTooltip")
@@ -215,18 +225,18 @@
         stroke: white;
         fill: none;
     }
-    :global([data-sd-component-tooltip]) {
+    :global([data-sd-c-tooltip]) {
         position: relative;
     }
 
-    :global([data-sd-component-tooltip])::after {
-        content: attr(data-sd-component-tooltip);
+    :global([data-sd-c-tooltip])::after {
+        content: attr(data-sd-c-tooltip);
         position: absolute;
         background: #dadada;
         color: #303030;
         padding: 5px 10px;
-        border-radius: 0.25em;
-        font-size: 0.92em;
+        border-radius: 0.25rem;
+        font-size: 0.85rem;
         white-space: nowrap;
         opacity: 0;
         pointer-events: none;
@@ -237,51 +247,51 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     }
 
-    :global([data-sd-component-tooltip-position="top"])::after {
+    :global([data-sd-c-tooltip-position="top"])::after {
         bottom: 100%;
         left: 50%;
         transform: translateX(-50%) translateY(5px);
         margin-bottom: 5px;
     }
-    :global([data-sd-component-tooltip-position="top"]):hover::after {
+    :global([data-sd-c-tooltip-position="top"]):hover::after {
         transform: translateX(-50%) translateY(0);
     }
 
-    :global([data-sd-component-tooltip-position="bottom"])::after {
+    :global([data-sd-c-tooltip-position="bottom"])::after {
         top: 100%;
         left: 50%;
         transform: translateX(-50%) translateY(-5px);
         margin-top: 5px;
     }
-    :global([data-sd-component-tooltip-position="bottom"]):hover::after {
+    :global([data-sd-c-tooltip-position="bottom"]):hover::after {
         transform: translateX(-50%) translateY(0);
     }
 
-    :global([data-sd-component-tooltip-position="left"])::after {
+    :global([data-sd-c-tooltip-position="left"])::after {
         right: 100%;
         top: 50%;
         transform: translateY(-50%) translateX(5px);
         margin-right: 5px;
     }
-    :global([data-sd-component-tooltip-position="left"]):hover::after {
+    :global([data-sd-c-tooltip-position="left"]):hover::after {
         transform: translateY(-50%) translateX(0);
     }
 
-    :global([data-sd-component-tooltip-position="right"])::after {
+    :global([data-sd-c-tooltip-position="right"])::after {
         left: 100%;
         top: 50%;
         transform: translateY(-50%) translateX(-5px);
         margin-left: 5px;
     }
-    :global([data-sd-component-tooltip-position="right"]):hover::after {
+    :global([data-sd-c-tooltip-position="right"]):hover::after {
         transform: translateY(-50%) translateX(0);
     }
 
-    :global([data-sd-component-tooltip]):hover::after {
+    :global([data-sd-c-tooltip]):hover::after {
         opacity: 1;
     }
 
-    :global([data-sd-component-tooltip])::before {
+    :global([data-sd-c-tooltip])::before {
         content: "";
         position: absolute;
         width: 0;
@@ -292,7 +302,7 @@
         z-index: var(--sd-toggle-button-z-index, 1001);
     }
 
-    :global([data-sd-component-tooltip-position="top"])::before {
+    :global([data-sd-c-tooltip-position="top"])::before {
         bottom: 100%;
         left: 50%;
         transform: translateX(-50%);
@@ -300,7 +310,7 @@
         margin-bottom: -5px;
     }
 
-    :global([data-sd-component-tooltip-position="bottom"])::before {
+    :global([data-sd-c-tooltip-position="bottom"])::before {
         top: 100%;
         left: 50%;
         transform: translateX(-50%);
@@ -308,7 +318,7 @@
         margin-top: -5px;
     }
 
-    :global([data-sd-component-tooltip-position="left"])::before {
+    :global([data-sd-c-tooltip-position="left"])::before {
         top: 50%;
         right: 100%;
         transform: translateY(-50%);
@@ -316,7 +326,7 @@
         margin-right: -5px;
     }
 
-    :global([data-sd-component-tooltip-position="right"])::before {
+    :global([data-sd-c-tooltip-position="right"])::before {
         top: 50%;
         left: 100%;
         transform: translateY(-50%);
@@ -324,7 +334,7 @@
         margin-left: -5px;
     }
 
-    :global([data-sd-component-tooltip]):hover::before {
+    :global([data-sd-c-tooltip]):hover::before {
         opacity: 1;
     }
 </style>

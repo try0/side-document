@@ -68,7 +68,7 @@
      * ドキュメントパネルの位置
      */
     let drawerPositionClass: "right" | "left" = $derived.by(() => {
-        const position = option.documentDrawerPosition || "left";
+        const position = option.drawerPosition || "left";
         return position;
     });
 
@@ -84,6 +84,22 @@
      * ドキュメントパネルのリサイズ開始時の幅
      */
     let startWidthPx = $state(calculateInitialWidthInPx());
+
+    // フォーカス状態管理
+    let isResizeBarFocused = $state(false);
+    let focusTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    let frameElement: HTMLIFrameElement | null = null;
+
+    function setResizeBarActiveWithDelay() {
+        focusTimeout = setTimeout(() => {
+            isResizeBarFocused = true;
+        }, 300);
+    }
+    function clearResizeBarActive() {
+        if (focusTimeout) clearTimeout(focusTimeout);
+        isResizeBarFocused = false;
+    }
 
     /**
      * 初期幅をpx単位に変換して取得する関数
@@ -154,6 +170,12 @@
         isResizing = false;
         window.removeEventListener("mousemove", onMouseMove);
         window.removeEventListener("mouseup", onMouseUp);
+
+        if (frameElement) {
+            frameElement.style.pointerEvents = "auto";
+            frameElement.style.userSelect = "auto";
+            frameElement.style.opacity = "1";
+        }
     }
 
     /**
@@ -165,10 +187,10 @@
         event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
     ) {
         if (drawerPositionClass === "left") {
-            option.documentDrawerPosition = "right";
+            option.drawerPosition = "right";
             drawerPositionClass = "right";
         } else {
-            option.documentDrawerPosition = "left";
+            option.drawerPosition = "left";
             drawerPositionClass = "left";
         }
     }
@@ -253,23 +275,32 @@
 <div
     class="sd-drawer {drawerToggleClass} {drawerPositionClass}"
     style="--drawer-width: {drawerWidthPx}px; "
-    class:panel-hidden={!documentPanelState.isOpened}
 >
     <!-- セパレーター-->
-    {#if option.resizable && drawerPositionClass === "right"}
-        <div class="sd-resize-bar-container">
-            <span
-                class="sd-resize-bar"
-                role="separator"
-                tabindex="0"
-                aria-orientation="vertical"
-                data-sd-component-tooltip={str(
-                    option.i18nText,
-                    "resizeBarTooltip",
-                )}
-                data-sd-component-tooltip-position="right"
-                on:mousedown={onResizeBarMouseDown}
-            ></span>
+    {#if drawerPositionClass === "right"}
+        <div
+            class="sd-divider"
+            style="background-color: {isResizeBarFocused || isResizing
+                ? 'var(--sd-primary-color)'
+                : 'rgb(235, 235, 235)'};
+                opacity: {isResizeBarFocused || isResizing ? '0.7' : '1'};
+                "
+        >
+            {#if option.resizable}
+                <span
+                    class="sd-resize-bar"
+                    role="separator"
+                    tabindex="0"
+                    aria-orientation="vertical"
+                    data-sd-c-tooltip={str(option.i18nText, "resizeBarTooltip")}
+                    data-sd-c-tooltip-position="right"
+                    on:mousedown={onResizeBarMouseDown}
+                    on:focus={setResizeBarActiveWithDelay}
+                    on:blur={clearResizeBarActive}
+                    on:mouseenter={setResizeBarActiveWithDelay}
+                    on:mouseleave={clearResizeBarActive}
+                ></span>
+            {/if}
         </div>
     {/if}
 
@@ -277,10 +308,13 @@
     <div style="width: 100%; height: 100%; border: none; ">
         {#if isVisibleFrame}
             <iframe
+                bind:this={frameElement}
                 title={str(option.i18nText, "documentTitle")}
                 src={frameSrc}
                 style="width: 100%; height: 100%; border: none; 
-            {isResizing ? 'pointer-events: none; user-select: none;' : ''}
+            {isResizing
+                    ? 'pointer-events: none; user-select: none;'
+                    : 'pointer-events: auto; user-select: auto;'}
             {isLoading ? 'opacity: 0;' : ''}"
                 on:load={() => {
                     isLoading = false;
@@ -290,20 +324,30 @@
     </div>
 
     <!-- セパレーター-->
-    {#if option.resizable && drawerPositionClass === "left"}
-        <div class="sd-resize-bar-container">
-            <span
-                class="sd-resize-bar"
-                role="separator"
-                tabindex="0"
-                aria-orientation="vertical"
-                data-sd-component-tooltip={str(
-                    option.i18nText,
-                    "resizeBarTooltip",
-                )}
-                data-sd-component-tooltip-position="left"
-                on:mousedown={onResizeBarMouseDown}
-            ></span>
+    {#if drawerPositionClass === "left"}
+        <div
+            class="sd-divider"
+            style="background-color: {isResizeBarFocused || isResizing
+                ? 'var(--sd-primary-color)'
+                : 'rgb(235, 235, 235)'};
+                opacity: {isResizeBarFocused || isResizing ? '0.7' : '1'};
+                "
+        >
+            {#if option.resizable}
+                <span
+                    class="sd-resize-bar"
+                    role="separator"
+                    tabindex="0"
+                    aria-orientation="vertical"
+                    data-sd-c-tooltip={str(option.i18nText, "resizeBarTooltip")}
+                    data-sd-c-tooltip-position="left"
+                    on:mousedown={onResizeBarMouseDown}
+                    on:focus={setResizeBarActiveWithDelay}
+                    on:blur={clearResizeBarActive}
+                    on:mouseenter={setResizeBarActiveWithDelay}
+                    on:mouseleave={clearResizeBarActive}
+                ></span>
+            {/if}
         </div>
     {/if}
 </div>
@@ -323,11 +367,8 @@
             type="button"
             on:click={() => close()}
             aria-label={str(option.i18nText, "closeButtonTooltip")}
-            data-sd-component-tooltip={str(
-                option.i18nText,
-                "closeButtonTooltip",
-            )}
-            data-sd-component-tooltip-position={drawerPositionClass === "left"
+            data-sd-c-tooltip={str(option.i18nText, "closeButtonTooltip")}
+            data-sd-c-tooltip-position={drawerPositionClass === "left"
                 ? "right"
                 : "left"}
             class="sd-drawer-button"
@@ -370,12 +411,8 @@
                 type="button"
                 class="sd-drawer-button"
                 aria-label={str(option.i18nText, "externalLinkTooltip")}
-                data-sd-component-tooltip={str(
-                    option.i18nText,
-                    "externalLinkTooltip",
-                )}
-                data-sd-component-tooltip-position={drawerPositionClass ===
-                "left"
+                data-sd-c-tooltip={str(option.i18nText, "externalLinkTooltip")}
+                data-sd-c-tooltip-position={drawerPositionClass === "left"
                     ? "right"
                     : "left"}
                 on:click={onClickOpenInNewWindow}
@@ -400,11 +437,11 @@
             type="button"
             class="sd-drawer-button"
             aria-label={str(option.i18nText, "positionChangeButtonTooltip")}
-            data-sd-component-tooltip={str(
+            data-sd-c-tooltip={str(
                 option.i18nText,
                 "positionChangeButtonTooltip",
             )}
-            data-sd-component-tooltip-position={drawerPositionClass === "left"
+            data-sd-c-tooltip-position={drawerPositionClass === "left"
                 ? "right"
                 : "left"}
             on:click={onChangeDrawerPosition}
@@ -463,13 +500,23 @@
     }
     .sd-drawer.left.close {
         left: calc(-1 * var(--drawer-width, 320px));
+        opacity: 0;
+        transition:
+            left 0.3s ease,
+            opacity 0.3s ease;
+        user-event: none;
     }
     .sd-drawer.right.close {
         right: calc(-1 * var(--drawer-width, 320px));
+        opacity: 0;
+        transition:
+            right 0.3s ease,
+            opacity 0.3s ease;
+        user-event: none;
     }
 
-    .sd-resize-bar-container {
-        width: 0.5rem;
+    .sd-divider {
+        width: 7px;
         height: 100%;
         display: flex;
         align-items: center;
@@ -488,7 +535,7 @@
     }
 
     .sd-drawer-button-container {
-        position: absolute;
+        position: fixed;
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
