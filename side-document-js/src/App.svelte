@@ -6,7 +6,7 @@
     // 開発用Appコンポーネント
 
     let option = $state(Object.assign({}, SideDocument.defaultOption));
-    option.defaultSrc = "../public/sample.html"; // 初期ページURLを設定
+    option.defaultSrc = "./sample.html"; // 初期ページURLを設定
     let app = new SideDocument(option);
 
     let updatingId: number | null = null;
