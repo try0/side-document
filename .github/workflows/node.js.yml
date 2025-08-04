@@ -39,7 +39,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./side-document-js/dis-demo/
+          path: ./side-document-js/dist-demo/
 
 
   deploy:
