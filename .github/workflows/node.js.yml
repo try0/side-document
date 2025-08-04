@@ -37,7 +37,7 @@ jobs:
         run: npm run build
         working-directory: ./side-document-js
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./side-document-js/dis-demo/
 
