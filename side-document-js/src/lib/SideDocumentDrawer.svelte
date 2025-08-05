@@ -469,7 +469,8 @@
         position: fixed;
         display: flex;
         top: 0;
-        height: 100vh;
+        height: 100dvh;
+        min-height: 100dvh;
         width: var(--drawer-width, 320px);
         background: #fff;
         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
