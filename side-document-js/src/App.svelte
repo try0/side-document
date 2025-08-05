@@ -643,4 +643,68 @@
         max-width: 140px;
         font-family: monospace;
     }
+
+    @media (max-width: 600px) {
+        .app-container {
+            max-width: 100vw;
+            padding: 0px;
+        }
+
+        .container {
+            display: block;
+            gap: 0;
+        }
+
+        .settings-panel,
+        .functions-panel {
+            min-width: 0;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 4px;
+            margin-bottom: 18px;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            padding-bottom: 6px;
+            margin-bottom: 12px;
+        }
+
+        .setting-content,
+        .function-content {
+            padding: 8px 2px;
+        }
+
+        .setting-row {
+            flex-direction: column;
+            align-items: stretch;
+            padding: 8px 5px;
+        }
+
+        .setting-label {
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .setting-control,
+        .radio-group,
+        .size-input-group,
+        .unit-selector,
+        .color-picker-control {
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .width-input,
+        .color-text {
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .function-button {
+            padding: 10px 8px;
+            font-size: 15px;
+        }
+    }
 </style>
