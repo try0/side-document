@@ -581,6 +581,7 @@
         padding: 0;
         border-radius: 0.25em;
         cursor: pointer;
+        z-index: var(--sd-drawer-z-index, 1000);
     }
     .sd-drawer-button svg {
         display: block;
@@ -590,10 +591,12 @@
         transform: scale(0.92);
     }
     .sd-drawer-button:hover {
-        opacity: 0.9;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        filter: brightness(1.15) saturate(1.2);
+        outline: 2px solid var(--sd-primary-color, #236ad4);
+        outline-offset: 2px;
+        box-shadow: 0 0 0 4px
+            color-mix(in srgb, var(--sd-primary-color, #236ad4) 30%, #fff 70%);
     }
-
     .sd-panel-hidden {
         visibility: hidden;
         pointer-events: none;
