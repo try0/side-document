@@ -550,7 +550,7 @@
     }
 
     input:checked + .toggle-slider {
-        background-color: #2196f3;
+        background-color: #236ad4;
     }
 
     input:checked + .toggle-slider:before {
@@ -592,7 +592,50 @@
         color: #555;
     }
 
-    input[type="text"] {
-        width: 20rem;
-    }
+/* 入力欄の共通スタイル */
+input[type="text"],
+input[type="number"],
+input[type="color"] {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 15px;
+    background: #fff;
+    color: #222;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="color"]:focus {
+    border-color: #236ad4;
+    box-shadow: 0 0 0 2px color-mix(in srgb, #236ad4 30%, #fff 70%);
+    outline: 2px solid #236ad4;
+    outline-offset: 2px;
+    z-index: 2;
+}
+
+/* カラーピッカーとテキストカラー入力の並び調整 */
+.color-picker-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.color-picker {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    background: none;
+}
+
+.color-text {
+    width: 110px;
+    min-width: 80px;
+    max-width: 140px;
+    font-family: monospace;
+}
 </style>
