@@ -8,23 +8,20 @@
     import { str } from "./i18n";
 
     /**
-     * コンテナー、Drawer間の状態を管理するためのインターフェース
+     * 初期オプション値
      */
-    export interface SideDocumentDrawerState {
-        isOpened: boolean;
-        isVisibleToggleButton: boolean;
-    }
-
     let { initOption }: { initOption: SideDocumentOption } = $props();
     let option = $state(initOption);
     setContext("option", option);
 
-    $effect(() => {
-        documentDrawerState.isVisibleToggleButton =
-            option.showToggleButton ?? true;
-    });
+    /**
+     * コンテナー内のルート要素
+     */
+    let containerRootElement: HTMLDivElement | null = $state(null);
 
-    // トグルボタンの位置クラスを計算
+    /**
+     * トグルボタンの位置クラス
+     */
     let toggleButtonPositionClass = $derived.by(() => {
         if (option.toggleButtonFollowsDrawerPosition && option.drawerPosition) {
             // drawerPositionが"left"なら"bottom-left"、"right"なら"bottom-right"
@@ -43,8 +40,10 @@
         return position;
     });
 
-    // ツールチップの位置を計算
-    let tooltipPosition = $derived.by(() => {
+    /**
+     * トグルボタンのツールチップ位置
+     */
+    let toggleButtonTooltipPosition = $derived.by(() => {
         // toggleButtonPositionClassを参照
         const position = toggleButtonPositionClass;
         if (position.startsWith("top")) {
@@ -58,32 +57,45 @@
         }
     });
 
-    let containerRootElement: HTMLDivElement | null = $state(null);
-
-    // ドキュメントのDrawerの状態を管理するためのコンテキスト
-    let documentDrawerState: SideDocumentDrawerState = $state({
-        isOpened: false,
-        isVisibleToggleButton: option.showToggleButton ?? true,
+    /**
+     * トグルボタンの表示制御
+     * option.showToggleButtonがtrueの場合のみ表示
+     */
+    let isVisibleToggleButton: boolean = $derived.by(() => {
+        // option.showToggleButtonがtrueの場合のみ表示
+        return option.showToggleButton ?? true;
     });
-    setContext("documentDrawerState", documentDrawerState);
+
+    /**
+     * ドキュメントのDrawerの状態を管理するためのコンテキスト
+     */
+    let isOpened: boolean = $state(false);
 
     // svelte-ignore non_reactive_update
     let documentDrawer: SideDocumentDrawer;
 
     onMount(() => {
-        documentDrawerState.isOpened = false;
+        isOpened = false;
     });
 
     // onDestroy(() => {});
 
+    /**
+     * Drawerの表示状態を切り替えます。
+     */
     export function toggleDrawer() {
-        if (documentDrawerState.isOpened) {
+        if (isOpened) {
             documentDrawer.close();
         } else {
             documentDrawer.open();
         }
     }
 
+    /**
+     * Drawerを開きます。
+     *
+     * @param frameSrc
+     */
     export function openDrawer(frameSrc?: string) {
         if (documentDrawer) {
             documentDrawer.open(frameSrc);
@@ -94,6 +106,9 @@
         }
     }
 
+    /**
+     * Drawerを閉じます。
+     */
     export function closeDrawer() {
         if (documentDrawer) {
             documentDrawer.close();
@@ -114,24 +129,28 @@
 >
     <!-- ドキュメント　メインコンポーネント -->
 
-    <SideDocumentDrawer bind:this={documentDrawer} {containerRootElement} />
+    <SideDocumentDrawer
+        bind:this={documentDrawer}
+        {containerRootElement}
+        bind:isOpened
+    />
 
-    {#if documentDrawerState.isVisibleToggleButton}
+    {#if isVisibleToggleButton}
         <div>
             <!-- トグルボタン -->
             <button
                 type="button"
                 class="sd-toggle-button {toggleButtonPositionClass}"
-                data-sd-c-tooltip={documentDrawerState.isOpened
+                data-sd-c-tooltip={isOpened
                     ? str(option.i18nText, "toggleButtonCloseTooltip")
                     : str(option.i18nText, "toggleButtonOpenTooltip")}
-                data-sd-c-tooltip-position={tooltipPosition}
+                data-sd-c-tooltip-position={toggleButtonTooltipPosition}
                 on:click={toggleDrawer}
-                aria-label={documentDrawerState.isOpened
+                aria-label={isOpened
                     ? str(option.i18nText, "toggleButtonCloseTooltip")
                     : str(option.i18nText, "toggleButtonOpenTooltip")}
             >
-                {#if documentDrawerState.isOpened}
+                {#if isOpened}
                     <svg
                         class="sd-toggle-button-icon"
                         aria-hidden="true"
@@ -220,7 +239,11 @@
         transform: scale(0.95);
     }
     .sd-toggle-button:hover {
-        background: color-mix(in srgb, var(--sd-primary-color, #236ad4) 90%, #fff 10%);
+        background: color-mix(
+            in srgb,
+            var(--sd-primary-color, #236ad4) 90%,
+            #fff 10%
+        );
         outline: 2px solid var(--sd-primary-color, #236ad4);
         outline-offset: 2px;
         box-shadow: 0 0 0 4px

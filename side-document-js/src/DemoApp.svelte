@@ -726,7 +726,7 @@
     .color-picker {
         width: 32px;
         height: 32px;
-        padding: 0;
+        padding: 0 1px !important;
         border: none;
         background: none;
     }

@@ -1,8 +1,8 @@
 import { mount } from 'svelte'
-import App from './App.svelte'
+import DemoApp from './DemoApp.svelte'
 
 // 開発用Appコンポーネント
-const app = mount(App, {
+const app = mount(DemoApp, {
   target: document.getElementById('app')!,
 })
 

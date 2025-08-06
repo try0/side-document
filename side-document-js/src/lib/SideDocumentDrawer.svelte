@@ -2,7 +2,6 @@
     import { getContext, onDestroy, onMount } from "svelte";
     import type { SideDocumentOption } from "../types";
     import { fade } from "svelte/transition";
-    import type { SideDocumentDrawerState } from "./SideDocumentContainer.svelte";
     import { str } from "./i18n";
 
     /**
@@ -11,20 +10,15 @@
     const option: SideDocumentOption = getContext("option");
 
     /**
-     * コンポーネントステート
-     */
-    const documentPanelState: SideDocumentDrawerState = getContext(
-        "documentDrawerState",
-    );
-
-    /**
      * rootコンテナ
      */
-    let { containerRootElement }: { containerRootElement: HTMLElement } =
-        $props();
+    let {
+        containerRootElement,
+        isOpened = $bindable(),
+    }: { containerRootElement: HTMLElement; isOpened: boolean } = $props();
 
     $effect(() => {
-        if (documentPanelState.isOpened) {
+        if (isOpened) {
             drawerToggleClass = "open";
         } else {
             drawerToggleClass = "close";
@@ -62,7 +56,7 @@
      * ドキュメントパネルのトグル状態
      */
     let drawerToggleClass: "close" | "open" = $derived.by(() => {
-        return documentPanelState.isOpened ? "open" : "close";
+        return isOpened ? "open" : "close";
     });
 
     /**
@@ -268,11 +262,11 @@
             console.warn("Frame source is not provided.");
         }
 
-        documentPanelState.isOpened = true;
+        isOpened = true;
     }
 
     export function close() {
-        documentPanelState.isOpened = false;
+        isOpened = false;
     }
 
     export function setFrameSrc(src: string) {
@@ -293,8 +287,6 @@
             style="background-color: {isResizeBarFocused || isResizing
                 ? 'color-mix(in srgb, var(--sd-primary-color, #236ad4) 30%, #fff 70%);'
                 : 'rgb(235, 235, 235)'};
-
-                
                 "
         >
             {#if option.resizable}
@@ -362,7 +354,7 @@
     {/if}
 </div>
 
-{#if documentPanelState.isOpened}
+{#if isOpened}
     <div
         class="sd-drawer-button-container {drawerPositionClass} {drawerToggleClass}"
         style="top:0.5rem; z-index: 1000;

@@ -9,9 +9,9 @@
 
     <script type="module" src="/src/main.ts">
         import { mount, unmount } from 'svelte';
-        import App from './App.svelte'
+        import DemoApp from './DemoApp.svelte'
         document.addEventListener('DOMContentLoaded', () => {
-            const app = mount(App, { target: document.getElementById("app") });
+            const app = mount(DemoApp, { target: document.getElementById("app") });
         });
     </script>
     <!-- <script src="./dist/side-document.umd.js"></script>
