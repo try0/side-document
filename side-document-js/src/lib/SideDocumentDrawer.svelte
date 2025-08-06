@@ -279,11 +279,12 @@
     <!-- セパレーター-->
     {#if drawerPositionClass === "right"}
         <div
-            class="sd-divider"
+            class="sd-divider {option.resizable ? 'sd-resizable' : ''}"
             style="background-color: {isResizeBarFocused || isResizing
-                ? 'var(--sd-primary-color)'
+                ? 'color-mix(in srgb, var(--sd-primary-color, #236ad4) 30%, #fff 70%);'
                 : 'rgb(235, 235, 235)'};
-                opacity: {isResizeBarFocused || isResizing ? '0.7' : '1'};
+
+                
                 "
         >
             {#if option.resizable}
@@ -326,11 +327,10 @@
     <!-- セパレーター-->
     {#if drawerPositionClass === "left"}
         <div
-            class="sd-divider"
+            class="sd-divider {option.resizable ? 'sd-resizable' : ''}"
             style="background-color: {isResizeBarFocused || isResizing
-                ? 'var(--sd-primary-color)'
+                ? 'color-mix(in srgb, var(--sd-primary-color, #236ad4) 30%, #fff 70%);'
                 : 'rgb(235, 235, 235)'};
-                opacity: {isResizeBarFocused || isResizing ? '0.7' : '1'};
                 "
         >
             {#if option.resizable}
@@ -517,13 +517,16 @@
     }
 
     .sd-divider {
-        width: 7px;
+        width: 4px;
         height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
         background-color: rgb(235, 235, 235);
         user-select: none;
+    }
+    .sd-divider.sd-resizable {
+        width: 7px;
     }
     .sd-resize-bar {
         width: 3px;
@@ -589,7 +592,7 @@
         margin: auto;
     }
     .sd-drawer-button:active {
-        transform: scale(0.92);
+        transform: scale(0.95);
     }
     .sd-drawer-button:hover {
         filter: brightness(1.15) saturate(1.2);

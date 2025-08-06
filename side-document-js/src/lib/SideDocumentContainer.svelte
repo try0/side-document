@@ -29,9 +29,13 @@
         if (option.toggleButtonFollowsDrawerPosition && option.drawerPosition) {
             // drawerPositionが"left"なら"bottom-left"、"right"なら"bottom-right"
             if (option.toggleButtonPosition?.startsWith("bottom")) {
-                return option.drawerPosition === "left" ? "bottom-left" : "bottom-right";
+                return option.drawerPosition === "left"
+                    ? "bottom-left"
+                    : "bottom-right";
             } else if (option.toggleButtonPosition?.startsWith("top")) {
-                return option.drawerPosition === "left" ? "top-left" : "top-right";
+                return option.drawerPosition === "left"
+                    ? "top-left"
+                    : "top-right";
             }
         }
         // 通常はoption.toggleButtonPosition
@@ -84,7 +88,9 @@
         if (documentDrawer) {
             documentDrawer.open(frameSrc);
         } else {
-            console.warn("SideDocumentDrawer is not initialized. Call init() before open().");
+            console.warn(
+                "SideDocumentDrawer is not initialized. Call init() before open().",
+            );
         }
     }
 
@@ -92,11 +98,11 @@
         if (documentDrawer) {
             documentDrawer.close();
         } else {
-            console.warn("SideDocumentDrawer is not initialized. Call init() before close().");
+            console.warn(
+                "SideDocumentDrawer is not initialized. Call init() before close().",
+            );
         }
     }
-
-
 </script>
 
 <div
@@ -108,8 +114,7 @@
 >
     <!-- ドキュメント　メインコンポーネント -->
 
-        <SideDocumentDrawer bind:this={documentDrawer} {containerElement} />
-
+    <SideDocumentDrawer bind:this={documentDrawer} {containerElement} />
 
     {#if documentDrawerState.isVisibleToggleButton}
         <div>
@@ -212,12 +217,16 @@
     }
 
     .sd-toggle-button:active {
-        transform: scale(0.92);
+        transform: scale(0.95);
     }
     .sd-toggle-button:hover {
-        opacity: 0.9;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        filter: brightness(1.15) saturate(1.2);
+        outline: 2px solid var(--sd-primary-color, #236ad4);
+        outline-offset: 2px;
+        box-shadow: 0 0 0 4px
+            color-mix(in srgb, var(--sd-primary-color, #236ad4) 30%, #fff 70%);
     }
+
     .sd-toggle-button-icon {
         width: 28px;
         height: 28px;
