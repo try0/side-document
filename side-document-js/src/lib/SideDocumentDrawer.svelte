@@ -20,7 +20,8 @@
     /**
      * rootコンテナ
      */
-    let { containerElement }: { containerElement: HTMLDivElement } = $props();
+    let { containerRootElement }: { containerRootElement: HTMLElement } =
+        $props();
 
     $effect(() => {
         if (documentPanelState.isOpened) {
@@ -157,9 +158,18 @@
         if (!isResizing) return;
         const dx = event.clientX - startX;
         if (drawerPositionClass === "left") {
-            drawerWidthPx = Math.max(320, startWidthPx + dx);
+            drawerWidthPx = startWidthPx + dx;
         } else {
-            drawerWidthPx = Math.max(320, startWidthPx - dx);
+            drawerWidthPx = startWidthPx - dx;
+        }
+
+        if (option.drawerMaxWidth && drawerWidthPx > option.drawerMaxWidth) {
+            drawerWidthPx = option.drawerMaxWidth;
+        } else if (
+            option.drawerMinWidth &&
+            drawerWidthPx < option.drawerMinWidth
+        ) {
+            drawerWidthPx = option.drawerMinWidth;
         }
     }
 
@@ -240,7 +250,7 @@
         // クリックされた要素がドロワー内かShadow DOM内かを確認
         const target = event.target as Node;
         const isInsideDrawer =
-            containerElement && containerElement.contains(target);
+            containerRootElement && containerRootElement.contains(target);
         const insideShadowRoot = isInsideShadowDOM(target);
 
         // ドロワー内でなく、かつShadow DOM内でもない場合のみ閉じる
@@ -363,59 +373,110 @@
         in:fade={{ duration: 0, delay: 300 }}
         out:fade={{ duration: 0, delay: 0 }}
     >
-        <button
-            type="button"
-            on:click={() => close()}
-            aria-label={str(option.i18nText, "closeButtonTooltip")}
-            data-sd-c-tooltip={str(option.i18nText, "closeButtonTooltip")}
-            data-sd-c-tooltip-position={drawerPositionClass === "left"
-                ? "right"
-                : "left"}
-            class="sd-drawer-button"
-        >
-            {#if drawerPositionClass === "left"}
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    ><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path
-                        d="M5 12l14 0"
-                    /><path d="M5 12l4 4" /><path d="M5 12l4 -4" /></svg
-                >
-            {:else}
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    ><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path
-                        d="M5 12l14 0"
-                    /><path d="M15 16l4 -4" /><path d="M15 8l4 4" /></svg
-                >
-            {/if}
-        </button>
-
-        {#if frameSrc}
+        {#if option.showDrawerButtons.includes("close")}
+            <!-- 閉じるボタン -->
             <button
                 type="button"
-                class="sd-drawer-button"
-                aria-label={str(option.i18nText, "externalLinkTooltip")}
-                data-sd-c-tooltip={str(option.i18nText, "externalLinkTooltip")}
+                on:click={() => close()}
+                aria-label={str(option.i18nText, "closeButtonTooltip")}
+                data-sd-c-tooltip={str(option.i18nText, "closeButtonTooltip")}
                 data-sd-c-tooltip-position={drawerPositionClass === "left"
                     ? "right"
                     : "left"}
-                on:click={onClickOpenInNewWindow}
+                class="sd-drawer-button"
+            >
+                {#if drawerPositionClass === "left"}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        ><path
+                            stroke="none"
+                            d="M0 0h24v24H0z"
+                            fill="none"
+                        /><path d="M5 12l14 0" /><path d="M5 12l4 4" /><path
+                            d="M5 12l4 -4"
+                        /></svg
+                    >
+                {:else}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        ><path
+                            stroke="none"
+                            d="M0 0h24v24H0z"
+                            fill="none"
+                        /><path d="M5 12l14 0" /><path d="M15 16l4 -4" /><path
+                            d="M15 8l4 4"
+                        /></svg
+                    >
+                {/if}
+            </button>
+        {/if}
+
+        {#if option.showDrawerButtons.includes("external-link")}
+            {#if frameSrc}
+                <button
+                    type="button"
+                    class="sd-drawer-button"
+                    aria-label={str(option.i18nText, "externalLinkTooltip")}
+                    data-sd-c-tooltip={str(
+                        option.i18nText,
+                        "externalLinkTooltip",
+                    )}
+                    data-sd-c-tooltip-position={drawerPositionClass === "left"
+                        ? "right"
+                        : "left"}
+                    on:click={onClickOpenInNewWindow}
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        ><path
+                            stroke="none"
+                            d="M0 0h24v24H0z"
+                            fill="none"
+                        /><path
+                            d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6"
+                        /><path d="M11 13l9 -9" /><path d="M15 4h5v5" /></svg
+                    ></button
+                >
+            {/if}
+        {/if}
+
+        {#if option.showDrawerButtons.includes("position-change")}
+            <button
+                type="button"
+                class="sd-drawer-button"
+                aria-label={str(option.i18nText, "positionChangeButtonTooltip")}
+                data-sd-c-tooltip={str(
+                    option.i18nText,
+                    "positionChangeButtonTooltip",
+                )}
+                data-sd-c-tooltip-position={drawerPositionClass === "left"
+                    ? "right"
+                    : "left"}
+                on:click={onChangeDrawerPosition}
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -428,39 +489,11 @@
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     ><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path
-                        d="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6"
-                    /><path d="M11 13l9 -9" /><path d="M15 4h5v5" /></svg
-                ></button
-            >
+                        d="M7 8l-4 4l4 4"
+                    /><path d="M17 8l4 4l-4 4" /><path d="M3 12l18 0" /></svg
+                >
+            </button>
         {/if}
-        <button
-            type="button"
-            class="sd-drawer-button"
-            aria-label={str(option.i18nText, "positionChangeButtonTooltip")}
-            data-sd-c-tooltip={str(
-                option.i18nText,
-                "positionChangeButtonTooltip",
-            )}
-            data-sd-c-tooltip-position={drawerPositionClass === "left"
-                ? "right"
-                : "left"}
-            on:click={onChangeDrawerPosition}
-        >
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                ><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path
-                    d="M7 8l-4 4l4 4"
-                /><path d="M17 8l4 4l-4 4" /><path d="M3 12l18 0" /></svg
-            >
-        </button>
     </div>
 {/if}
 
@@ -595,7 +628,11 @@
         transform: scale(0.95);
     }
     .sd-drawer-button:hover {
-        filter: brightness(1.15) saturate(1.2);
+        background: color-mix(
+            in srgb,
+            var(--sd-primary-color, #236ad4) 90%,
+            #fff 10%
+        );
         outline: 2px solid var(--sd-primary-color, #236ad4);
         outline-offset: 2px;
         box-shadow: 0 0 0 4px

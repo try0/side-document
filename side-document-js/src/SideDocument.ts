@@ -31,7 +31,7 @@ export class SideDocument {
         /**
          * トグルボタンを有効にするか
          */
-        enableToggleButton: true,
+        showToggleButton: true,
         /**
          * トグルボタンの位置
          */
@@ -80,11 +80,15 @@ export class SideDocument {
          * i18nテキスト
          */
         i18nText: SideDocument.defaultI18NText,
+        /**
+         * ドキュメントDrawerのボタンを表示するか
+         */
+        showDrawerButtons: ["close", "position-change", "external-link"],
     };
 
 
 
-    container?: HTMLDivElement;
+    container?: HTMLElement;
     option: SideDocumentOption;
     documentContainer: SideDocumentContainer;
 

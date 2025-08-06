@@ -21,7 +21,7 @@
 
     $effect(() => {
         documentDrawerState.isVisibleToggleButton =
-            option.enableToggleButton ?? true;
+            option.showToggleButton ?? true;
     });
 
     // トグルボタンの位置クラスを計算
@@ -58,12 +58,12 @@
         }
     });
 
-    let containerElement: HTMLDivElement | null = $state(null);
+    let containerRootElement: HTMLDivElement | null = $state(null);
 
     // ドキュメントのDrawerの状態を管理するためのコンテキスト
     let documentDrawerState: SideDocumentDrawerState = $state({
         isOpened: false,
-        isVisibleToggleButton: option.enableToggleButton ?? true,
+        isVisibleToggleButton: option.showToggleButton ?? true,
     });
     setContext("documentDrawerState", documentDrawerState);
 
@@ -106,7 +106,7 @@
 </script>
 
 <div
-    bind:this={containerElement}
+    bind:this={containerRootElement}
     style="
     --sd-primary-color: {option.primaryColor || '#d80000'};
     --sd-drawer-z-index: {option.drawerZIndex || 1000};
@@ -114,7 +114,7 @@
 >
     <!-- ドキュメント　メインコンポーネント -->
 
-    <SideDocumentDrawer bind:this={documentDrawer} {containerElement} />
+    <SideDocumentDrawer bind:this={documentDrawer} {containerRootElement} />
 
     {#if documentDrawerState.isVisibleToggleButton}
         <div>
@@ -220,7 +220,7 @@
         transform: scale(0.95);
     }
     .sd-toggle-button:hover {
-        filter: brightness(1.15) saturate(1.2);
+        background: color-mix(in srgb, var(--sd-primary-color, #236ad4) 90%, #fff 10%);
         outline: 2px solid var(--sd-primary-color, #236ad4);
         outline-offset: 2px;
         box-shadow: 0 0 0 4px
@@ -259,8 +259,8 @@
     :global([data-sd-c-tooltip-position="top"])::after {
         bottom: 100%;
         left: 50%;
-        transform: translateX(-50%) translateY(5px);
-        margin-bottom: 5px;
+        transform: translateX(-50%) translateY(7px);
+        margin-bottom: 7px;
     }
     :global([data-sd-c-tooltip-position="top"]):hover::after {
         transform: translateX(-50%) translateY(0);
@@ -269,8 +269,8 @@
     :global([data-sd-c-tooltip-position="bottom"])::after {
         top: 100%;
         left: 50%;
-        transform: translateX(-50%) translateY(-5px);
-        margin-top: 5px;
+        transform: translateX(-50%) translateY(-7px);
+        margin-top: 7px;
     }
     :global([data-sd-c-tooltip-position="bottom"]):hover::after {
         transform: translateX(-50%) translateY(0);
@@ -279,8 +279,8 @@
     :global([data-sd-c-tooltip-position="left"])::after {
         right: 100%;
         top: 50%;
-        transform: translateY(-50%) translateX(5px);
-        margin-right: 5px;
+        transform: translateY(-50%) translateX(7px);
+        margin-right: 7px;
     }
     :global([data-sd-c-tooltip-position="left"]):hover::after {
         transform: translateY(-50%) translateX(0);
@@ -289,8 +289,8 @@
     :global([data-sd-c-tooltip-position="right"])::after {
         left: 100%;
         top: 50%;
-        transform: translateY(-50%) translateX(-5px);
-        margin-left: 5px;
+        transform: translateY(-50%) translateX(-7px);
+        margin-left: 7px;
     }
     :global([data-sd-c-tooltip-position="right"]):hover::after {
         transform: translateY(-50%) translateX(0);
@@ -316,7 +316,7 @@
         left: 50%;
         transform: translateX(-50%);
         border-top-color: #dadada;
-        margin-bottom: -5px;
+        margin-bottom: -3px;
     }
 
     :global([data-sd-c-tooltip-position="bottom"])::before {
@@ -324,7 +324,7 @@
         left: 50%;
         transform: translateX(-50%);
         border-bottom-color: #dadada;
-        margin-top: -5px;
+        margin-top: -3px;
     }
 
     :global([data-sd-c-tooltip-position="left"])::before {
@@ -332,7 +332,7 @@
         right: 100%;
         transform: translateY(-50%);
         border-left-color: #dadada;
-        margin-right: -5px;
+        margin-right: -3px;
     }
 
     :global([data-sd-c-tooltip-position="right"])::before {
@@ -340,7 +340,7 @@
         left: 100%;
         transform: translateY(-50%);
         border-right-color: #dadada;
-        margin-left: -5px;
+        margin-left: -3px;
     }
 
     :global([data-sd-c-tooltip]):hover::before {

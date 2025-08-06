@@ -23,7 +23,7 @@
         if (option.drawerWidth !== preOption.drawerWidth) {
             upd = true;
         }
-        if (option.enableToggleButton !== preOption.enableToggleButton) {
+        if (option.showToggleButton !== preOption.showToggleButton) {
             upd = true;
         }
         if (option.toggleButtonPosition !== preOption.toggleButtonPosition) {
@@ -47,6 +47,13 @@
         if (
             option.toggleButtonFollowsDrawerPosition !==
             preOption.toggleButtonFollowsDrawerPosition
+        ) {
+            upd = true;
+        }
+
+        if (
+            JSON.stringify(option.showDrawerButtons) !==
+            JSON.stringify(preOption.showDrawerButtons)
         ) {
             upd = true;
         }
@@ -97,14 +104,14 @@
                 <div class="setting-content">
                     <div class="setting-row">
                         <div class="setting-label">
-                            <code>enableToggleButton</code>
+                            <code>showToggleButton</code>
                             <div class="label-description">表示する</div>
                         </div>
                         <div class="setting-control">
                             <label class="toggle-switch">
                                 <input
                                     type="checkbox"
-                                    bind:checked={option.enableToggleButton}
+                                    bind:checked={option.showToggleButton}
                                 />
                                 <span class="toggle-slider"></span>
                             </label>
@@ -279,6 +286,93 @@
                                 placeholder="https://example.com/docs"
                                 class="url-input"
                             />
+                        </div>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-label">
+                            <code>showDrawerButtons</code>
+                            <div class="label-description">
+                                ドロワー内に表示するボタン
+                            </div>
+                        </div>
+                        <div class="setting-control">
+                            <label
+                                class="radio-option"
+                                style="margin-right:12px;"
+                            >
+                                <input
+                                    type="checkbox"
+                                    value="close"
+                                    checked={option.showDrawerButtons.includes(
+                                        "close",
+                                    )}
+                                    on:change={(e) => {
+                                        if (e.target.checked) {
+                                            option.showDrawerButtons = [
+                                                ...option.showDrawerButtons,
+                                                "close",
+                                            ];
+                                        } else {
+                                            option.showDrawerButtons =
+                                                option.showDrawerButtons.filter(
+                                                    (v) => v !== "close",
+                                                );
+                                        }
+                                    }}
+                                />
+                                <span>閉じる</span>
+                            </label>
+                            <label
+                                class="radio-option"
+                                style="margin-right:12px;"
+                            >
+                                <input
+                                    type="checkbox"
+                                    value="position-change"
+                                    checked={option.showDrawerButtons.includes(
+                                        "position-change",
+                                    )}
+                                    on:change={(e) => {
+                                        if (e.target.checked) {
+                                            option.showDrawerButtons = [
+                                                ...option.showDrawerButtons,
+                                                "position-change",
+                                            ];
+                                        } else {
+                                            option.showDrawerButtons =
+                                                option.showDrawerButtons.filter(
+                                                    (v) =>
+                                                        v !== "position-change",
+                                                );
+                                        }
+                                    }}
+                                />
+                                <span>位置切替</span>
+                            </label>
+                            <label class="radio-option">
+                                <input
+                                    type="checkbox"
+                                    value="external-link"
+                                    checked={option.showDrawerButtons.includes(
+                                        "external-link",
+                                    )}
+                                    on:change={(e) => {
+                                        if (e.target.checked) {
+                                            option.showDrawerButtons = [
+                                                ...option.showDrawerButtons,
+                                                "external-link",
+                                            ];
+                                        } else {
+                                            option.showDrawerButtons =
+                                                option.showDrawerButtons.filter(
+                                                    (v) =>
+                                                        v !== "external-link",
+                                                );
+                                        }
+                                    }}
+                                />
+                                <span>外部リンク</span>
+                            </label>
                         </div>
                     </div>
                 </div>

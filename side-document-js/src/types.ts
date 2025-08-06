@@ -11,7 +11,7 @@ export interface SideDocumentOption {
     /**
     * トグルボタンを有効にするか
     */
-    enableToggleButton?: boolean | null;
+    showToggleButton?: boolean | null;
     /**
     * トグルボタンの位置
     */
@@ -28,6 +28,14 @@ export interface SideDocumentOption {
      * ドキュメントDrawerの初期幅
      */
     drawerWidth: number;
+    /**
+     * ドキュメントDrawerの最大幅
+     */
+    drawerMaxWidth?: number;
+    /**
+     * ドキュメントDrawerの最小幅
+     */
+    drawerMinWidth?: number;
     /**
      * ドキュメントDrawerの幅の単位
      */
@@ -65,6 +73,10 @@ export interface SideDocumentOption {
      * i18nテキスト
      */
     i18nText: SideDocumentI18NText;
+    /**
+     * ドキュメントDrawerのボタンを表示するか
+     */
+    showDrawerButtons: ("close" | "position-change" | "external-link")[];
 }
 
 export interface SideDocumentI18NText {
