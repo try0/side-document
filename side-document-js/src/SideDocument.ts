@@ -10,7 +10,7 @@ export class SideDocument {
     /**
      * デフォルトのi18nテキスト
      */
-    public static defaultI18NText: SideDocumentI18NText = {
+    public static DEFAULT_I18N_TEXT: SideDocumentI18NText = Object.freeze({
         toggleButtonOpenTooltip: '開く',
         toggleButtonCloseTooltip: '閉じる',
         closeButtonTooltip: '閉じる',
@@ -18,12 +18,12 @@ export class SideDocument {
         positionChangeButtonTooltip: '表示位置を変更',
         resizeBarTooltip: 'サイズを変更',
         documentTitle: "ドキュメント"
-    };
+    });
 
     /**
      * デフォルトのオプション
      */
-    public static defaultOption: SideDocumentOption = {
+    public static DEFAULT_OPTION: SideDocumentOption = Object.freeze({
         /**
          * コンテナセレクター
          */
@@ -79,12 +79,12 @@ export class SideDocument {
         /**
          * i18nテキスト
          */
-        i18nText: SideDocument.defaultI18NText,
+        i18nText: SideDocument.DEFAULT_I18N_TEXT,
         /**
          * ドキュメントDrawerのボタンを表示するか
          */
-        showDrawerButtons: ["close", "position-change", "external-link"],
-    };
+        showDrawerButtons: ["close", "position-change", "external-link"] as ("close" | "position-change" | "external-link")[],
+    });
 
 
 
@@ -93,7 +93,7 @@ export class SideDocument {
     documentContainer: SideDocumentContainer;
 
     constructor(option?: SideDocumentOption) {
-        this.option = Object.assign({}, SideDocument.defaultOption, option);
+        this.option = Object.assign({}, SideDocument.DEFAULT_OPTION, option);
     }
 
     private createContainer() {
@@ -120,7 +120,7 @@ export class SideDocument {
      */
     public async update(option: SideDocumentOption | null = null): Promise<void> {
         if (option) {
-            this.option = Object.assign({}, SideDocument.defaultOption, this.option, option);
+            this.option = Object.assign({}, SideDocument.DEFAULT_OPTION, this.option, option);
         }
 
         if (this.documentContainer) {
@@ -190,6 +190,44 @@ export class SideDocument {
             this.documentContainer.toggleDrawer();
         } else {
             console.warn("SideDocument is not initialized. Call init() before toggle().");
+        }
+    }
+
+    /**
+     * Drawerのコンテンツを設定します。
+     * 
+     * @param content 
+     */
+    public setDrawerContent(content: HTMLElement | string | undefined = undefined): void {
+        if (this.documentContainer) {
+            if (!content) {
+                const nodes = Array.from(document.querySelectorAll('[data-sd-document]')) as HTMLElement[];
+
+                const wrapper = document.createElement('div');
+                nodes.forEach(node => {
+                    if (node.tagName === 'TEMPLATE') {
+                        const template = node as HTMLTemplateElement;
+                        const templateContent = template.content.cloneNode(true) as DocumentFragment;
+                        wrapper.appendChild(templateContent);
+                    } else {
+                        // それ以外の要素はそのまま追加
+                        wrapper.appendChild(node.cloneNode(true));
+                    }
+                });
+                this.documentContainer.setDrawerContent(wrapper);
+            } else {
+                this.documentContainer.setDrawerContent(content);
+            }
+        } else {
+            console.warn("SideDocument is not initialized. Call init() before setDrawerContent().");
+        }
+    }
+
+    public setFrameSrc(src: string | undefined | null): void {
+        if (this.documentContainer) {
+            this.documentContainer.setFrameSrc(src);
+        } else {
+            console.warn("SideDocument is not initialized. Call init() before setFrameSrc().");
         }
     }
 

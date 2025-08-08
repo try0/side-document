@@ -5,12 +5,25 @@
 
     // 開発用Appコンポーネント
 
-    let option = $state(Object.assign({}, SideDocument.defaultOption));
+    let contentType: "iframe" | "page-element" = $state("iframe");
+    $effect(() => {
+        if (contentType === "iframe") {
+            app.setFrameSrc(option.defaultSrc);
+        } else if (contentType === "page-element") {
+            option.showToggleButton = true;
+            option.drawerWidth = 400;
+            option.drawerWidthUnit = "px";
+
+            app.setDrawerContent();
+        }
+    });
+
+    let option = $state(Object.assign({}, SideDocument.DEFAULT_OPTION));
     option.defaultSrc = "./sample.html"; // 初期ページURLを設定
     let app = new SideDocument(option);
 
     let updatingId: number | null = null;
-    let preOption = $state(Object.assign({}, SideDocument.defaultOption));
+    let preOption = $state(Object.assign({}, SideDocument.DEFAULT_OPTION));
     $effect(() => {
         let upd = false;
         if (option.drawerPosition !== preOption.drawerPosition) {
@@ -93,6 +106,31 @@
     </div>
 
     <div class="container">
+        <div class="tab-bar">
+            <button
+                type="button"
+                class:tab-active={contentType === "iframe"}
+                on:click={() => (contentType = "iframe")}
+            >
+                iframe
+            </button>
+            <button
+                type="button"
+                class:tab-active={contentType === "page-element"}
+                on:click={() => (contentType = "page-element")}
+            >
+                ページ要素
+            </button>
+            <template data-sd-document>
+                <div style="padding: 10px;">
+                    <h1>setDrawerContent()</h1>
+                    <p>
+                        ページからdata-sd-documentアトリビュートを持つ要素を、Drawerコンテンツとして設定できます。
+                    </p>
+                </div>
+            </template>
+        </div>
+
         <!-- 左側：設定パネル -->
         <div class="settings-panel">
             <h2 class="panel-title">Settings</h2>
@@ -107,6 +145,16 @@
                             <code>showToggleButton</code>
                             <div class="label-description">表示する</div>
                         </div>
+                        <template data-sd-document>
+                            <div style="padding: 10px;">
+                                <h3>showToggleButton</h3>
+                                <p>
+                                    トグルボタンを表示するかどうかを設定します。
+                                    <br />
+                                    トグルボタンはDrawerの開閉を切り替えるためのボタンです。
+                                </p>
+                            </div>
+                        </template>
                         <div class="setting-control">
                             <label class="toggle-switch">
                                 <input
@@ -123,6 +171,17 @@
                             <code>toggleButtonPosition</code>
                             <div class="label-description">ボタンの位置</div>
                         </div>
+                        <template data-sd-document>
+                            <div style="padding: 10px;">
+                                <h3>toggleButtonPosition</h3>
+                                <p>
+                                    トグルボタンの位置を設定します。
+                                    toggleButtonFollowsDrawerPosition
+                                    が有効な場合、Drawerの位置に応じて自動的に位置が調整されます。
+                                    <br />
+                                </p>
+                            </div>
+                        </template>
                         <div class="setting-control radio-group">
                             {#each positionOptions as pos}
                                 <label class="radio-option">
@@ -145,6 +204,14 @@
                                 Drawer位置にトグルボタン位置を追従させる
                             </div>
                         </div>
+                        <template data-sd-document>
+                            <div style="padding: 10px;">
+                                <h3>toggleButtonFollowsDrawerPosition</h3>
+                                <p>
+                                    Drawer位置にトグルボタン位置を追従させるかどうかを設定します。
+                                </p>
+                            </div>
+                        </template>
                         <div class="setting-control">
                             <label class="toggle-switch">
                                 <input
@@ -170,6 +237,16 @@
                             <code>drawerPosition</code>
                             <div class="label-description">Drawerの位置</div>
                         </div>
+                        <template data-sd-document>
+                            <div style="padding: 10px;">
+                                <h3>drawerPosition</h3>
+                                <p>
+                                    Drawerの位置を設定します。
+                                    <br />
+                                    Drawerは画面の左または右に表示されます。
+                                </p>
+                            </div>
+                        </template>
                         <div class="setting-control radio-group">
                             <label class="radio-option">
                                 <input
@@ -197,6 +274,12 @@
                             <code>drawerWidth</code>
                             <div class="label-description">初期サイズ</div>
                         </div>
+                        <template data-sd-document>
+                            <div style="padding: 10px;">
+                                <h3>drawerWidth</h3>
+                                <p>Drawerの初期サイズを設定します。</p>
+                            </div>
+                        </template>
                         <div class="setting-control size-input-group">
                             <input
                                 type="number"
@@ -222,6 +305,12 @@
                                 初期サイズの単位
                             </div>
                         </div>
+                        <template data-sd-document>
+                            <div style="padding: 10px;">
+                                <h3>drawerWidthUnit</h3>
+                                <p>Drawerの初期サイズの単位を設定します。</p>
+                            </div>
+                        </template>
                         <div class="setting-control unit-selector">
                             <label class="radio-option">
                                 <input
@@ -261,6 +350,14 @@
                                 リサイズを有効にする
                             </div>
                         </div>
+                        <template data-sd-document>
+                            <div style="padding: 10px;">
+                                <h3>resizable</h3>
+                                <p>
+                                    Drawerのリサイズを有効にするかどうかを設定します。
+                                </p>
+                            </div>
+                        </template>
                         <div class="setting-control">
                             <label class="toggle-switch">
                                 <input
@@ -279,6 +376,14 @@
                                 デフォルトドキュメントURL
                             </div>
                         </div>
+                        <template data-sd-document>
+                            <div style="padding: 10px;">
+                                <h3>defaultSrc</h3>
+                                <p>
+                                    Drawerに表示するデフォルトurlを指定します。
+                                </p>
+                            </div>
+                        </template>
                         <div class="setting-control full-width">
                             <input
                                 type="text"
@@ -295,6 +400,12 @@
                                 ドロワー内に表示するボタン
                             </div>
                         </div>
+                        <template data-sd-document>
+                            <div style="padding: 10px;">
+                                <h3>showDrawerButtons</h3>
+                                <p>Drawer操作用のボタンを設定します。</p>
+                            </div>
+                        </template>
                         <div class="setting-control">
                             <label
                                 class="radio-option"
@@ -307,12 +418,14 @@
                                         "close",
                                     )}
                                     on:change={(e) => {
-                                        if (e.target.checked) {
+                                        const target =
+                                            e.target as HTMLInputElement | null;
+                                        if (target && target.checked) {
                                             option.showDrawerButtons = [
                                                 ...option.showDrawerButtons,
                                                 "close",
                                             ];
-                                        } else {
+                                        } else if (target) {
                                             option.showDrawerButtons =
                                                 option.showDrawerButtons.filter(
                                                     (v) => v !== "close",
@@ -333,12 +446,14 @@
                                         "position-change",
                                     )}
                                     on:change={(e) => {
-                                        if (e.target.checked) {
+                                        const target =
+                                            e.target as HTMLInputElement | null;
+                                        if (target && target.checked) {
                                             option.showDrawerButtons = [
                                                 ...option.showDrawerButtons,
                                                 "position-change",
                                             ];
-                                        } else {
+                                        } else if (target) {
                                             option.showDrawerButtons =
                                                 option.showDrawerButtons.filter(
                                                     (v) =>
@@ -357,12 +472,14 @@
                                         "external-link",
                                     )}
                                     on:change={(e) => {
-                                        if (e.target.checked) {
+                                        const target =
+                                            e.target as HTMLInputElement | null;
+                                        if (target && target.checked) {
                                             option.showDrawerButtons = [
                                                 ...option.showDrawerButtons,
                                                 "external-link",
                                             ];
-                                        } else {
+                                        } else if (target) {
                                             option.showDrawerButtons =
                                                 option.showDrawerButtons.filter(
                                                     (v) =>
@@ -390,6 +507,14 @@
                                 外部クリックで閉じる
                             </div>
                         </div>
+                        <template data-sd-document>
+                            <div style="padding: 10px;">
+                                <h3>closeOnOutsideClick</h3>
+                                <p>
+                                    ドロワー外をクリックしたときにドロワーを閉じるかどうかを設定します。
+                                </p>
+                            </div>
+                        </template>
                         <div class="setting-control">
                             <label class="toggle-switch">
                                 <input
@@ -487,6 +612,35 @@
         /* display: flex; */
         gap: 20px;
         flex-wrap: wrap;
+    }
+
+    .tab-bar {
+        display: flex;
+        gap: 8px;
+        padding: 10px;
+        background: #f0f0f0;
+        border-radius: 6px;
+    }
+    .tab-bar button {
+        padding: 8px 22px;
+        border: none;
+        border-radius: 6px 6px;
+        background: #e3e8f0;
+        color: #236ad4;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition:
+            background 0.18s,
+            color 0.18s;
+        outline: none;
+    }
+    .tab-bar button.tab-active {
+        background: #236ad4;
+        color: #fff;
+        font-weight: bold;
+        box-shadow: 0 2px 8px #236ad420;
+        z-index: 1;
     }
 
     .panel-title {

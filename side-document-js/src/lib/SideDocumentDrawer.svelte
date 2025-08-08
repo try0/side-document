@@ -33,10 +33,13 @@
     });
 
     let isVisibleFrame = $state(true);
+    let documentMode: "iframe" | "page-element" = $state("iframe");
+    let contentContainer: HTMLDivElement | null = null;
+
     /**
      * ドキュメントURL
      */
-    let frameSrc = $state(option.defaultSrc);
+    let frameSrc: string | null | undefined = $state(option.defaultSrc);
     /**
      * 読み込み中フラグ
      */
@@ -207,6 +210,11 @@
     function onClickOpenInNewWindow(
         event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
     ) {
+        if (!frameSrc) {
+            console.warn("Frame source is not set.");
+            return;
+        }
+
         window.open(frameSrc, "_blank", "noopener");
     }
 
@@ -255,6 +263,7 @@
 
     export function open(frameSrc?: string) {
         if (frameSrc) {
+            documentMode = "iframe";
             isVisibleFrame = true;
             isLoading = true;
             frameSrc = frameSrc;
@@ -270,9 +279,29 @@
     }
 
     export function setFrameSrc(src: string) {
+        documentMode = "iframe";
         frameSrc = src;
         isVisibleFrame = true;
         isLoading = true;
+    }
+
+    export function setContent(content: HTMLElement | string) {
+        documentMode = "page-element";
+        isVisibleFrame = false;
+        frameSrc = null;
+
+        if (contentContainer) {
+            if (typeof content === "string") {
+                contentContainer.innerHTML = content;
+            } else if (content instanceof HTMLElement) {
+                contentContainer.innerHTML = ""; // 既存の内容をクリア
+                contentContainer.appendChild(content);
+            } else {
+                console.warn(
+                    "SideDocumentDrawer is not initialized. Call init() before setContent().",
+                );
+            }
+        }
     }
 </script>
 
@@ -315,15 +344,25 @@
                 title={str(option.i18nText, "documentTitle")}
                 src={frameSrc}
                 style="width: 100%; height: 100%; border: none; 
-            {isResizing
+                
+                {documentMode === 'iframe' ? '' : 'display: none;'}
+                {isResizing
                     ? 'pointer-events: none; user-select: none;'
                     : 'pointer-events: auto; user-select: auto;'}
-            {isLoading ? 'opacity: 0;' : ''}"
+                {isLoading ? 'opacity: 0;' : ''}"
                 on:load={() => {
                     isLoading = false;
                 }}
             ></iframe>
         {/if}
+
+        <!-- ページ要素コンテンツ -->
+        <div
+            bind:this={contentContainer}
+            class="sd-page-element-content"
+            style="width: 100%; height: 100%; overflow: auto; 
+                {documentMode === 'page-element' ? '' : 'display: none;'}"
+        ></div>
     </div>
 
     <!-- セパレーター-->
@@ -636,5 +675,10 @@
     }
     .sd-drawer.close:not(.sd-panel-hidden) {
         pointer-events: none;
+    }
+    .sd-page-element-content {
+        white-space: normal;
+        word-break: break-word;
+        overflow-wrap: break-word;
     }
 </style>

@@ -118,6 +118,26 @@
             );
         }
     }
+
+    export function setFrameSrc(src: string) {
+        if (documentDrawer) {
+            documentDrawer.setFrameSrc(src);
+        } else {
+            console.warn(
+                "SideDocumentDrawer is not initialized. Call init() before setFrameSrc().",
+            );
+        }
+    }
+
+    export function setDrawerContent(content: HTMLElement | string) {
+        if (documentDrawer) {
+            documentDrawer.setContent(content);
+        } else {
+            console.warn(
+                "SideDocumentDrawer is not initialized. Call init() before setDrawerContent().",
+            );
+        }
+    }
 </script>
 
 <div
