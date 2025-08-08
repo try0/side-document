@@ -32,6 +32,14 @@
         }
     });
 
+    $effect(() => {
+        if (option.closeOnOutsideClick) {
+            window.addEventListener("mousedown", onClickOutside);
+        } else {
+            window.removeEventListener("mousedown", onClickOutside);
+        }
+    });
+
     let isVisibleFrame = $state(true);
     let documentMode: "iframe" | "page-element" = $state("iframe");
     let contentContainer: HTMLDivElement | null = null;
@@ -124,11 +132,7 @@
         return defaultWidth;
     }
 
-    onMount(() => {
-        if (option.closeOnOutsideClick) {
-            window.addEventListener("mousedown", onClickOutside);
-        }
-    });
+    onMount(() => {});
 
     onDestroy(() => {
         window.removeEventListener("mousemove", onMouseMove);
@@ -262,13 +266,16 @@
     }
 
     export function open(frameSrc?: string) {
+        console.log({
+            documentMode: documentMode,
+        });
         if (frameSrc) {
             documentMode = "iframe";
             isVisibleFrame = true;
             isLoading = true;
             frameSrc = frameSrc;
         } else {
-            console.warn("Frame source is not provided.");
+            isVisibleFrame = documentMode === "iframe";
         }
 
         isOpened = true;

@@ -81,6 +81,16 @@
     // onDestroy(() => {});
 
     /**
+     * オプションを更新します。
+     * 
+     * @param updOption
+     */
+    export function updateOption(updOption: SideDocumentOption) {
+        // オプションを更新
+        Object.assign(option, updOption);
+    }
+
+    /**
      * Drawerの表示状態を切り替えます。
      */
     export function toggleDrawer() {
@@ -119,6 +129,11 @@
         }
     }
 
+    /**
+     * urlを設定します。
+     * 
+     * @param src
+     */
     export function setFrameSrc(src: string) {
         if (documentDrawer) {
             documentDrawer.setFrameSrc(src);
@@ -129,6 +144,11 @@
         }
     }
 
+    /**
+     * Drawerのコンテンツを設定します。
+     *
+     * @param content
+     */
     export function setDrawerContent(content: HTMLElement | string) {
         if (documentDrawer) {
             documentDrawer.setContent(content);

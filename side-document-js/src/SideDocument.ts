@@ -124,10 +124,8 @@ export class SideDocument {
         }
 
         if (this.documentContainer) {
-            await unmount(this.documentContainer);
+            this.documentContainer.updateOption(this.option);
         }
-
-        this.init();
     }
 
     /**
