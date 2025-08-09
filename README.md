@@ -1,1 +1,23 @@
 # side-document
+
+ドキュメントを表示する
+
+
+```
+npm install
+```
+
+デバッグ
+```
+npm run dev
+```
+
+Demoアプリ出力
+```
+npm run build
+```
+
+Lib出力
+```
+npm run build:lib
+```
