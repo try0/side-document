@@ -2,6 +2,9 @@
 
 ドキュメントを表示する
 
+Demoアプリ  
+[https://try0.github.io/side-document/](https://try0.github.io/side-document/)
+
 
 ```
 npm install
