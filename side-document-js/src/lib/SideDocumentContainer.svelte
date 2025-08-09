@@ -6,6 +6,7 @@
     import type { SideDocumentOption } from "../types";
     import { SideDocument } from "../SideDocument";
     import { str } from "./i18n";
+    import RelatedElementEffect from "./RelatedElementEffect.svelte";
 
     /**
      * 初期オプション値
@@ -18,6 +19,8 @@
      * コンテナー内のルート要素
      */
     let containerRootElement: HTMLDivElement | null = $state(null);
+
+    let effectTargetElements: HTMLElement[] = $state([]);
 
     /**
      * トグルボタンの位置クラス
@@ -82,7 +85,7 @@
 
     /**
      * オプションを更新します。
-     * 
+     *
      * @param updOption
      */
     export function updateOption(updOption: SideDocumentOption) {
@@ -131,7 +134,7 @@
 
     /**
      * urlを設定します。
-     * 
+     *
      * @param src
      */
     export function setFrameSrc(src: string) {
@@ -158,6 +161,18 @@
             );
         }
     }
+
+    export function addEffectTargetElement(element: HTMLElement) {
+        if (!effectTargetElements.includes(element)) {
+            effectTargetElements.push(element);
+        }
+
+        setTimeout(() => {
+            effectTargetElements = effectTargetElements.filter(
+                (el) => el !== element,
+            );
+        }, 2000);
+    }
 </script>
 
 <div
@@ -167,6 +182,11 @@
     --sd-drawer-z-index: {option.drawerZIndex || 1000};
     --sd-toggle-button-z-index: {option.toggleButtonZIndex || 1001};"
 >
+    {#each effectTargetElements as effectTargetElement (effectTargetElement)}
+        <RelatedElementEffect targetElement={effectTargetElement} active={true}
+        ></RelatedElementEffect>
+    {/each}
+
     <!-- ドキュメント　メインコンポーネント -->
 
     <SideDocumentDrawer

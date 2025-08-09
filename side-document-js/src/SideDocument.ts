@@ -203,14 +203,49 @@ export class SideDocument {
 
                 const wrapper = document.createElement('div');
                 nodes.forEach(node => {
+
+                    let docElement: HTMLElement | DocumentFragment;
                     if (node.tagName === 'TEMPLATE') {
                         const template = node as HTMLTemplateElement;
-                        const templateContent = template.content.cloneNode(true) as DocumentFragment;
-                        wrapper.appendChild(templateContent);
+                        docElement = template.content.cloneNode(true) as DocumentFragment;
                     } else {
                         // それ以外の要素はそのまま追加
-                        wrapper.appendChild(node.cloneNode(true));
+                        docElement = node.cloneNode(true) as HTMLElement;
                     }
+
+                    // ドキュメント→ページ内要素へのリンク生成
+                    let linkHolder = docElement.querySelector("[data-sd-link-target]");
+                    if (linkHolder) {
+                        let linkElementSelector: string | null = linkHolder.getAttribute('data-sd-link-target');
+                        if (linkElementSelector) {
+                            linkElementSelector = linkElementSelector.trim();
+
+                            // 
+                            const linkButton = document.createElement('button');
+                            linkButton.className = 'sd-link-button';
+                            linkButton.innerHTML = '<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M16 4h2a2 2 0 0 1 2 2v2" /><path d="M20 16v2a2 2 0 0 1 -2 2h-2" /><path d="M8 20h-2a2 2 0 0 1 -2 -2v-2" /><path d="M4 8v-2a2 2 0 0 1 2 -2h2" /></svg>';
+                            linkButton.addEventListener('click', () => {
+                                const targetElement = document.querySelector(linkElementSelector!);
+                                if (targetElement) {
+                                    const offset = 80; // 画面上部に確保したい余白(px)
+                                    const rect = targetElement.getBoundingClientRect();
+
+                                    const fullyVisible =
+                                        rect.top >= offset &&
+                                        rect.bottom <= window.innerHeight;
+
+                                    if (!fullyVisible) {
+                                        const top = Math.max(0, rect.top + window.scrollY - offset);
+                                        window.scrollTo({ top, behavior: 'smooth' });
+                                    }
+                                    this.documentContainer.addEffectTargetElement(targetElement);
+                                }
+                            });
+                            linkHolder.appendChild(linkButton);
+                        }
+                    }
+
+                    wrapper.appendChild(docElement);
                 });
                 this.documentContainer.setDrawerContent(wrapper);
             } else {

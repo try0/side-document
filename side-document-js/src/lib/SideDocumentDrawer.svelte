@@ -688,4 +688,52 @@
         word-break: break-word;
         overflow-wrap: break-word;
     }
+
+    :global([data-sd-link-target]) {
+        display: inline; /* テキストと同じ行内フロー */
+        white-space: normal;
+    }
+
+    :global(.sd-link-button) {
+        display: inline-block; /* 行内ボックスとして扱う */
+        vertical-align: text-bottom;
+        margin-left: 0.4em;
+        width: 1.5rem;
+        height: 1.5rem;
+        padding: 0;
+        line-height: 1;
+        background: color-mix(
+            in srgb,
+            var(--sd-primary-color, #236ad4) 70%,
+            #fff 30%
+        );
+        color: #fff;
+        border: none;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        box-shadow: 0 2px 4px #0002;
+        transition:
+            background 0.15s ease,
+            box-shadow 0.15s ease,
+            transform 0.1s;
+    }
+
+    :global(.sd-link-button) svg {
+        display: block;
+        margin: auto;
+    }
+    :global(.sd-link-button):active {
+        transform: scale(0.95);
+    }
+    :global(.sd-link-button):hover {
+        background: color-mix(
+            in srgb,
+            var(--sd-primary-color, #236ad4) 90%,
+            #fff 10%
+        );
+        outline: 2px solid var(--sd-primary-color, #236ad4);
+        outline-offset: 2px;
+        box-shadow: 0 0 0 4px
+            color-mix(in srgb, var(--sd-primary-color, #236ad4) 30%, #fff 70%);
+    }
 </style>

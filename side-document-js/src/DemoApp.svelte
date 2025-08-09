@@ -140,14 +140,16 @@
                 <div class="setting-header">Toggle Button</div>
 
                 <div class="setting-content">
-                    <div class="setting-row">
+                    <div id="showToggleButton" class="setting-row">
                         <div class="setting-label">
                             <code>showToggleButton</code>
                             <div class="label-description">表示する</div>
                         </div>
                         <template data-sd-document>
                             <div style="padding: 10px;">
-                                <h3>showToggleButton</h3>
+                                <h3 data-sd-link-target="#showToggleButton">
+                                    showToggleButton
+                                </h3>
                                 <p>
                                     トグルボタンを表示するかどうかを設定します。
                                     <br />
@@ -166,14 +168,16 @@
                         </div>
                     </div>
 
-                    <div class="setting-row">
+                    <div id="toggleButtonPosition" class="setting-row">
                         <div class="setting-label">
                             <code>toggleButtonPosition</code>
                             <div class="label-description">ボタンの位置</div>
                         </div>
                         <template data-sd-document>
                             <div style="padding: 10px;">
-                                <h3>toggleButtonPosition</h3>
+                                <h3 data-sd-link-target="#toggleButtonPosition">
+                                    toggleButtonPosition
+                                </h3>
                                 <p>
                                     トグルボタンの位置を設定します。
                                     toggleButtonFollowsDrawerPosition
@@ -197,7 +201,10 @@
                         </div>
                     </div>
 
-                    <div class="setting-row">
+                    <div
+                        id="toggleButtonFollowsDrawerPosition"
+                        class="setting-row"
+                    >
                         <div class="setting-label">
                             <code>toggleButtonFollowsDrawerPosition</code>
                             <div class="label-description">
@@ -206,7 +213,11 @@
                         </div>
                         <template data-sd-document>
                             <div style="padding: 10px;">
-                                <h3>toggleButtonFollowsDrawerPosition</h3>
+                                <h3
+                                    data-sd-link-target="#toggleButtonFollowsDrawerPosition"
+                                >
+                                    toggleButtonFollowsDrawerPosition
+                                </h3>
                                 <p>
                                     Drawer位置にトグルボタン位置を追従させるかどうかを設定します。
                                 </p>
@@ -232,14 +243,16 @@
                 <div class="setting-header">Drawer</div>
 
                 <div class="setting-content">
-                    <div class="setting-row">
+                    <div id="drawerPosition" class="setting-row">
                         <div class="setting-label">
                             <code>drawerPosition</code>
                             <div class="label-description">Drawerの位置</div>
                         </div>
                         <template data-sd-document>
                             <div style="padding: 10px;">
-                                <h3>drawerPosition</h3>
+                                <h3 data-sd-link-target="#drawerPosition">
+                                    drawerPosition
+                                </h3>
                                 <p>
                                     Drawerの位置を設定します。
                                     <br />
@@ -269,14 +282,16 @@
                         </div>
                     </div>
 
-                    <div class="setting-row">
+                    <div id="drawerWidth" class="setting-row">
                         <div class="setting-label">
                             <code>drawerWidth</code>
                             <div class="label-description">初期サイズ</div>
                         </div>
                         <template data-sd-document>
                             <div style="padding: 10px;">
-                                <h3>drawerWidth</h3>
+                                <h3 data-sd-link-target="#drawerWidth">
+                                    drawerWidth
+                                </h3>
                                 <p>Drawerの初期サイズを設定します。</p>
                             </div>
                         </template>
@@ -298,7 +313,7 @@
                         </div>
                     </div>
 
-                    <div class="setting-row">
+                    <div id="drawerWidthUnit" class="setting-row">
                         <div class="setting-label">
                             <code>drawerWidthUnit</code>
                             <div class="label-description">
@@ -307,7 +322,9 @@
                         </div>
                         <template data-sd-document>
                             <div style="padding: 10px;">
-                                <h3>drawerWidthUnit</h3>
+                                <h3 data-sd-link-target="#drawerWidthUnit">
+                                    drawerWidthUnit
+                                </h3>
                                 <p>Drawerの初期サイズの単位を設定します。</p>
                             </div>
                         </template>
@@ -343,7 +360,7 @@
                         </div>
                     </div>
 
-                    <div class="setting-row">
+                    <div id="resizable" class="setting-row">
                         <div class="setting-label">
                             <code>resizable</code>
                             <div class="label-description">
@@ -352,7 +369,9 @@
                         </div>
                         <template data-sd-document>
                             <div style="padding: 10px;">
-                                <h3>resizable</h3>
+                                <h3 data-sd-link-target="#resizable">
+                                    resizable
+                                </h3>
                                 <p>
                                     Drawerのリサイズを有効にするかどうかを設定します。
                                 </p>
@@ -369,7 +388,7 @@
                         </div>
                     </div>
 
-                    <div class="setting-row">
+                    <div id="defaultSrc" class="setting-row">
                         <div class="setting-label">
                             <code>defaultSrc</code>
                             <div class="label-description">
@@ -378,7 +397,9 @@
                         </div>
                         <template data-sd-document>
                             <div style="padding: 10px;">
-                                <h3>defaultSrc</h3>
+                                <h3 data-sd-link-target="#defaultSrc">
+                                    defaultSrc
+                                </h3>
                                 <p>
                                     Drawerに表示するデフォルトurlを指定します。
                                 </p>
@@ -393,7 +414,7 @@
                             />
                         </div>
                     </div>
-                    <div class="setting-row">
+                    <div id="showDrawerButtons" class="setting-row">
                         <div class="setting-label">
                             <code>showDrawerButtons</code>
                             <div class="label-description">
@@ -402,7 +423,9 @@
                         </div>
                         <template data-sd-document>
                             <div style="padding: 10px;">
-                                <h3>showDrawerButtons</h3>
+                                <h3 data-sd-link-target="#showDrawerButtons">
+                                    showDrawerButtons
+                                </h3>
                                 <p>Drawer操作用のボタンを設定します。</p>
                             </div>
                         </template>
@@ -500,7 +523,7 @@
                 <div class="setting-header">Behavior</div>
 
                 <div class="setting-content">
-                    <div class="setting-row">
+                    <div id="closeOnOutsideClick" class="setting-row">
                         <div class="setting-label">
                             <code>closeOnOutsideClick</code>
                             <div class="label-description">
@@ -509,7 +532,9 @@
                         </div>
                         <template data-sd-document>
                             <div style="padding: 10px;">
-                                <h3>closeOnOutsideClick</h3>
+                                <h3 data-sd-link-target="#closeOnOutsideClick">
+                                    closeOnOutsideClick
+                                </h3>
                                 <p>
                                     ドロワー外をクリックしたときにドロワーを閉じるかどうかを設定します。
                                 </p>
@@ -533,7 +558,7 @@
                 <div class="setting-header">Styling</div>
 
                 <div class="setting-content">
-                    <div class="setting-row">
+                    <div id="primaryColor" class="setting-row">
                         <div class="setting-label">
                             <code>primaryColor</code>
                             <div class="label-description">
