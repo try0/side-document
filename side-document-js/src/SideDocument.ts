@@ -214,36 +214,46 @@ export class SideDocument {
                     }
 
                     // ドキュメント→ページ内要素へのリンク生成
-                    let linkHolder = docElement.querySelector("[data-sd-link-target]");
-                    if (linkHolder) {
+                    const linkHolders = Array.from(docElement.querySelectorAll('[data-sd-link-target]')) as HTMLElement[];
+                    linkHolders.forEach(linkHolder => {
                         let linkElementSelector: string | null = linkHolder.getAttribute('data-sd-link-target');
-                        if (linkElementSelector) {
-                            linkElementSelector = linkElementSelector.trim();
+                        if (!linkElementSelector) return;
+                        linkElementSelector = linkElementSelector.trim();
+                        if (!linkElementSelector) return;
 
-                            // 
-                            const linkButton = document.createElement('button');
-                            linkButton.className = 'sd-link-button';
-                            linkButton.innerHTML = '<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M16 4h2a2 2 0 0 1 2 2v2" /><path d="M20 16v2a2 2 0 0 1 -2 2h-2" /><path d="M8 20h-2a2 2 0 0 1 -2 -2v-2" /><path d="M4 8v-2a2 2 0 0 1 2 -2h2" /></svg>';
-                            linkButton.addEventListener('click', () => {
-                                const targetElement = document.querySelector(linkElementSelector!);
-                                if (targetElement) {
-                                    const offset = 80; // 画面上部に確保したい余白(px)
-                                    const rect = targetElement.getBoundingClientRect();
+                        const linkButton = document.createElement('button');
+                        linkButton.className = 'sd-link-button';
+                        linkButton.type = 'button';
+                        linkButton.innerHTML =
+                            '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" ' +
+                            'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+                            'stroke-linecap="round" stroke-linejoin="round">' +
+                            '<path stroke="none" d="M0 0h24v24H0z" fill="none"/>' +
+                            '<path d="M16 4h2a2 2 0 0 1 2 2v2" />' +
+                            '<path d="M20 16v2a2 2 0 0 1 -2 2h-2" />' +
+                            '<path d="M8 20h-2a2 2 0 0 1 -2 -2v-2" />' +
+                            '<path d="M4 8v-2a2 2 0 0 1 2 -2h2" />' +
+                            '</svg>';
 
-                                    const fullyVisible =
-                                        rect.top >= offset &&
-                                        rect.bottom <= window.innerHeight;
+                        linkButton.addEventListener('click', () => {
+                            const targetElement = document.querySelector(linkElementSelector!) as HTMLElement | null;
+                            if (targetElement) {
+                                const offset = 80;
+                                const rect = targetElement.getBoundingClientRect();
+                                const fullyVisible =
+                                    rect.top >= offset &&
+                                    rect.bottom <= window.innerHeight;
 
-                                    if (!fullyVisible) {
-                                        const top = Math.max(0, rect.top + window.scrollY - offset);
-                                        window.scrollTo({ top, behavior: 'smooth' });
-                                    }
-                                    this.documentContainer.addEffectTargetElement(targetElement);
+                                if (!fullyVisible) {
+                                    const top = Math.max(0, rect.top + window.scrollY - offset);
+                                    window.scrollTo({ top, behavior: 'smooth' });
                                 }
-                            });
-                            linkHolder.appendChild(linkButton);
-                        }
-                    }
+                                this.documentContainer.addEffectTargetElement(targetElement);
+                            }
+                        });
+
+                        linkHolder.appendChild(linkButton);
+                    });
 
                     wrapper.appendChild(docElement);
                 });

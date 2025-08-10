@@ -139,7 +139,7 @@
             left 0.12s ease,
             width 0.12s ease,
             height 0.12s ease;
-        z-index: 2147482000;
+        z-index: var(--sd-drawer-z-index, 2147482000);
     }
 
     .sd-related-effect.pulse {

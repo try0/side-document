@@ -180,7 +180,7 @@
                                 </h3>
                                 <p>
                                     トグルボタンの位置を設定します。
-                                    toggleButtonFollowsDrawerPosition
+                                    <span data-sd-link-target="#toggleButtonFollowsDrawerPosition">toggleButtonFollowsDrawerPosition</span>
                                     が有効な場合、Drawerの位置に応じて自動的に位置が調整されます。
                                     <br />
                                 </p>

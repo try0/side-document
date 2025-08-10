@@ -350,8 +350,8 @@
                 bind:this={frameElement}
                 title={str(option.i18nText, "documentTitle")}
                 src={frameSrc}
+                loading="lazy"
                 style="width: 100%; height: 100%; border: none; 
-                
                 {documentMode === 'iframe' ? '' : 'display: none;'}
                 {isResizing
                     ? 'pointer-events: none; user-select: none;'
@@ -704,8 +704,8 @@
         line-height: 1;
         background: color-mix(
             in srgb,
-            var(--sd-primary-color, #236ad4) 70%,
-            #fff 30%
+            var(--sd-primary-color, #236ad4) 50%,
+            #fff 50%
         );
         color: #fff;
         border: none;
