@@ -538,6 +538,33 @@
                                 />
                                 <span>閉じる</span>
                             </label>
+
+                            <label class="radio-option">
+                                <input
+                                    type="checkbox"
+                                    value="external-link"
+                                    checked={option.showDrawerButtons.includes(
+                                        "external-link",
+                                    )}
+                                    on:change={(e) => {
+                                        const target =
+                                            e.target as HTMLInputElement | null;
+                                        if (target && target.checked) {
+                                            option.showDrawerButtons = [
+                                                ...option.showDrawerButtons,
+                                                "external-link",
+                                            ];
+                                        } else if (target) {
+                                            option.showDrawerButtons =
+                                                option.showDrawerButtons.filter(
+                                                    (v) =>
+                                                        v !== "external-link",
+                                                );
+                                        }
+                                    }}
+                                />
+                                <span>外部リンク</span>
+                            </label>
                             <label
                                 class="radio-option"
                                 style="margin-right:12px;"
@@ -566,32 +593,6 @@
                                     }}
                                 />
                                 <span>位置切替</span>
-                            </label>
-                            <label class="radio-option">
-                                <input
-                                    type="checkbox"
-                                    value="external-link"
-                                    checked={option.showDrawerButtons.includes(
-                                        "external-link",
-                                    )}
-                                    on:change={(e) => {
-                                        const target =
-                                            e.target as HTMLInputElement | null;
-                                        if (target && target.checked) {
-                                            option.showDrawerButtons = [
-                                                ...option.showDrawerButtons,
-                                                "external-link",
-                                            ];
-                                        } else if (target) {
-                                            option.showDrawerButtons =
-                                                option.showDrawerButtons.filter(
-                                                    (v) =>
-                                                        v !== "external-link",
-                                                );
-                                        }
-                                    }}
-                                />
-                                <span>外部リンク</span>
                             </label>
                         </div>
                     </div>

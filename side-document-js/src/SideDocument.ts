@@ -83,7 +83,7 @@ export class SideDocument {
         /**
          * ドキュメントDrawerのボタンを表示するか
          */
-        showDrawerButtons: ["close", "position-change", "external-link"] as ("close" | "position-change" | "external-link")[],
+        showDrawerButtons: ["close", "external-link", "position-change"] as ("close" | "external-link" | "position-change")[],
     });
 
 
