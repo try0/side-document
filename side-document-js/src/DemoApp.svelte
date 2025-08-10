@@ -36,6 +36,15 @@
         if (option.drawerWidth !== preOption.drawerWidth) {
             upd = true;
         }
+
+        if (option.drawerMinWidth !== preOption.drawerMinWidth) {
+            upd = true;
+        }
+
+        if (option.drawerMaxWidth !== preOption.drawerMaxWidth) {
+            upd = true;
+        }
+
         if (option.showToggleButton !== preOption.showToggleButton) {
             upd = true;
         }
@@ -46,6 +55,9 @@
             upd = true;
         }
         if (option.closeOnOutsideClick !== preOption.closeOnOutsideClick) {
+            upd = true;
+        }
+        if (option.refreshFrameOnClose !== preOption.refreshFrameOnClose) {
             upd = true;
         }
 
@@ -180,7 +192,10 @@
                                 </h3>
                                 <p>
                                     トグルボタンの位置を設定します。
-                                    <span data-sd-link-target="#toggleButtonFollowsDrawerPosition">toggleButtonFollowsDrawerPosition</span>
+                                    <span
+                                        data-sd-link-target="#toggleButtonFollowsDrawerPosition"
+                                        >toggleButtonFollowsDrawerPosition</span
+                                    >
                                     が有効な場合、Drawerの位置に応じて自動的に位置が調整されます。
                                     <br />
                                 </p>
@@ -359,7 +374,72 @@
                             </label>
                         </div>
                     </div>
+                    <!-- drawerWidthUnit 設定の後に追加 -->
+                    <div id="drawerMinWidth" class="setting-row">
+                        <div class="setting-label">
+                            <code>drawerMinWidth</code>
+                            <div class="label-description">最小サイズ</div>
+                        </div>
+                        <template data-sd-document>
+                            <div style="padding: 10px;">
+                                <h3 data-sd-link-target="#drawerMinWidth">
+                                    drawerMinWidth
+                                </h3>
+                                <p>
+                                    ドロワーの最小サイズを設定します。リサイズ時に適用されます。
+                                </p>
+                            </div>
+                        </template>
+                        <div class="setting-control size-input-group">
+                            <input
+                                type="number"
+                                min={option.drawerWidthUnit === "px" ? 100 : 10}
+                                max={option.drawerWidthUnit === "px"
+                                    ? 500
+                                    : option.drawerWidthUnit === "%"
+                                      ? 40
+                                      : 320}
+                                bind:value={option.drawerMinWidth}
+                                class="width-input"
+                            />
+                            <span class="unit-text"
+                                >{option.drawerWidthUnit}</span
+                            >
+                        </div>
+                    </div>
 
+                    <div id="drawerMaxWidth" class="setting-row">
+                        <div class="setting-label">
+                            <code>drawerMaxWidth</code>
+                            <div class="label-description">最大サイズ</div>
+                        </div>
+                        <template data-sd-document>
+                            <div style="padding: 10px;">
+                                <h3 data-sd-link-target="#drawerMaxWidth">
+                                    drawerMaxWidth
+                                </h3>
+                                <p>
+                                    ドロワーの最大サイズを設定します。リサイズ時に適用されます。
+                                </p>
+                            </div>
+                        </template>
+                        <div class="setting-control size-input-group">
+                            <input
+                                type="number"
+                                min={option.drawerWidthUnit === "px" ? 300 : 20}
+                                max={option.drawerWidthUnit === "px"
+                                    ? 1200
+                                    : option.drawerWidthUnit === "%"
+                                      ? 95
+                                      : 320}
+                                bind:value={option.drawerMaxWidth}
+                                class="width-input"
+                            />
+                            <span class="unit-text"
+                                >{option.drawerWidthUnit}</span
+                            >
+                        </div>
+                    </div>
                     <div id="resizable" class="setting-row">
                         <div class="setting-label">
                             <code>resizable</code>
@@ -545,6 +625,34 @@
                                 <input
                                     type="checkbox"
                                     bind:checked={option.closeOnOutsideClick}
+                                />
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="refreshFrameOnClose" class="setting-row">
+                        <div class="setting-label">
+                            <code>refreshFrameOnClose</code>
+                            <div class="label-description">
+                                ドロワーを閉じた時にiframeを再読み込み
+                            </div>
+                        </div>
+                        <template data-sd-document>
+                            <div style="padding: 10px;">
+                                <h3 data-sd-link-target="#refreshFrameOnClose">
+                                    refreshFrameOnClose
+                                </h3>
+                                <p>
+                                    ドロワーを閉じた際にiframeの内容を再読み込みするかどうかを設定します。
+                                    iframe内でのインタラクティブな変更を元に戻したい場合に有効化します。
+                                </p>
+                            </div>
+                        </template>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input
+                                    type="checkbox"
+                                    bind:checked={option.refreshFrameOnClose}
                                 />
                                 <span class="toggle-slider"></span>
                             </label>

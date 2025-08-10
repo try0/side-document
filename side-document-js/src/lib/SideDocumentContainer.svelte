@@ -11,7 +11,10 @@
     /**
      * 初期オプション値
      */
-    let { initOption }: { initOption: SideDocumentOption } = $props();
+    let {
+        initOption,
+        drawerId = "sd-drawer-panel",
+    }: { initOption: SideDocumentOption; drawerId: string } = $props();
     let option = $state(initOption);
     setContext("option", option);
 
@@ -79,9 +82,17 @@
 
     onMount(() => {
         isOpened = false;
+        window.addEventListener("keydown", handleKeyDown);
+    });
+    onDestroy(() => {
+        window.removeEventListener("keydown", handleKeyDown);
     });
 
-    // onDestroy(() => {});
+    function handleKeyDown(event: KeyboardEvent) {
+        if (event.key === "Escape" && isOpened) {
+            closeDrawer();
+        }
+    }
 
     /**
      * オプションを更新します。
@@ -193,6 +204,7 @@
         bind:this={documentDrawer}
         {containerRootElement}
         bind:isOpened
+        {drawerId}
     />
 
     {#if isVisibleToggleButton}
@@ -209,6 +221,8 @@
                 aria-label={isOpened
                     ? str(option.i18nText, "toggleButtonCloseTooltip")
                     : str(option.i18nText, "toggleButtonOpenTooltip")}
+                aria-expanded={isOpened}
+                aria-controls={drawerId}
             >
                 {#if isOpened}
                     <svg

@@ -45,11 +45,11 @@ export interface SideDocumentOption {
      */
     resizable?: boolean;
     /**
-     * ドキュメントDrawerを外部クリックで閉じるか
+     * ドキュメントDrawerを閉じたときにフレームをリフレッシュするか
      */
     refreshFrameOnClose?: boolean;
     /**
-     * ドキュメントDrawerを閉じたときにフレームをリフレッシュするか
+     * ドキュメントDrawerを外部クリックで閉じるか
      */
     closeOnOutsideClick?: boolean;
     /**

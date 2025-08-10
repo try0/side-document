@@ -15,7 +15,8 @@
     let {
         containerRootElement,
         isOpened = $bindable(),
-    }: { containerRootElement: HTMLElement; isOpened: boolean } = $props();
+        drawerId = "sd-drawer-panel",
+    }: { containerRootElement: HTMLElement; isOpened: boolean; drawerId: string } = $props();
 
     $effect(() => {
         if (isOpened) {
@@ -57,10 +58,34 @@
      */
     let drawerWidthPx = $derived.by(() => {
         if (option.drawerWidthUnit) {
-            return calculateInitialWidthInPx();
+            return calculateWidthToPx(option.drawerWidth, option.drawerWidthUnit);
         }
 
         return Math.max(option.drawerWidth || 320, 320);
+    });
+
+    let drawerMinWidthPx = $derived.by(() => {
+        if (!option.drawerMinWidth) {
+            return 0;
+        }
+
+        if (option.drawerWidthUnit) {
+            return calculateWidthToPx(option.drawerMinWidth, option.drawerWidthUnit);
+        }
+
+        return Math.max(option.drawerMinWidth || 100, 100);
+    });
+
+    let drawerMaxWidthPx = $derived.by(() => {
+        if (!option.drawerMaxWidth) {
+            return 2000;
+        }
+
+        if (option.drawerWidthUnit) {
+            return calculateWidthToPx(option.drawerMaxWidth, option.drawerWidthUnit);
+        }
+
+        return Math.max(option.drawerMaxWidth || 800, 800);
     });
 
     /**
@@ -89,7 +114,7 @@
     /**
      * ドキュメントパネルのリサイズ開始時の幅
      */
-    let startWidthPx = $state(calculateInitialWidthInPx());
+    let startWidthPx = $state(calculateWidthToPx(option.drawerWidth, option.drawerWidthUnit ?? "px"));
 
     // フォーカス状態管理
     let isResizeBarFocused = $state(false);
@@ -110,19 +135,16 @@
     /**
      * 初期幅をpx単位に変換して取得する関数
      */
-    function calculateInitialWidthInPx(): number {
+    function calculateWidthToPx(width: number, unit: "px" | "%"): number {
         // 初期値のデフォルト
-        const defaultWidth = 320;
+        const defaultWidth = unit == "px" ? 320 : 25;
 
         // オプションが無い場合はデフォルト値
-        if (!option || !option.drawerWidth) {
+        if (!width) {
             return defaultWidth;
         }
 
         // 単位に応じて変換
-        const unit = option.drawerWidthUnit || "px";
-        const width = option.drawerWidth;
-
         if (unit === "px") {
             return Math.max(width, 100); // 最小幅は100px
         } else if (unit === "%") {
@@ -164,13 +186,13 @@
             drawerWidthPx = startWidthPx - dx;
         }
 
-        if (option.drawerMaxWidth && drawerWidthPx > option.drawerMaxWidth) {
-            drawerWidthPx = option.drawerMaxWidth;
+        if (option.drawerMaxWidth && drawerWidthPx > drawerMaxWidthPx) {
+            drawerWidthPx = drawerMaxWidthPx;
         } else if (
             option.drawerMinWidth &&
-            drawerWidthPx < option.drawerMinWidth
+            drawerWidthPx < drawerMinWidthPx
         ) {
-            drawerWidthPx = option.drawerMinWidth;
+            drawerWidthPx = drawerMinWidthPx;
         }
     }
 
@@ -313,6 +335,7 @@
 </script>
 
 <div
+    id="{drawerId}"
     class="sd-drawer {drawerToggleClass} {drawerPositionClass}"
     style="--drawer-width: {drawerWidthPx}px; "
 >
@@ -704,8 +727,8 @@
         line-height: 1;
         background: color-mix(
             in srgb,
-            var(--sd-primary-color, #236ad4) 50%,
-            #fff 50%
+            var(--sd-primary-color, #236ad4) 40%,
+            #fff 60%
         );
         color: #fff;
         border: none;
