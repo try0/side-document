@@ -1,6 +1,5 @@
 <script lang="ts">
     import { onDestroy, onMount } from "svelte";
-    import SideDocumentContainer from "./lib/SideDocumentContainer.svelte";
     import { SideDocument } from "./SideDocument";
 
     // 開発用Appコンポーネント

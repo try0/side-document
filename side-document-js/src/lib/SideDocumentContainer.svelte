@@ -1,10 +1,8 @@
 <script lang="ts">
     import { onDestroy, onMount, setContext } from "svelte";
 
-    import { fade } from "svelte/transition";
     import SideDocumentDrawer from "./SideDocumentDrawer.svelte";
     import type { SideDocumentOption } from "../types";
-    import { SideDocument } from "../SideDocument";
     import { str } from "./i18n";
     import RelatedElementEffect from "./RelatedElementEffect.svelte";
 

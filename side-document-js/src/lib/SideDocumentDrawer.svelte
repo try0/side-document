@@ -1,7 +1,6 @@
 <script lang="ts">
     import { getContext, onDestroy, onMount } from "svelte";
     import type { SideDocumentOption } from "../types";
-    import { fade } from "svelte/transition";
     import { str } from "./i18n";
 
     /**
@@ -135,6 +134,7 @@
     let isResizeBarFocused = $state(false);
     let focusTimeout: ReturnType<typeof setTimeout> | null = null;
 
+    // svelte-ignore non_reactive_update
     let frameElement: HTMLIFrameElement | null = null;
 
     function setResizeBarActiveWithDelay() {
@@ -443,8 +443,6 @@
             ? `left: calc(${drawerWidthPx}px + 5px); right: auto;`
             : `right: calc(${drawerWidthPx}px + 5px); left: auto;`}
         "
-        in:fade={{ duration: 0, delay: 300 }}
-        out:fade={{ duration: 0, delay: 0 }}
     >
         {#each option.showDrawerButtons as buttonType}
             {#if buttonType === "close"}
