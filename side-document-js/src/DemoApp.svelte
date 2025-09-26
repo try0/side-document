@@ -117,7 +117,7 @@
     </div>
 
     <div class="container">
-        <div class="tab-bar">
+        <!-- <div class="tab-bar">
             <button
                 type="button"
                 class:tab-active={contentType === "iframe"}
@@ -140,7 +140,7 @@
                     </p>
                 </div>
             </template>
-        </div>
+        </div> -->
 
         <!-- 左側：設定パネル -->
         <div class="settings-panel">
