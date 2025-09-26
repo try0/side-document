@@ -15,7 +15,7 @@ export default defineConfig({
     ? {
       lib: {
         entry: 'src/SideDocument.ts',
-        name: 'SD',
+        name: 'SideDocument',
         fileName: (format) => `side-document.${format}.js`,
       },
       rollupOptions: {

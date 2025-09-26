@@ -248,12 +248,27 @@
     function onClickOpenInNewWindow(
         event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
     ) {
-        if (!frameSrc) {
+        let urlToOpen = frameSrc;
+
+        // iframe内の現在のURLを取得できる場合はそれを優先
+        if (frameElement && frameElement.contentWindow) {
+            try {
+                const currentUrl = frameElement.contentWindow.location.href;
+                // クロスオリジンでなければ、現在のURLを使用
+                if (currentUrl && currentUrl !== "about:blank") {
+                    urlToOpen = currentUrl;
+                }
+            } catch (e) {
+                // クロスオリジンの場合は frameSrc を使う
+            }
+        }
+
+        if (!urlToOpen) {
             console.warn("Frame source is not set.");
             return;
         }
 
-        window.open(frameSrc, "_blank", "noopener");
+        window.open(urlToOpen, "_blank", "noopener");
     }
 
     /**
@@ -588,6 +603,9 @@
         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
         z-index: var(--sd-drawer-z-index, 1000);
         will-change: transform;
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
         overflow: hidden;
         transition:
             left 0.3s ease,
@@ -731,12 +749,12 @@
     }
 
     :global([data-sd-link-target]) {
-        display: inline; /* テキストと同じ行内フロー */
+        display: inline;
         white-space: normal;
     }
 
     :global(.sd-link-button) {
-        display: inline-block; /* 行内ボックスとして扱う */
+        display: inline-block;
         vertical-align: text-bottom;
         margin-left: 0.4em;
         width: 1.5rem;

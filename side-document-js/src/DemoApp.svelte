@@ -7,7 +7,7 @@
     let contentType: "iframe" | "page-element" = $state("iframe");
     $effect(() => {
         if (contentType === "iframe") {
-            app.setFrameSrc(option.defaultSrc);
+            app.setFrameSrc(option.defaultSrc ?? "");
         } else if (contentType === "page-element") {
             option.showToggleButton = true;
             option.drawerWidth = 400;
@@ -96,7 +96,7 @@
 
     onMount(() => {
         // 初期化
-        app.init();
+        app.initialize();
     });
 
     onDestroy(() => {});

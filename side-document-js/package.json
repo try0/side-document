@@ -1,7 +1,36 @@
 {
-    "name": "side-document",
-    "private": true,
+    "name": "@try0/side-document",
     "version": "0.0.1",
+    "private": true,
+    "description": "Display the document in a drawer using an iframe.",
+    "keywords": [
+        "browser",
+        "drawer",
+        "document",
+        "iframe"
+    ],
+    "author": "try0 <try0.development@gmail.com>",
+    "license": "MIT",
+    "homepage": "https://github.com/try0/side-document",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/try0/side-document.git"
+    },
+    "bugs": {
+        "url": "https://github.com/try0/side-document/issues"
+    },
+    "main": "dist/side-document.es.js",
+    "types": "dist/side-document.es.d.ts",
+    "files": [
+        "dist"
+    ],
+    "exports": {
+        ".": {
+            "import": "./dist/side-document.es.js",
+            "types": "./dist/side-document.es.d.ts"
+        }
+    },
+    "sideEffects": false,
     "type": "module",
     "scripts": {
         "dev": "vite",
@@ -28,5 +57,7 @@
         "last 2 version",
         "iOS >= 8.1",
         "Android >= 4.4"
-    ]
+    ],
+    "dependencies": {
+    }
 }

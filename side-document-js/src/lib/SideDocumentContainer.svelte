@@ -12,7 +12,7 @@
     let {
         initOption,
         drawerId = "sd-drawer-panel",
-    }: { initOption: SideDocumentOption; drawerId: string } = $props();
+    }: { initOption: SideDocumentOption; drawerId: string | undefined } = $props();
     let option = $state(initOption);
     setContext("option", option);
 

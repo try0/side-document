@@ -43,7 +43,7 @@ export class SideDocument {
         /**
          * ドキュメントDrawerの幅
          */
-        drawerWidth: 320,
+        drawerWidth: 380,
         /**
          * ドキュメントDrawerの幅の単位
          */
@@ -90,7 +90,7 @@ export class SideDocument {
 
     container?: HTMLElement;
     option: SideDocumentOption;
-    documentContainer: SideDocumentContainer;
+    documentContainer: SideDocumentContainer | null = null;
 
     constructor(option?: SideDocumentOption) {
         this.option = Object.assign({}, SideDocument.DEFAULT_OPTION, option);
@@ -133,7 +133,7 @@ export class SideDocument {
      * 
      * @returns void
      */
-    public init(): void {
+    public initialize(): void {
         console.log("SideDocument initialized");
 
         if (this.option.containerSelector) {
@@ -150,7 +150,7 @@ export class SideDocument {
         this.documentContainer = mount(SideDocumentContainer, {
             target: this.container.shadowRoot ? this.container.shadowRoot : this.container,
             props: {
-                initOption: this.option,
+                initOption: this.option
             },
         });
 
@@ -248,7 +248,7 @@ export class SideDocument {
                                     const top = Math.max(0, rect.top + window.scrollY - offset);
                                     window.scrollTo({ top, behavior: 'smooth' });
                                 }
-                                this.documentContainer.addEffectTargetElement(targetElement);
+                                this.documentContainer!.addEffectTargetElement(targetElement);
                             }
                         });
 
@@ -266,7 +266,7 @@ export class SideDocument {
         }
     }
 
-    public setFrameSrc(src: string | undefined | null): void {
+    public setFrameSrc(src: string): void {
         if (this.documentContainer) {
             this.documentContainer.setFrameSrc(src);
         } else {
@@ -275,3 +275,6 @@ export class SideDocument {
     }
 
 }
+
+
+export type { SideDocumentOption, SideDocumentI18NText } from "./types";
