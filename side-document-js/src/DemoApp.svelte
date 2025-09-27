@@ -118,6 +118,12 @@
 <main class="app-container">
     <div>
         <h1>Side Document Example</h1>
+        <a href="https://github.com/try0/side-document"
+            ><img
+                src="./public/github-mark.svg"
+                style="height: 2rem;width: 2rem;"
+            /></a
+        >
         <p>使い方とサンプル</p>
     </div>
 
@@ -569,6 +575,31 @@
                                 />
                                 <span>外部リンク</span>
                             </label>
+                            <label class="radio-option">
+                                <input
+                                    type="checkbox"
+                                    value="qrcode"
+                                    checked={option.showDrawerButtons.includes(
+                                        "qrcode",
+                                    )}
+                                    on:change={(e) => {
+                                        const target =
+                                            e.target as HTMLInputElement | null;
+                                        if (target && target.checked) {
+                                            option.showDrawerButtons = [
+                                                ...option.showDrawerButtons,
+                                                "qrcode",
+                                            ];
+                                        } else if (target) {
+                                            option.showDrawerButtons =
+                                                option.showDrawerButtons.filter(
+                                                    (v) => v !== "qrcode",
+                                                );
+                                        }
+                                    }}
+                                />
+                                <span>QRコード</span>
+                            </label>
                             <label
                                 class="radio-option"
                                 style="margin-right:12px;"
@@ -692,7 +723,7 @@
                             />
                         </div>
                     </div>
-                     <div id="qrcodeImageColor" class="setting-row">
+                    <div id="qrcodeImageColor" class="setting-row">
                         <div class="setting-label">
                             <code>qrcodeImageColor</code>
                             <div class="label-description">
