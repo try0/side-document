@@ -457,7 +457,9 @@
     /**
      * QRコード画像をクリップボードにコピーします。
      */
-    async function copyToClipboard(): Promise<void> {
+    async function copyToClipboard(
+        event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
+    ): Promise<void> {
         if (!qrCodeDataUrl) return;
         try {
             // DataURLからBlobを生成
@@ -475,7 +477,9 @@
     /**
      * QRコード画像をダウンロードします。
      */
-    function downloadQrCodeImage() {
+    function downloadQrCodeImage(
+        event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
+    ) {
         if (!qrCodeDataUrl) return;
         const a = document.createElement("a");
         a.href = qrCodeDataUrl;
