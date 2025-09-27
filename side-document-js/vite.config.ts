@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
+import dts from 'vite-plugin-dts'
 
 const isLib = process.env.BUILD_LIB === 'true';
 
@@ -7,7 +8,12 @@ export default defineConfig({
   base: './',
   plugins: [svelte({
     emitCss: false,
-  })],
+  }),
+  dts({
+    outDir: 'dist',
+    rollupTypes: true,
+  }),
+  ],
   css: {
     postcss: './postcss.config.js'
   },
