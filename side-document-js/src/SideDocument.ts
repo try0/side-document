@@ -200,6 +200,19 @@ export class SideDocument {
     }
 
     /**
+     * Drawerが開いているかどうかを返します。
+     * 
+     * @returns 
+     */
+    public isOpenedDrawer(): boolean {
+        if (this.documentContainer) {
+            return this.documentContainer.isOpenedDrawer();
+        } else {
+            return false;
+        }  
+    }
+
+    /**
      * Drawerのコンテンツを設定します。
      * 
      * @param content 

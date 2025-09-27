@@ -142,6 +142,13 @@
     }
 
     /**
+     * Drawerが開いているかどうかを返します。
+     */
+    export function isOpenedDrawer(): boolean {
+        return isOpened;
+    }
+
+    /**
      * urlを設定します。
      *
      * @param src

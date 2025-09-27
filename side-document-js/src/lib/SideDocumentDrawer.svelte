@@ -352,14 +352,16 @@
     /**
      * ドロワーを表示します。
      *
-     * @param frameSrc
+     * @param url
      */
-    export function open(frameSrc?: string) {
-        if (frameSrc) {
+    export function open(url?: string) {
+        if (url) {
             documentMode = "iframe";
             isVisibleFrame = true;
-            isLoading = true;
-            frameSrc = frameSrc;
+            if (!isOpened) {
+                isLoading = true;
+            }
+            frameSrc = url;
         } else {
             isVisibleFrame = documentMode === "iframe";
         }
