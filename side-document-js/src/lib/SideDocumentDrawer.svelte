@@ -488,6 +488,42 @@
         a.click();
         document.body.removeChild(a);
     }
+
+    /**
+     * ドキュメントパネルの幅を変更するボタンのクリックイベントハンドラ
+     */
+    function onClickResize(
+        event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
+    ) {
+        if (!option.resizable) {
+            return;
+        }
+
+        // 基本サイズ
+        const baseWidth = calculateWidthToPx(
+            option.drawerWidth,
+            option.drawerWidthUnit ?? "px",
+        );
+        // 2段階の固定長追加サイズ
+        const step1 = baseWidth + 150;
+        const step2 = baseWidth + 300;
+
+        // 現在の幅に応じて切り替え
+        if (drawerWidthPx < step1 - 10) {
+            drawerWidthPx = step1;
+        } else if (drawerWidthPx < step2 - 10) {
+            drawerWidthPx = step2;
+        } else {
+            drawerWidthPx = baseWidth;
+        }
+
+        // 最大・最小幅の制約
+        if (option.drawerMaxWidth && drawerWidthPx > drawerMaxWidthPx) {
+            drawerWidthPx = drawerMaxWidthPx;
+        } else if (option.drawerMinWidth && drawerWidthPx < drawerMinWidthPx) {
+            drawerWidthPx = drawerMinWidthPx;
+        }
+    }
 </script>
 
 <div
@@ -839,6 +875,42 @@
                         /><path d="M20 17l0 3" /></svg
                     >
                 </button>
+            {:else if buttonType === "resize" && option.resizable}
+                <!-- 固定長リサイズボタン -->
+                <button
+                    type="button"
+                    class="sd-drawer-button"
+                    aria-label={str(option.i18nText, "resizeBarTooltip")}
+                    data-sd-c-tooltip={str(option.i18nText, "resizeBarTooltip")}
+                    data-sd-c-tooltip-position={drawerPositionClass === "left"
+                        ? "right"
+                        : "left"}
+                    on:click={onClickResize}
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class=" {drawerPositionClass == 'left'
+                            ? 'rotate-90'
+                            : 'rotate-270'}"
+                        ><path
+                            stroke="none"
+                            d="M0 0h24v24H0z"
+                            fill="none"
+                        /><path d="M7 21v-6" /><path
+                            d="M20 6l-3 -3l-3 3"
+                        /><path d="M17 3v18" /><path
+                            d="M10 18l-3 3l-3 -3"
+                        /><path d="M7 3v2" /><path d="M7 9v2" /></svg
+                    >
+                </button>
             {/if}
         {/each}
     </div>
@@ -995,6 +1067,14 @@
     }
     .sd-drawer-button:hover {
         @extend .sd-button-hover;
+    }
+    .sd-drawer-button svg.rotate-90 {
+        transform: rotate(90deg);
+        transition: transform 0.2s;
+    }
+    .sd-drawer-button svg.rotate-270 {
+        transform: rotate(270deg);
+        transition: transform 0.2s;
     }
     .sd-panel-hidden {
         visibility: hidden;

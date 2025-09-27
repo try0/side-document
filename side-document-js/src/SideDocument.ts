@@ -95,7 +95,7 @@ export class SideDocument {
         /**
          * ドキュメントDrawerのボタンを表示するか
          */
-        showDrawerButtons: ["close", "external-link", "qrcode", "position-change"] as ("close" | "external-link" | "position-change" | "qrcode")[],
+        showDrawerButtons: ["close", "external-link", "qrcode", "resize", "position-change"] as ("close" | "external-link" | "position-change" | "qrcode")[],
     });
 
 

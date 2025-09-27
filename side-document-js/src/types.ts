@@ -79,7 +79,7 @@ export interface SideDocumentOption {
     /**
      * ドキュメントDrawerのボタンを表示するか
      */
-    showDrawerButtons: ("close" | "position-change" | "external-link" | "qrcode")[];
+    showDrawerButtons: ("close" | "position-change" | "external-link" | "qrcode" | "resize")[];
 }
 
 export interface SideDocumentI18NText {
