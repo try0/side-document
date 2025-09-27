@@ -17,6 +17,7 @@ export default defineConfig({
   css: {
     postcss: './postcss.config.js'
   },
+  publicDir: isLib ? false : 'public',
   build: isLib
     ? {
       lib: {
