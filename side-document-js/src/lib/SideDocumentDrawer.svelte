@@ -410,10 +410,15 @@
         }
     }
 
-    async function onShowQRCode(
+    async function onClickQRCode(
         event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
     ) {
         event.preventDefault();
+
+        if (showQrCode) {
+            showQrCode = false;
+            return;
+        }
 
         const urlToOpen = getOpenUrl();
         if (!urlToOpen) {
@@ -695,15 +700,16 @@
                 <button
                     type="button"
                     class="sd-drawer-button"
-                    aria-label={str(option.i18nText, "qrcodeButtonTooltip")}
-                    data-sd-c-tooltip={str(
-                        option.i18nText,
-                        "qrcodeButtonTooltip",
-                    )}
+                    aria-label={!showQrCode
+                        ? str(option.i18nText, "qrcodeButtonTooltip")
+                        : str(option.i18nText, "qrcodeCloseButton")}
+                    data-sd-c-tooltip={!showQrCode
+                        ? str(option.i18nText, "qrcodeButtonTooltip")
+                        : str(option.i18nText, "qrcodeCloseButton")}
                     data-sd-c-tooltip-position={drawerPositionClass === "left"
                         ? "right"
                         : "left"}
-                    on:click={onShowQRCode}
+                    on:click={onClickQRCode}
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
