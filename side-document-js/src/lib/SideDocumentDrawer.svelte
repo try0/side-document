@@ -375,10 +375,17 @@
      *
      * @param src
      */
-    export function setFrameSrc(src: string) {
+    export async function setFrameSrc(src: string): Promise<void> {
         documentMode = "iframe";
-        frameSrc = src;
-        isVisibleFrame = true;
+        isVisibleFrame = false;
+        
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                frameSrc = src;
+                isVisibleFrame = true;
+                resolve();
+            }, 0);
+        });
     }
 
     /**
@@ -420,6 +427,9 @@
             console.warn("Frame source is not set.");
             return;
         }
+
+        // 移動していた場合、qrコードと違いが出るので戻す
+        setFrameSrc(urlToOpen);
 
         qrCodeDataUrl = await generateQrCode(urlToOpen);
         qrCodeUrl = urlToOpen;
@@ -500,18 +510,20 @@
 
         <!-- iframeコンテンツ -->
         {#if isVisibleFrame}
-            <iframe
-                bind:this={frameElement}
-                title={str(option.i18nText, "documentTitle")}
-                src={frameSrc}
-                loading="lazy"
-                style="width: 100%; height: 100%; border: none; 
-                {documentMode === 'iframe' ? '' : 'display: none;'}
-                {isResizing
-                    ? 'pointer-events: none; user-select: none;'
-                    : 'pointer-events: auto; user-select: auto;'}
-                "
-            ></iframe>
+            {#key frameSrc}
+                <iframe
+                    bind:this={frameElement}
+                    title={str(option.i18nText, "documentTitle")}
+                    src={frameSrc}
+                    loading="lazy"
+                    style="width: 100%; height: 100%; border: none; 
+                    {documentMode === 'iframe' ? '' : 'display: none;'}
+                    {isResizing
+                        ? 'pointer-events: none; user-select: none;'
+                        : 'pointer-events: auto; user-select: auto;'}
+                    "
+                ></iframe>
+            {/key}
         {/if}
 
         <!-- ページ要素コンテンツ -->
