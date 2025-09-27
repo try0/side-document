@@ -53,10 +53,7 @@
      * ドキュメントURL
      */
     let frameSrc: string | null | undefined = $state(option.defaultSrc);
-    /**
-     * 読み込み中フラグ
-     */
-    let isLoading = $state(true);
+
     /**
      * ドキュメントパネルの幅
      */
@@ -358,9 +355,6 @@
         if (url) {
             documentMode = "iframe";
             isVisibleFrame = true;
-            if (!isOpened) {
-                isLoading = true;
-            }
             frameSrc = url;
         } else {
             isVisibleFrame = documentMode === "iframe";
@@ -385,7 +379,6 @@
         documentMode = "iframe";
         frameSrc = src;
         isVisibleFrame = true;
-        isLoading = true;
     }
 
     /**
@@ -517,10 +510,7 @@
                 {isResizing
                     ? 'pointer-events: none; user-select: none;'
                     : 'pointer-events: auto; user-select: auto;'}
-                {isLoading ? 'opacity: 0;' : ''}"
-                on:load={() => {
-                    isLoading = false;
-                }}
+                "
             ></iframe>
         {/if}
 
