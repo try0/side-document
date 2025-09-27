@@ -490,6 +490,7 @@
                 />
                 <div class="sd-qr-code-url">{qrCodeUrl}</div>
                 <button
+                    type="button"
                     class="sd-qr-close"
                     on:click={() => (showQrCode = false)}
                     >{str(option.i18nText, "qrcodeCloseButton")}</button
@@ -960,7 +961,7 @@
         transform: translateX(-50%) scale(0.8);
         background: #fff;
         border: 1px solid #e2e2e2;
-        box-shadow: 0 4px 24px #0002;
+        box-shadow: 0 4px 12px #0002;
         padding: 1.5rem;
         border-radius: 0.25rem;
         z-index: 9999;
