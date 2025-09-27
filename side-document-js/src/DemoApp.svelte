@@ -101,7 +101,7 @@
 
     onMount(() => {
         // 初期化
-        app.initialize();
+        app.render();
     });
 
     onDestroy(() => {});

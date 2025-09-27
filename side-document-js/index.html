@@ -7,21 +7,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Side Document</title>
 
-    <script type="module" src="/src/main.ts">
+    <!-- <script type="module" src="/src/main.ts">
         import { mount, unmount } from 'svelte';
         import DemoApp from './DemoApp.svelte'
         document.addEventListener('DOMContentLoaded', () => {
             const app = mount(DemoApp, { target: document.getElementById("app") });
         });
-    </script>
-    <!-- <script src="./dist/side-document.umd.js"></script>
+    </script> -->
+    <script src="./dist/side-document.umd.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      new SD.SideDocument({
+      SideDocument.initialize({
         closeOnOutsideClick: true
-      }).init();
+      });
     });
-  </script> -->
+  </script>
 </head>
 
 <body>

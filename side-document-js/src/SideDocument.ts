@@ -3,6 +3,12 @@ import SideDocumentContainer from "./lib/SideDocumentContainer.svelte";
 import type { SideDocumentI18NText, SideDocumentOption } from "./types";
 
 
+export function initialize(option?: SideDocumentOption): SideDocument {
+    const sideDocument = new SideDocument(option);
+    sideDocument.render();
+    return sideDocument;
+}
+
 /**
  * メインクラス
  */
@@ -135,7 +141,7 @@ export class SideDocument {
      * 
      * @returns void
      */
-    public initialize(): void {
+    public render(): void {
         console.log("SideDocument initialized");
 
         if (this.option.containerSelector) {
