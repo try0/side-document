@@ -25,7 +25,11 @@ export class SideDocument {
         qrcodeButtonTooltip: 'QRコードを表示',
         qrcodeCloseButton: '閉じる',
         resizeBarTooltip: 'サイズを変更',
-        documentTitle: "ドキュメント"
+        documentTitle: "ドキュメント",
+        qrcodeDownloadButtonTooltip: '画像をダウンロード',
+        qrcodeCopyButtonTooltip: '画像をコピー',
+        qrcodeCopySuccessMessage: 'コピーしました',
+        qrcodeCopyErrorMessage: 'コピーに失敗しました'
     });
 
     /**

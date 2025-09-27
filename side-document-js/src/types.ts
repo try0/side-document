@@ -90,6 +90,10 @@ export interface SideDocumentI18NText {
     positionChangeButtonTooltip: string;
     qrcodeButtonTooltip: string;
     qrcodeCloseButton: string;
+    qrcodeDownloadButtonTooltip: string;
+    qrcodeCopyButtonTooltip: string;
+    qrcodeCopySuccessMessage: string;
+    qrcodeCopyErrorMessage: string;
     resizeBarTooltip: string;
     documentTitle: string;
 }

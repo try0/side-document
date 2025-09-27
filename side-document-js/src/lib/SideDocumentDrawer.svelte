@@ -378,7 +378,7 @@
     export async function setFrameSrc(src: string): Promise<void> {
         documentMode = "iframe";
         isVisibleFrame = false;
-        
+
         return new Promise((resolve) => {
             setTimeout(() => {
                 frameSrc = src;
@@ -453,6 +453,37 @@
             },
         });
     }
+
+    /**
+     * QRコード画像をクリップボードにコピーします。
+     */
+    async function copyToClipboard(): Promise<void> {
+        if (!qrCodeDataUrl) return;
+        try {
+            // DataURLからBlobを生成
+            const res = await fetch(qrCodeDataUrl);
+            const blob = await res.blob();
+            await navigator.clipboard.write([
+                new window.ClipboardItem({ [blob.type]: blob }),
+            ]);
+            alert(str(option.i18nText, "qrcodeCopySuccessMessage"));
+        } catch (e) {
+            alert(str(option.i18nText, "qrcodeCopyErrorMessage"));
+        }
+    }
+
+    /**
+     * QRコード画像をダウンロードします。
+     */
+    function downloadQrCodeImage() {
+        if (!qrCodeDataUrl) return;
+        const a = document.createElement("a");
+        a.href = qrCodeDataUrl;
+        a.download = "qrcode.png";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
 </script>
 
 <div
@@ -499,12 +530,74 @@
                     height="192"
                 />
                 <div class="sd-qr-code-url">{qrCodeUrl}</div>
-                <button
-                    type="button"
-                    class="sd-qr-close"
-                    on:click={() => (showQrCode = false)}
-                    >{str(option.i18nText, "qrcodeCloseButton")}</button
-                >
+                <div class="sd-qr-code-actions">
+                    <button
+                        type="button"
+                        class="sd-drawer-button"
+                        data-sd-c-tooltip={str(
+                            option.i18nText,
+                            "qrcodeCopyButtonTooltip",
+                        )}
+                        data-sd-c-tooltip-position="top"
+                        on:click={copyToClipboard}
+                        ><svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            ><path
+                                stroke="none"
+                                d="M0 0h24v24H0z"
+                                fill="none"
+                            /><path
+                                d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z"
+                            /><path
+                                d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1"
+                            /></svg
+                        ></button
+                    >
+                    <button
+                        type="button"
+                        class="sd-drawer-button"
+                        on:click={downloadQrCodeImage}
+                        data-sd-c-tooltip={str(
+                            option.i18nText,
+                            "qrcodeDownloadButtonTooltip",
+                        )}
+                        data-sd-c-tooltip-position="top"
+                        ><svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            ><path
+                                stroke="none"
+                                d="M0 0h24v24H0z"
+                                fill="none"
+                            /><path
+                                d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"
+                            /><path d="M7 11l5 5l5 -5" /><path
+                                d="M12 4l0 12"
+                            /></svg
+                        ></button
+                    >
+                    <button
+                        type="button"
+                        class="sd-qr-close"
+                        on:click={() => (showQrCode = false)}
+                        >{str(option.i18nText, "qrcodeCloseButton")}</button
+                    >
+                </div>
             </div>
         {/if}
 
@@ -989,7 +1082,7 @@
         pointer-events: auto;
     }
     .sd-qr-code-url {
-        margin-top: 1rem;
+        margin-top: 0.25rem;
         font-size: 0.9rem;
         color: var(--sd-primary-color, #236ad4);
         word-break: break-all;
@@ -1002,8 +1095,12 @@
         max-width: 320px;
         line-height: 1.3;
     }
+    .sd-qr-code-actions {
+        margin-top: 0.75rem;
+        display: flex;
+        gap: 0.5rem;
+    }
     .sd-qr-close {
-        margin-top: 1rem;
         height: 2rem;
         width: 5rem;
         @extend .sd-button-base;
