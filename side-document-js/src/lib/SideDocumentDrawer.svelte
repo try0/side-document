@@ -137,6 +137,8 @@
     // svelte-ignore non_reactive_update
     let frameElement: HTMLIFrameElement | null = null;
 
+    let windowWidth = window.innerWidth;
+
     function setResizeBarActiveWithDelay() {
         focusTimeout = setTimeout(() => {
             isResizeBarFocused = true;
@@ -151,31 +153,42 @@
      * 初期幅をpx単位に変換して取得する関数
      */
     function calculateWidthToPx(width: number, unit: "px" | "%"): number {
-        // 初期値のデフォルト
-        const defaultWidth = unit == "px" ? 320 : 25;
-
-        // オプションが無い場合はデフォルト値
-        if (!width) {
-            return defaultWidth;
-        }
-
-        // 単位に応じて変換
-        if (unit === "px") {
-            return Math.max(width, 100); // 最小幅は100px
-        } else if (unit === "%") {
-            // パーセント値をピクセルに変換
-            return Math.max((width * window.innerWidth) / 100, 100);
-        }
-        return defaultWidth;
+        if (!width) return unit === "px" ? 320 : 0.25 * windowWidth;
+        if (unit === "px") return Math.max(width, 100);
+        if (unit === "%") return Math.max((width * windowWidth) / 100, 100);
+        return 320;
     }
 
-    onMount(() => {});
+    function updateDrawerWidthPx() {
+        drawerWidthPx = calculateWidthToPx(
+            option.drawerWidth,
+            option.drawerWidthUnit ?? "px",
+        );
+        drawerMinWidthPx = calculateWidthToPx(
+            option.drawerMinWidth ?? 100,
+            option.drawerWidthUnit ?? "px",
+        );
+        drawerMaxWidthPx = calculateWidthToPx(
+            option.drawerMaxWidth ?? 800,
+            option.drawerWidthUnit ?? "px",
+        );
+    }
+
+    onMount(() => {
+        window.addEventListener("resize", onResizeWindow);
+    });
 
     onDestroy(() => {
         window.removeEventListener("mousemove", onMouseMove);
         window.removeEventListener("mouseup", onMouseUp);
         window.removeEventListener("mousedown", onClickOutside);
+        window.removeEventListener("resize", onResizeWindow);
     });
+
+    function onResizeWindow() {
+        windowWidth = window.innerWidth;
+        updateDrawerWidthPx();
+    }
 
     /**
      * ドキュメントパネルのリサイズバーをマウスダウンしたときのイベントハンドラ
@@ -314,10 +327,12 @@
         }
     }
 
+    /**
+     * ドロワーを表示します。
+     * 
+     * @param frameSrc
+     */
     export function open(frameSrc?: string) {
-        console.log({
-            documentMode: documentMode,
-        });
         if (frameSrc) {
             documentMode = "iframe";
             isVisibleFrame = true;
@@ -330,10 +345,18 @@
         isOpened = true;
     }
 
+    /**
+     * ドロワーを閉じます。
+     */
     export function close() {
         isOpened = false;
     }
 
+    /**
+     * ドキュメントURLを設定します。
+     * 
+     * @param src
+     */
     export function setFrameSrc(src: string) {
         documentMode = "iframe";
         frameSrc = src;
@@ -341,6 +364,11 @@
         isLoading = true;
     }
 
+    /**
+     * 表示コンテンツを設定します。
+     * 
+     * @param content
+     */
     export function setContent(content: HTMLElement | string) {
         documentMode = "page-element";
         isVisibleFrame = false;
