@@ -432,8 +432,8 @@
     }
 
     async function generateQrCode(url: string): Promise<string> {
-
-        let qrCodeImageColor = option.qrcodeImageColor || option.primaryColor || "#000";
+        let qrCodeImageColor =
+            option.qrcodeImageColor || option.primaryColor || "#000";
         return await QRCode.toDataURL(url, {
             width: 192,
             margin: 2,
@@ -971,6 +971,7 @@
             opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
             transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         pointer-events: none;
+        max-width: 350px;
     }
     .sd-qr-popup-active {
         opacity: 1;
@@ -982,6 +983,14 @@
         font-size: 0.9rem;
         color: var(--sd-primary-color, #236ad4);
         word-break: break-all;
+        display: -webkit-box;
+        /* 最大2行 */
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 320px;
+        line-height: 1.3;
     }
     .sd-qr-close {
         margin-top: 1rem;
