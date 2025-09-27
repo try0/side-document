@@ -60,7 +60,10 @@ export interface SideDocumentOption {
      * プライマリカラー
      */
     primaryColor?: string;
-
+    /**
+     * QRコードのドットカラー
+     */
+    qrcodeImageColor?: string;
     /**
      * ドキュメントDrawerのz-index
      */
@@ -76,7 +79,7 @@ export interface SideDocumentOption {
     /**
      * ドキュメントDrawerのボタンを表示するか
      */
-    showDrawerButtons: ("close" | "position-change" | "external-link")[];
+    showDrawerButtons: ("close" | "position-change" | "external-link" | "qrcode")[];
 }
 
 export interface SideDocumentI18NText {
@@ -85,6 +88,8 @@ export interface SideDocumentI18NText {
     closeButtonTooltip: string;
     externalLinkTooltip: string;
     positionChangeButtonTooltip: string;
+    qrcodeButtonTooltip: string;
+    qrcodeCloseButton: string;
     resizeBarTooltip: string;
     documentTitle: string;
 }

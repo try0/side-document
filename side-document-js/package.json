@@ -43,11 +43,14 @@
         "@sveltejs/adapter-static": "^3.0.8",
         "@sveltejs/vite-plugin-svelte": "^6.0.0",
         "@tsconfig/svelte": "^5.0.4",
+        "@types/qrcode": "^1.5.5",
         "autoprefixer": "^10.4.21",
         "cross-env": "^10.0.0",
         "cssnano": "^7.1.0",
         "postcss": "^8.5.6",
+        "postcss-extend-rule": "^4.0.0",
         "postcss-load-config": "^6.0.1",
+        "qrcode": "^1.5.4",
         "svelte": "^5.35.5",
         "svelte-check": "^4.2.2",
         "typescript": "~5.8.3",
@@ -57,7 +60,5 @@
         "last 2 version",
         "iOS >= 8.1",
         "Android >= 4.4"
-    ],
-    "dependencies": {
-    }
+    ]
 }

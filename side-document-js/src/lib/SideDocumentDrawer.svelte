@@ -2,6 +2,7 @@
     import { getContext, onDestroy, onMount } from "svelte";
     import type { SideDocumentOption } from "../types";
     import { str } from "./i18n";
+    import QRCode from "qrcode";
 
     /**
      * オプション
@@ -139,6 +140,10 @@
 
     let windowWidth = window.innerWidth;
 
+    let showQrCode: boolean = $state(false);
+    let qrCodeUrl: string | null = $state(null);
+    let qrCodeDataUrl: string | null = $state(null);
+
     function setResizeBarActiveWithDelay() {
         focusTimeout = setTimeout(() => {
             isResizeBarFocused = true;
@@ -253,14 +258,7 @@
         }
     }
 
-    /**
-     * ドキュメントを新しいウィンドウで開くボタンのクリックイベントハンドラ
-     *
-     * @param event
-     */
-    function onClickOpenInNewWindow(
-        event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
-    ) {
+    function getOpenUrl(): string | null {
         let urlToOpen = frameSrc;
 
         // iframe内の現在のURLを取得できる場合はそれを優先
@@ -276,6 +274,30 @@
             }
         }
 
+        if (!urlToOpen) {
+            return null;
+        }
+
+        const isAbsolute =
+            urlToOpen.startsWith("http://") || urlToOpen.startsWith("https://");
+        if (isAbsolute) {
+            return urlToOpen;
+        }
+
+        // 相対パスの場合は絶対URLに変換
+        const baseUrl = window.location.origin;
+        return new URL(urlToOpen, baseUrl).href;
+    }
+
+    /**
+     * ドキュメントを新しいウィンドウで開くボタンのクリックイベントハンドラ
+     *
+     * @param event
+     */
+    function onClickOpenInNewWindow(
+        event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
+    ) {
+        let urlToOpen = getOpenUrl();
         if (!urlToOpen) {
             console.warn("Frame source is not set.");
             return;
@@ -329,7 +351,7 @@
 
     /**
      * ドロワーを表示します。
-     * 
+     *
      * @param frameSrc
      */
     export function open(frameSrc?: string) {
@@ -354,7 +376,7 @@
 
     /**
      * ドキュメントURLを設定します。
-     * 
+     *
      * @param src
      */
     export function setFrameSrc(src: string) {
@@ -366,7 +388,7 @@
 
     /**
      * 表示コンテンツを設定します。
-     * 
+     *
      * @param content
      */
     export function setContent(content: HTMLElement | string) {
@@ -386,6 +408,40 @@
                 );
             }
         }
+    }
+
+    async function onShowQRCode(
+        event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
+    ) {
+        event.preventDefault();
+
+        const urlToOpen = getOpenUrl();
+        if (!urlToOpen) {
+            console.warn("Frame source is not set.");
+            return;
+        }
+
+        qrCodeDataUrl = await generateQrCode(urlToOpen);
+        qrCodeUrl = urlToOpen;
+        if (!qrCodeDataUrl) {
+            console.warn("Failed to generate QR code.");
+            return;
+        }
+
+        showQrCode = true;
+    }
+
+    async function generateQrCode(url: string): Promise<string> {
+
+        let qrCodeImageColor = option.qrcodeImageColor || option.primaryColor || "#000";
+        return await QRCode.toDataURL(url, {
+            width: 192,
+            margin: 2,
+            color: {
+                dark: qrCodeImageColor,
+                light: "#fff",
+            },
+        });
     }
 </script>
 
@@ -423,6 +479,25 @@
 
     <!-- メインドキュメント -->
     <div style="width: 100%; height: 100%; border: none; ">
+        <!-- ページURLのQRコード画像 -->
+        {#if showQrCode && qrCodeDataUrl}
+            <div class="sd-qr-code-popup sd-qr-popup-active">
+                <img
+                    src={qrCodeDataUrl}
+                    alt="QRCode"
+                    width="192"
+                    height="192"
+                />
+                <div class="sd-qr-code-url">{qrCodeUrl}</div>
+                <button
+                    class="sd-qr-close"
+                    on:click={() => (showQrCode = false)}
+                    >{str(option.i18nText, "qrcodeCloseButton")}</button
+                >
+            </div>
+        {/if}
+
+        <!-- iframeコンテンツ -->
         {#if isVisibleFrame}
             <iframe
                 bind:this={frameElement}
@@ -614,6 +689,48 @@
                         /><path d="M3 12l18 0" /></svg
                     >
                 </button>
+            {:else if buttonType === "qrcode" && frameSrc}
+                <!-- QRコードボタン -->
+                <button
+                    type="button"
+                    class="sd-drawer-button"
+                    aria-label={str(option.i18nText, "qrcodeButtonTooltip")}
+                    data-sd-c-tooltip={str(
+                        option.i18nText,
+                        "qrcodeButtonTooltip",
+                    )}
+                    data-sd-c-tooltip-position={drawerPositionClass === "left"
+                        ? "right"
+                        : "left"}
+                    on:click={onShowQRCode}
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        ><path
+                            stroke="none"
+                            d="M0 0h24v24H0z"
+                            fill="none"
+                        /><path
+                            d="M4 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"
+                        /><path d="M7 17l0 .01" /><path
+                            d="M14 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"
+                        /><path d="M7 7l0 .01" /><path
+                            d="M4 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"
+                        /><path d="M17 7l0 .01" /><path d="M14 14l3 0" /><path
+                            d="M20 14l0 .01"
+                        /><path d="M14 14l0 3" /><path d="M14 20l3 0" /><path
+                            d="M17 17l3 0"
+                        /><path d="M20 17l0 3" /></svg
+                    >
+                </button>
             {/if}
         {/each}
     </div>
@@ -729,9 +846,8 @@
         right: calc(var(--drawer-width, 320px) + 5px);
         left: auto;
     }
-    .sd-drawer-button {
-        width: 2rem;
-        height: 2rem;
+
+    .sd-button-base {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -745,6 +861,11 @@
         cursor: pointer;
         z-index: var(--sd-drawer-z-index, 1000);
     }
+    .sd-drawer-button {
+        width: 2rem;
+        height: 2rem;
+        @extend .sd-button-base;
+    }
     .sd-drawer-button svg {
         display: block;
         margin: auto;
@@ -752,7 +873,8 @@
     .sd-drawer-button:active {
         transform: scale(0.95);
     }
-    .sd-drawer-button:hover {
+
+    .sd-button-hover {
         background: color-mix(
             in srgb,
             var(--sd-primary-color, #236ad4) 90%,
@@ -762,6 +884,9 @@
         outline-offset: 2px;
         box-shadow: 0 0 0 4px
             color-mix(in srgb, var(--sd-primary-color, #236ad4) 30%, #fff 70%);
+    }
+    .sd-drawer-button:hover {
+        @extend .sd-button-hover;
     }
     .sd-panel-hidden {
         visibility: hidden;
@@ -822,5 +947,48 @@
         outline-offset: 2px;
         box-shadow: 0 0 0 4px
             color-mix(in srgb, var(--sd-primary-color, #236ad4) 30%, #fff 70%);
+    }
+
+    .sd-qr-code-popup {
+        position: fixed;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        top: 2rem;
+        left: 50%;
+        transform: translateX(-50%) scale(0.8);
+        background: #fff;
+        border: 1px solid #e2e2e2;
+        box-shadow: 0 4px 24px #0002;
+        padding: 1.5rem;
+        border-radius: 0.25rem;
+        z-index: 9999;
+        text-align: center;
+        opacity: 0;
+        transition:
+            opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+            transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+    }
+    .sd-qr-popup-active {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+        pointer-events: auto;
+    }
+    .sd-qr-code-url {
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        color: var(--sd-primary-color, #236ad4);
+        word-break: break-all;
+    }
+    .sd-qr-close {
+        margin-top: 1rem;
+        height: 2rem;
+        width: 5rem;
+        @extend .sd-button-base;
+    }
+    .sd-qr-close:hover {
+        @extend .sd-button-hover;
     }
 </style>

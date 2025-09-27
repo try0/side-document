@@ -19,6 +19,7 @@
 
     let option = $state(Object.assign({}, SideDocument.DEFAULT_OPTION));
     option.defaultSrc = "./sample.html"; // 初期ページURLを設定
+    option.qrcodeImageColor = option.primaryColor; // QRコードのドットカラーを設定
     let app = new SideDocument(option);
 
     let updatingId: number | null = null;
@@ -61,6 +62,10 @@
         }
 
         if (option.primaryColor !== preOption.primaryColor) {
+            upd = true;
+        }
+
+        if (option.qrcodeImageColor !== preOption.qrcodeImageColor) {
             upd = true;
         }
 
@@ -682,6 +687,27 @@
                             <input
                                 type="text"
                                 bind:value={option.primaryColor}
+                                class="color-text"
+                                placeholder="#236ad4"
+                            />
+                        </div>
+                    </div>
+                     <div id="qrcodeImageColor" class="setting-row">
+                        <div class="setting-label">
+                            <code>qrcodeImageColor</code>
+                            <div class="label-description">
+                                QRコードの画像カラー
+                            </div>
+                        </div>
+                        <div class="setting-control color-picker-control">
+                            <input
+                                type="color"
+                                bind:value={option.qrcodeImageColor}
+                                class="color-picker"
+                            />
+                            <input
+                                type="text"
+                                bind:value={option.qrcodeImageColor}
                                 class="color-text"
                                 placeholder="#236ad4"
                             />

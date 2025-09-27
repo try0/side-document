@@ -16,6 +16,8 @@ export class SideDocument {
         closeButtonTooltip: '閉じる',
         externalLinkTooltip: '新しいタブで開く',
         positionChangeButtonTooltip: '表示位置を変更',
+        qrcodeButtonTooltip: 'QRコードを表示',
+        qrcodeCloseButton: '閉じる',
         resizeBarTooltip: 'サイズを変更',
         documentTitle: "ドキュメント"
     });
@@ -83,7 +85,7 @@ export class SideDocument {
         /**
          * ドキュメントDrawerのボタンを表示するか
          */
-        showDrawerButtons: ["close", "external-link", "position-change"] as ("close" | "external-link" | "position-change")[],
+        showDrawerButtons: ["close", "external-link", "qrcode", "position-change"] as ("close" | "external-link" | "position-change" | "qrcode")[],
     });
 
 
