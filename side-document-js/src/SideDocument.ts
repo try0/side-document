@@ -3,10 +3,15 @@ import SideDocumentContainer from "./lib/SideDocumentContainer.svelte";
 import type { SideDocumentI18NText, SideDocumentOption } from "./types";
 import { getStateKey, remove } from "./lib/storage";
 
-
-export function initialize(option?: SideDocumentOption): SideDocument {
+/**
+ * 初期化します。
+ * 
+ * @param option 
+ * @returns 
+ */
+export async function initialize(option?: SideDocumentOption): Promise<SideDocument> {
     const sideDocument = new SideDocument(option);
-    sideDocument.render();
+    await sideDocument.render();
     return sideDocument;
 }
 
@@ -154,9 +159,9 @@ export class SideDocument {
     /**
      * SideDocumentを初期化します。
      * 
-     * @returns void
+     * @returns Promise<void>
      */
-    public render(): void {
+    public async render(): Promise<void> {
 
         if (this.option.containerSelector) {
             this.container = document.querySelector(this.option.containerSelector) as HTMLDivElement;
@@ -176,6 +181,17 @@ export class SideDocument {
             },
         });
 
+        // 初期化完了まで待機
+        await new Promise<void>((resolve) => {
+            const checkRendered = () => {
+                if (this.documentContainer && this.documentContainer.isRendered()) {
+                    resolve();
+                } else {
+                    setTimeout(checkRendered, 50);
+                }
+            };
+            checkRendered();
+        });
     }
 
     public destroy(): void {

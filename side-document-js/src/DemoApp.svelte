@@ -149,10 +149,9 @@
         saveOption();
     }
 
-    onMount(() => {
+    onMount(async () => {
         preOption = Object.assign({}, option);
-        // 初期化
-        app.render();
+        await app.render();
     });
 
     onDestroy(() => {});

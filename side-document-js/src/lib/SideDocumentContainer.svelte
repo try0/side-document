@@ -96,6 +96,10 @@
         }
     }
 
+    export function isRendered(): boolean {
+        return !!documentDrawer;
+    }
+
     /**
      * オプションを更新します。
      *
