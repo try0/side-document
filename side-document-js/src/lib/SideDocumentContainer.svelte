@@ -2,9 +2,12 @@
     import { onDestroy, onMount, setContext } from "svelte";
 
     import SideDocumentDrawer from "./SideDocumentDrawer.svelte";
-    import type { SideDocumentOption } from "../types";
+    import type {
+        SideDocumentOption,
+    } from "../types";
     import { str } from "./i18n";
     import RelatedElementEffect from "./RelatedElementEffect.svelte";
+
 
     /**
      * 初期オプション値
@@ -44,6 +47,7 @@
         const position = option.toggleButtonPosition || "bottom-right";
         return position;
     });
+
 
     /**
      * トグルボタンのツールチップ位置
@@ -123,7 +127,7 @@
             documentDrawer.open(frameSrc);
         } else {
             console.warn(
-                "SideDocumentDrawer is not initialized. Call init() before open().",
+                "SideDocumentDrawer is not initialized. Call render() before open().",
             );
         }
     }
@@ -136,7 +140,7 @@
             documentDrawer.close();
         } else {
             console.warn(
-                "SideDocumentDrawer is not initialized. Call init() before close().",
+                "SideDocumentDrawer is not initialized. Call render() before close().",
             );
         }
     }
@@ -158,7 +162,7 @@
             documentDrawer.setFrameSrc(src);
         } else {
             console.warn(
-                "SideDocumentDrawer is not initialized. Call init() before setFrameSrc().",
+                "SideDocumentDrawer is not initialized. Call render() before setFrameSrc().",
             );
         }
     }
@@ -173,7 +177,7 @@
             documentDrawer.setContent(content);
         } else {
             console.warn(
-                "SideDocumentDrawer is not initialized. Call init() before setDrawerContent().",
+                "SideDocumentDrawer is not initialized. Call render() before setDrawerContent().",
             );
         }
     }
@@ -210,6 +214,7 @@
         {containerRootElement}
         bind:isOpened
         {drawerId}
+        bind:toggleButtonPositionClass
     />
 
     {#if isVisibleToggleButton}

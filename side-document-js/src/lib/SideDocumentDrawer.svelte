@@ -19,10 +19,16 @@
     let {
         containerRootElement,
         isOpened = $bindable(),
+        toggleButtonPositionClass = $bindable(),
         drawerId = "sd-drawer-panel",
     }: {
         containerRootElement: HTMLElement;
         isOpened: boolean;
+        toggleButtonPositionClass:
+            | "top-right"
+            | "top-left"
+            | "bottom-right"
+            | "bottom-left";
         drawerId: string;
     } = $props();
 
@@ -77,11 +83,7 @@
             isOpen: isOpened,
             drawerPosition: drawerPositionClass,
             drawerWidthPx: drawerWidthPx,
-            toggleButtonPosition: option.toggleButtonFollowsDrawerPosition
-                ? drawerPositionClass === "left"
-                    ? "top-left"
-                    : "top-right"
-                : "top-right",
+            toggleButtonPosition: toggleButtonPositionClass,
             frameSrc: frameSrc,
         };
 
@@ -100,12 +102,11 @@
             );
             if (savedState) {
                 isOpened = savedState.isOpen;
+
                 drawerPositionClass = savedState.drawerPosition;
+                toggleButtonPositionClass = savedState.toggleButtonPosition;
                 drawerWidthPx = savedState.drawerWidthPx;
-                if (option.toggleButtonFollowsDrawerPosition) {
-                    option.toggleButtonPosition =
-                        savedState.toggleButtonPosition;
-                }
+
                 if (savedState.frameSrc) {
                     frameSrc = savedState.frameSrc;
                 }
@@ -354,11 +355,22 @@
         event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
     ) {
         if (drawerPositionClass === "left") {
-            option.drawerPosition = "right";
             drawerPositionClass = "right";
         } else {
-            option.drawerPosition = "left";
             drawerPositionClass = "left";
+        }
+
+        if (option.toggleButtonFollowsDrawerPosition) {
+            // drawerPositionが"left"なら"bottom-left"、"right"なら"bottom-right"
+            if (option.toggleButtonPosition?.startsWith("bottom")) {
+                toggleButtonPositionClass = drawerPositionClass === "left"
+                    ? "bottom-left"
+                    : "bottom-right";
+            } else if (option.toggleButtonPosition?.startsWith("top")) {
+                toggleButtonPositionClass = drawerPositionClass === "left"
+                    ? "top-left"
+                    : "top-right";
+            }
         }
     }
 

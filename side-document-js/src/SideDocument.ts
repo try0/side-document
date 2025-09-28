@@ -1,4 +1,4 @@
-import { mount } from "svelte";
+import { mount, unmount } from "svelte";
 import SideDocumentContainer from "./lib/SideDocumentContainer.svelte";
 import type { SideDocumentI18NText, SideDocumentOption } from "./types";
 
@@ -175,6 +175,24 @@ export class SideDocument {
 
     }
 
+    public destroy(): void {
+        if (this.documentContainer) {
+            unmount(this.documentContainer);
+            this.documentContainer = null;
+        }
+        if (this.container) {
+            // Shadow DOMの場合はshadowRootもクリア
+            if (this.container.shadowRoot) {
+                this.container.shadowRoot.innerHTML = '';
+            }
+            // DOMから削除
+            if (this.container.parentNode) {
+                this.container.parentNode.removeChild(this.container);
+            }
+            this.container = undefined;
+        }
+    }
+
     /**
      * Drawerを開きます。
      * 
@@ -220,7 +238,7 @@ export class SideDocument {
             return this.documentContainer.isOpenedDrawer();
         } else {
             return false;
-        }  
+        }
     }
 
     /**

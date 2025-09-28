@@ -26,6 +26,7 @@
     let updatingId: number | null = null;
     let preOption = $state(Object.assign({}, SideDocument.DEFAULT_OPTION));
     $effect(() => {
+        let refresh = false;
         let upd = false;
         if (option.drawerPosition !== preOption.drawerPosition) {
             upd = true;
@@ -79,10 +80,12 @@
             preOption.toggleButtonFollowsDrawerPosition
         ) {
             upd = true;
+            refresh = true;
         }
 
         if (option.persistState !== preOption.persistState) {
             upd = true;
+            refresh = true;
         }
 
         if (
@@ -98,7 +101,13 @@
                 clearTimeout(updatingId);
             }
             updatingId = window.setTimeout(() => {
-                app.update(option);
+                if (refresh) {
+                    app.destroy();
+                    app = new SideDocument(option);
+                    app.render();
+                } else {
+                    app.update(option);
+                }
                 preOption = Object.assign({}, option);
                 updatingId = null;
             }, 200);
