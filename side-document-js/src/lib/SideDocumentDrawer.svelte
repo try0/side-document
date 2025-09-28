@@ -1,8 +1,12 @@
 <script lang="ts">
     import { getContext, onDestroy, onMount } from "svelte";
-    import type { SideDocumentOption } from "../types";
+    import type {
+        SideDocumentOption,
+        SideDocumentPersistedState,
+    } from "../types";
     import { str } from "./i18n";
     import QRCode from "qrcode";
+    import { getStateKey, load, save } from "./storage";
 
     /**
      * オプション
@@ -10,7 +14,7 @@
     const option: SideDocumentOption = getContext("option");
 
     /**
-     * rootコンテナ
+     * コンテナーからのプロパティ
      */
     let {
         containerRootElement,
@@ -22,6 +26,9 @@
         drawerId: string;
     } = $props();
 
+    /**
+     * ドキュメントパネルの開閉状態が変化したときのエフェクト
+     */
     $effect(() => {
         if (isOpened) {
             drawerToggleClass = "open";
@@ -37,6 +44,9 @@
         }
     });
 
+    /**
+     * 外側クリックで閉じる場合のイベントリスナー登録
+     */
     $effect(() => {
         if (option.closeOnOutsideClick) {
             window.addEventListener("mousedown", onClickOutside);
@@ -44,6 +54,68 @@
             window.removeEventListener("mousedown", onClickOutside);
         }
     });
+
+    let startRecordState: boolean = $state(option.persistState || false);
+    let saveThrottleTimer: number | null = null;
+    const SAVE_THROTTLE_MS = 500; // 0.5秒間隔で記録
+
+    /**
+     * 状態の記録を開始します。
+     */
+    $effect(() => {
+        // ストレージへ記録
+        if (!option.persistState || !startRecordState) {
+            return;
+        }
+
+        // スロットリング: 既存タイマーがあればキャンセル
+        if (saveThrottleTimer) {
+            window.clearTimeout(saveThrottleTimer);
+        }
+
+        const state: SideDocumentPersistedState = {
+            isOpen: isOpened,
+            drawerPosition: drawerPositionClass,
+            drawerWidthPx: drawerWidthPx,
+            toggleButtonPosition: option.toggleButtonFollowsDrawerPosition
+                ? drawerPositionClass === "left"
+                    ? "top-left"
+                    : "top-right"
+                : "top-right",
+            frameSrc: frameSrc,
+        };
+
+        saveThrottleTimer = window.setTimeout(() => {
+            save(getStateKey(option.storageKeyPrefix), state);
+            saveThrottleTimer = null;
+        }, SAVE_THROTTLE_MS);
+    });
+    /**
+     * 保存された状態を復元します。
+     */
+    function loadState() {
+        if (option.persistState) {
+            const savedState: SideDocumentPersistedState | null = load(
+                getStateKey(option.storageKeyPrefix),
+            );
+            if (savedState) {
+                isOpened = savedState.isOpen;
+                drawerPositionClass = savedState.drawerPosition;
+                drawerWidthPx = savedState.drawerWidthPx;
+                if (option.toggleButtonFollowsDrawerPosition) {
+                    option.toggleButtonPosition =
+                        savedState.toggleButtonPosition;
+                }
+                if (savedState.frameSrc) {
+                    frameSrc = savedState.frameSrc;
+                }
+
+                if (isOpened && frameSrc) {
+                    isVisibleFrame = true;
+                }
+            }
+        }
+    }
 
     let isVisibleFrame = $state(true);
     let documentMode: "iframe" | "page-element" = $state("iframe");
@@ -55,7 +127,7 @@
     let frameSrc: string | null | undefined = $state(option.defaultSrc);
 
     /**
-     * ドキュメントパネルの幅
+     * ドロワーの幅
      */
     let drawerWidthPx = $derived.by(() => {
         if (option.drawerWidthUnit) {
@@ -68,6 +140,9 @@
         return Math.max(option.drawerWidth || 320, 320);
     });
 
+    /**
+     * ドロワーの最小サイズ
+     */
     let drawerMinWidthPx = $derived.by(() => {
         if (!option.drawerMinWidth) {
             return 0;
@@ -83,6 +158,9 @@
         return Math.max(option.drawerMinWidth || 100, 100);
     });
 
+    /**
+     * ドロワーの最大サイズ
+     */
     let drawerMaxWidthPx = $derived.by(() => {
         if (!option.drawerMaxWidth) {
             return 2000;
@@ -128,31 +206,55 @@
         calculateWidthToPx(option.drawerWidth, option.drawerWidthUnit ?? "px"),
     );
 
-    // フォーカス状態管理
+    /**
+     * ドキュメントパネルのリサイズバーがフォーカスされているか
+     */
     let isResizeBarFocused = $state(false);
+    /**
+     * リサイズバーのフォーカス遅延タイマー
+     */
     let focusTimeout: ReturnType<typeof setTimeout> | null = null;
 
     // svelte-ignore non_reactive_update
     let frameElement: HTMLIFrameElement | null = null;
 
+    /**
+     * ウィンドウ幅 (リサイズ時に更新)
+     */
     let windowWidth = window.innerWidth;
 
+    /**
+     * QRコード表示状態
+     */
     let showQrCode: boolean = $state(false);
+    /**
+     * QRコード化するURL
+     */
     let qrCodeUrl: string | null = $state(null);
+    /**
+     * QRコード画像のDataURL
+     */
     let qrCodeDataUrl: string | null = $state(null);
 
+    /**
+     * リサイズバーフォーカス時にすこし遅延いれてアクティブ状態にします。
+     */
     function setResizeBarActiveWithDelay() {
         focusTimeout = setTimeout(() => {
             isResizeBarFocused = true;
         }, 300);
     }
+
+    /**
+     * リサイズバーのアクティブ状態を解除します。
+     */
     function clearResizeBarActive() {
         if (focusTimeout) clearTimeout(focusTimeout);
         isResizeBarFocused = false;
     }
 
     /**
-     * 初期幅をpx単位に変換して取得する関数
+     * 初期幅をpx単位に変換して取得します。
      */
     function calculateWidthToPx(width: number, unit: "px" | "%"): number {
         if (!width) return unit === "px" ? 320 : 0.25 * windowWidth;
@@ -161,6 +263,9 @@
         return 320;
     }
 
+    /**
+     * ドロワーの幅に関するプロパティーを更新します。
+     */
     function updateDrawerWidthPx() {
         drawerWidthPx = calculateWidthToPx(
             option.drawerWidth,
@@ -178,6 +283,8 @@
 
     onMount(() => {
         window.addEventListener("resize", onResizeWindow);
+
+        loadState();
     });
 
     onDestroy(() => {

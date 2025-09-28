@@ -12,7 +12,8 @@
     let {
         initOption,
         drawerId = "sd-drawer-panel",
-    }: { initOption: SideDocumentOption; drawerId: string | undefined } = $props();
+    }: { initOption: SideDocumentOption; drawerId: string | undefined } =
+        $props();
     let option = $state(initOption);
     setContext("option", option);
 
@@ -79,7 +80,6 @@
     let documentDrawer: SideDocumentDrawer;
 
     onMount(() => {
-        isOpened = false;
         window.addEventListener("keydown", handleKeyDown);
     });
     onDestroy(() => {

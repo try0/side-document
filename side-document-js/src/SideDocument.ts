@@ -1,4 +1,4 @@
-import { mount, unmount } from "svelte";
+import { mount } from "svelte";
 import SideDocumentContainer from "./lib/SideDocumentContainer.svelte";
 import type { SideDocumentI18NText, SideDocumentOption } from "./types";
 
@@ -96,6 +96,14 @@ export class SideDocument {
          * ドキュメントDrawerのボタンを表示するか
          */
         showDrawerButtons: ["close", "external-link", "qrcode", "resize", "position-change"] as ("close" | "external-link" | "position-change" | "qrcode")[],
+        /**
+         * 状態を記録するか
+         */
+        persistState: false,
+        /**
+         * ローカルストレージのキーのプレフィックス
+         */
+        storageKeyPrefix: 'sd',
     });
 
 
@@ -146,7 +154,6 @@ export class SideDocument {
      * @returns void
      */
     public render(): void {
-        console.log("SideDocument initialized");
 
         if (this.option.containerSelector) {
             this.container = document.querySelector(this.option.containerSelector) as HTMLDivElement;
@@ -177,7 +184,7 @@ export class SideDocument {
         if (this.documentContainer) {
             this.documentContainer.openDrawer(frameSrc);
         } else {
-            console.warn("SideDocument is not initialized. Call init() before open().");
+            console.warn("SideDocument is not initialized. Call render() before open().");
         }
     }
 
@@ -188,7 +195,7 @@ export class SideDocument {
         if (this.documentContainer) {
             this.documentContainer.closeDrawer();
         } else {
-            console.warn("SideDocument is not initialized. Call init() before close().");
+            console.warn("SideDocument is not initialized. Call render() before close().");
         }
     }
 
@@ -199,7 +206,7 @@ export class SideDocument {
         if (this.documentContainer) {
             this.documentContainer.toggleDrawer();
         } else {
-            console.warn("SideDocument is not initialized. Call init() before toggle().");
+            console.warn("SideDocument is not initialized. Call render() before toggle().");
         }
     }
 
@@ -287,7 +294,7 @@ export class SideDocument {
                 this.documentContainer.setDrawerContent(content);
             }
         } else {
-            console.warn("SideDocument is not initialized. Call init() before setDrawerContent().");
+            console.warn("SideDocument is not initialized. Call render() before setDrawerContent().");
         }
     }
 
@@ -295,7 +302,7 @@ export class SideDocument {
         if (this.documentContainer) {
             this.documentContainer.setFrameSrc(src);
         } else {
-            console.warn("SideDocument is not initialized. Call init() before setFrameSrc().");
+            console.warn("SideDocument is not initialized. Call render() before setFrameSrc().");
         }
     }
 

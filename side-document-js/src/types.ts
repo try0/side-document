@@ -19,7 +19,7 @@ export interface SideDocumentOption {
     /**
      * トグルボタンがドキュメントのDrawerの位置に従うか
      */
-    toggleButtonFollowsDrawerPosition ?: boolean;
+    toggleButtonFollowsDrawerPosition?: boolean;
     /**
      * ドキュメントのDrawerの位置
      */
@@ -80,6 +80,13 @@ export interface SideDocumentOption {
      * ドキュメントDrawerのボタンを表示するか
      */
     showDrawerButtons: ("close" | "position-change" | "external-link" | "qrcode" | "resize")[];
+    /**
+     * 状態をローカルストレージに保存するか
+     * ドロワーの開閉状態、位置、幅
+     * トグルボタンの位置
+     */
+    persistState?: boolean;
+    storageKeyPrefix?: string;
 }
 
 export interface SideDocumentI18NText {
@@ -96,4 +103,12 @@ export interface SideDocumentI18NText {
     qrcodeCopyErrorMessage: string;
     resizeBarTooltip: string;
     documentTitle: string;
+}
+
+export interface SideDocumentPersistedState {
+    isOpen: boolean;
+    drawerPosition: 'left' | 'right';
+    drawerWidthPx: number;
+    toggleButtonPosition: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+    frameSrc?: string | null;
 }

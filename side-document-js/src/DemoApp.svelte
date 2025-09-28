@@ -20,6 +20,7 @@
     let option = $state(Object.assign({}, SideDocument.DEFAULT_OPTION));
     option.defaultSrc = "./sample.html"; // 初期ページURLを設定
     option.qrcodeImageColor = option.primaryColor; // QRコードのドットカラーを設定
+    loadOption();
     let app = new SideDocument(option);
 
     let updatingId: number | null = null;
@@ -80,6 +81,10 @@
             upd = true;
         }
 
+        if (option.persistState !== preOption.persistState) {
+            upd = true;
+        }
+
         if (
             JSON.stringify(option.showDrawerButtons) !==
             JSON.stringify(preOption.showDrawerButtons)
@@ -88,6 +93,7 @@
         }
 
         if (upd) {
+            saveOption();
             if (updatingId) {
                 clearTimeout(updatingId);
             }
@@ -99,7 +105,24 @@
         }
     });
 
+    function saveOption() {
+        localStorage.setItem("demoAppOption", JSON.stringify(option, null, 2));
+    }
+
+    function loadOption() {
+        const v = localStorage.getItem("demoAppOption");
+        if (v) {
+            try {
+                const obj = JSON.parse(v);
+                option = Object.assign({}, SideDocument.DEFAULT_OPTION, obj);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    }
+
     onMount(() => {
+        preOption = Object.assign({}, option);
         // 初期化
         app.render();
     });
@@ -472,6 +495,31 @@
                                 <input
                                     type="checkbox"
                                     bind:checked={option.resizable}
+                                />
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="persistState" class="setting-row">
+                        <div class="setting-label">
+                            <code>persistState</code>
+                            <div class="label-description">状態を保存する</div>
+                        </div>
+                        <template data-sd-document>
+                            <div style="padding: 10px;">
+                                <h3 data-sd-link-target="#persistState">
+                                    persistState
+                                </h3>
+                                <p>
+                                    Drawerの状態を保存するかどうかを設定します。
+                                </p>
+                            </div>
+                        </template>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input
+                                    type="checkbox"
+                                    bind:checked={option.persistState}
                                 />
                                 <span class="toggle-slider"></span>
                             </label>
