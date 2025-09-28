@@ -86,6 +86,10 @@
         if (option.persistState !== preOption.persistState) {
             upd = true;
             refresh = true;
+            if (option.persistState === false) {
+                // 状態保存を無効にした場合、保存された状態をクリア
+                app.clearPersistedState();
+            }
         }
 
         if (
@@ -138,6 +142,13 @@
         }
     }
 
+    function resetOption() {
+        option = Object.assign({}, SideDocument.DEFAULT_OPTION);
+        option.defaultSrc = "./sample.html"; // 初期ページURLを設定
+        option.qrcodeImageColor = option.primaryColor; // QRコードのドットカラーを設定
+        saveOption();
+    }
+
     onMount(() => {
         preOption = Object.assign({}, option);
         // 初期化
@@ -184,6 +195,9 @@
             /></a
         >
         <p>使い方とサンプル</p>
+    </div>
+    <div style="padding: 0.5rem 0;">
+        <button on:click={resetOption} class="button-base">リセット</button>
     </div>
 
     <div class="container">
@@ -1194,5 +1208,20 @@
             padding: 10px 8px;
             font-size: 15px;
         }
+    }
+
+    .button-base {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        background-color: var(--sd-primary-color, #236ad4);
+        border: none;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+        padding: 0.25rem;
+        border-radius: 0.25em;
+        cursor: pointer;
+        z-index: var(--sd-drawer-z-index, 1000);
     }
 </style>

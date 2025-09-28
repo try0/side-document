@@ -1,6 +1,7 @@
 import { mount, unmount } from "svelte";
 import SideDocumentContainer from "./lib/SideDocumentContainer.svelte";
 import type { SideDocumentI18NText, SideDocumentOption } from "./types";
+import { getStateKey, remove } from "./lib/storage";
 
 
 export function initialize(option?: SideDocumentOption): SideDocument {
@@ -241,6 +242,14 @@ export class SideDocument {
         } else {
             return false;
         }
+    }
+
+    /**
+     * 保存された状態をクリアします。
+     */
+    public clearPersistedState(): void {
+        const key = getStateKey(this.option.storageKeyPrefix);
+        remove(key);
     }
 
     /**

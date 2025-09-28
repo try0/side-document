@@ -10,6 +10,9 @@ export function load(key: string): SideDocumentPersistedState | null {
     }
     return null;
 }
+export function remove(key: string): void {
+    localStorage.removeItem(key);
+}
 
 export function getStateKey(prefix: string | undefined): string {
     return `${(prefix || "sd-")}-state`;
