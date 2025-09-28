@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Side Document Example</title>
+    <script src="https://unpkg.com/@try0/side-document@latest/dist/side-document.umd.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const sd = await SideDocument.initialize({
+                persistState: true,
+                defaultSrc: "./sample.html",
+            });
+            sd.openDrawer("https://example.com/");
+        });
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #fefefe;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        h2 {
+            color: #555;
+        }
+
+        p {
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+
+    </div>
+</body>
+
+</html>
