@@ -29,7 +29,9 @@ export class SideDocument {
         qrcodeDownloadButtonTooltip: '画像をダウンロード',
         qrcodeCopyButtonTooltip: '画像をコピー',
         qrcodeCopySuccessMessage: 'コピーしました',
-        qrcodeCopyErrorMessage: 'コピーに失敗しました'
+        qrcodeCopyErrorMessage: 'コピーに失敗しました',
+        pinButtonTooltip: 'ピン留め',
+        unpinButtonTooltip: '解除'
     });
 
     /**
@@ -95,7 +97,7 @@ export class SideDocument {
         /**
          * ドキュメントDrawerのボタンを表示するか
          */
-        showDrawerButtons: ["close", "external-link", "qrcode", "resize", "position-change"] as ("close" | "external-link" | "position-change" | "qrcode")[],
+        showDrawerButtons: ["close", "external-link", "qrcode", "resize", "position-change"] as ("close" | "external-link" | "position-change" | "qrcode" | "pin")[],
         /**
          * 状態を記録するか
          */

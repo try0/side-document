@@ -79,7 +79,7 @@ export interface SideDocumentOption {
     /**
      * ドキュメントDrawerのボタンを表示するか
      */
-    showDrawerButtons: ("close" | "position-change" | "external-link" | "qrcode" | "resize")[];
+    showDrawerButtons: ("close" | "position-change" | "external-link" | "qrcode" | "resize" | "pin")[];
     /**
      * 状態をローカルストレージに保存するか
      * ドロワーの開閉状態、位置、幅
@@ -90,7 +90,7 @@ export interface SideDocumentOption {
      * persistStateがtrueの場合に、保存しないプロパティ
      * 例えば、['isOpen']とすると、ドロワーの開閉状態は保存されない
      */
-    ignorePersistProps?: ("is-open" | "drawer-position" | "drawer-width-px" | "toggle-button-position")[];
+    ignorePersistProps?: ("is-opened" | "drawer-position" | "drawer-width-px" | "toggle-button-position" | "is-pinned")[];
     /**
      * ローカルストレージのキーのプレフィックス
      */
@@ -104,6 +104,8 @@ export interface SideDocumentI18NText {
     externalLinkTooltip: string;
     positionChangeButtonTooltip: string;
     qrcodeButtonTooltip: string;
+    pinButtonTooltip: string;
+    unpinButtonTooltip: string;
     qrcodeCloseButton: string;
     qrcodeDownloadButtonTooltip: string;
     qrcodeCopyButtonTooltip: string;
@@ -114,9 +116,10 @@ export interface SideDocumentI18NText {
 }
 
 export interface SideDocumentPersistedState {
-    isOpen: boolean;
+    isOpened: boolean;
     drawerPosition: 'left' | 'right';
     drawerWidthPx: number;
     toggleButtonPosition: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
     frameSrc?: string | null;
+    isPinned?: boolean;
 }

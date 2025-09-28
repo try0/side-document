@@ -156,10 +156,11 @@
 
     // 記録無効プロパティー
     const ignorePersistPropsOptions = [
-        { value: "is-open", label: "開閉状態" },
+        { value: "is-opened", label: "開閉状態" },
         { value: "drawer-width-px", label: "Drawer幅(px)" },
         { value: "drawer-position", label: "Drawer位置" },
         { value: "toggle-button-position", label: "トグルボタン位置" },
+        { value: "is-pinned", label: "ピン留め状態" },
     ];
 
     // ドロワーボタン
@@ -169,6 +170,7 @@
         { value: "qrcode", label: "QRコード" },
         { value: "resize", label: "リサイズ" },
         { value: "position-change", label: "位置切替" },
+        { value: "pin", label: "ピン留め" },
     ];
 </script>
 
