@@ -101,17 +101,17 @@
                 getStateKey(option.storageKeyPrefix),
             );
             if (savedState) {
-                if (!option.ignorePersistProps?.includes("isOpen")) {
+                if (!option.ignorePersistProps?.includes("is-open")) {
                     isOpened = savedState.isOpen;
                 }
-                if (!option.ignorePersistProps?.includes("drawerPosition")) {
+                if (!option.ignorePersistProps?.includes("drawer-position")) {
                     drawerPositionClass = savedState.drawerPosition;
                 }
-                if (!option.ignorePersistProps?.includes("drawerWidthPx")) {
+                if (!option.ignorePersistProps?.includes("drawer-width-px")) {
                     drawerWidthPx = savedState.drawerWidthPx;
                 }
                 if (
-                    !option.ignorePersistProps?.includes("toggleButtonPosition")
+                    !option.ignorePersistProps?.includes("toggle-button-position")
                 ) {
                     toggleButtonPositionClass = savedState.toggleButtonPosition;
                 }

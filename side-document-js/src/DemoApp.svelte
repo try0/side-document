@@ -156,10 +156,10 @@
 
     // 記録無効プロパティー
     const ignorePersistPropsOptions = [
-        { value: "isOpen", label: "開閉状態" },
-        { value: "drawerWidthPx", label: "Drawer幅(px)" },
-        { value: "drawerPosition", label: "Drawer位置" },
-        { value: "toggleButtonPosition", label: "トグルボタン位置" },
+        { value: "is-open", label: "開閉状態" },
+        { value: "drawer-width-px", label: "Drawer幅(px)" },
+        { value: "drawer-position", label: "Drawer位置" },
+        { value: "toggle-button-position", label: "トグルボタン位置" },
     ];
 
     // ドロワーボタン

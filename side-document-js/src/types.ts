@@ -90,7 +90,7 @@ export interface SideDocumentOption {
      * persistStateがtrueの場合に、保存しないプロパティ
      * 例えば、['isOpen']とすると、ドロワーの開閉状態は保存されない
      */
-    ignorePersistProps?: ('isOpen' | 'drawerPosition' | 'drawerWidthPx' | 'toggleButtonPosition')[];
+    ignorePersistProps?: ("is-open" | "drawer-position" | "drawer-width-px" | "toggle-button-position")[];
     /**
      * ローカルストレージのキーのプレフィックス
      */
