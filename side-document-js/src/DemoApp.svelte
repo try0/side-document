@@ -89,6 +89,14 @@
         }
 
         if (
+            JSON.stringify(option.ignorePersistProps) !==
+            JSON.stringify(preOption.ignorePersistProps)
+        ) {
+            upd = true;
+            refresh = true;
+        }
+
+        if (
             JSON.stringify(option.showDrawerButtons) !==
             JSON.stringify(preOption.showDrawerButtons)
         ) {
@@ -144,6 +152,23 @@
         { value: "top-right", label: "右上" },
         { value: "bottom-left", label: "左下" },
         { value: "bottom-right", label: "右下" },
+    ];
+
+    // 記録無効プロパティー
+    const ignorePersistPropsOptions = [
+        { value: "isOpen", label: "開閉状態" },
+        { value: "drawerWidthPx", label: "Drawer幅(px)" },
+        { value: "drawerPosition", label: "Drawer位置" },
+        { value: "toggleButtonPosition", label: "トグルボタン位置" },
+    ];
+
+    // ドロワーボタン
+    const showDrawerButtonsOptions = [
+        { value: "close", label: "閉じる" },
+        { value: "external-link", label: "外部リンク" },
+        { value: "qrcode", label: "QRコード" },
+        { value: "resize", label: "リサイズ" },
+        { value: "position-change", label: "位置切替" },
     ];
 </script>
 
@@ -534,6 +559,54 @@
                             </label>
                         </div>
                     </div>
+                    <div id="ignorePersistProps" class="setting-row">
+                        <div class="setting-label">
+                            <code>ignorePersistProps</code>
+                            <div class="label-description">
+                                保存しないプロパティ
+                            </div>
+                        </div>
+                        <template data-sd-document>
+                            <div style="padding: 10px;">
+                                <h3 data-sd-link-target="#ignorePersistProps">
+                                    ignorePersistProps
+                                </h3>
+                                <p>
+                                    Drawerの状態を保存しないプロパティを設定します。
+                                </p>
+                            </div>
+                        </template>
+                        <div class="setting-control">
+                            {#each ignorePersistPropsOptions as opt}
+                                <label class="radio-option">
+                                    <input
+                                        type="checkbox"
+                                        value={opt.value}
+                                        checked={option.ignorePersistProps?.includes(
+                                            opt.value,
+                                        )}
+                                        on:change={(e) => {
+                                            const target =
+                                                e.target as HTMLInputElement | null;
+                                            if (target && target.checked) {
+                                                option.ignorePersistProps = [
+                                                    ...(option.ignorePersistProps ??
+                                                        []),
+                                                    opt.value,
+                                                ];
+                                            } else if (target) {
+                                                option.ignorePersistProps =
+                                                    option.ignorePersistProps?.filter(
+                                                        (v) => v !== opt.value,
+                                                    );
+                                            }
+                                        }}
+                                    />
+                                    <span>{opt.label}</span>
+                                </label>
+                            {/each}
+                        </div>
+                    </div>
 
                     <div id="defaultSrc" class="setting-row">
                         <div class="setting-label">
@@ -577,140 +650,33 @@
                             </div>
                         </template>
                         <div class="setting-control">
-                            <label
-                                class="radio-option"
-                                style="margin-right:12px;"
-                            >
-                                <input
-                                    type="checkbox"
-                                    value="close"
-                                    checked={option.showDrawerButtons.includes(
-                                        "close",
-                                    )}
-                                    on:change={(e) => {
-                                        const target =
-                                            e.target as HTMLInputElement | null;
-                                        if (target && target.checked) {
-                                            option.showDrawerButtons = [
-                                                ...option.showDrawerButtons,
-                                                "close",
-                                            ];
-                                        } else if (target) {
-                                            option.showDrawerButtons =
-                                                option.showDrawerButtons.filter(
-                                                    (v) => v !== "close",
-                                                );
-                                        }
-                                    }}
-                                />
-                                <span>閉じる</span>
-                            </label>
-
-                            <label class="radio-option">
-                                <input
-                                    type="checkbox"
-                                    value="external-link"
-                                    checked={option.showDrawerButtons.includes(
-                                        "external-link",
-                                    )}
-                                    on:change={(e) => {
-                                        const target =
-                                            e.target as HTMLInputElement | null;
-                                        if (target && target.checked) {
-                                            option.showDrawerButtons = [
-                                                ...option.showDrawerButtons,
-                                                "external-link",
-                                            ];
-                                        } else if (target) {
-                                            option.showDrawerButtons =
-                                                option.showDrawerButtons.filter(
-                                                    (v) =>
-                                                        v !== "external-link",
-                                                );
-                                        }
-                                    }}
-                                />
-                                <span>外部リンク</span>
-                            </label>
-                            <label class="radio-option">
-                                <input
-                                    type="checkbox"
-                                    value="qrcode"
-                                    checked={option.showDrawerButtons.includes(
-                                        "qrcode",
-                                    )}
-                                    on:change={(e) => {
-                                        const target =
-                                            e.target as HTMLInputElement | null;
-                                        if (target && target.checked) {
-                                            option.showDrawerButtons = [
-                                                ...option.showDrawerButtons,
-                                                "qrcode",
-                                            ];
-                                        } else if (target) {
-                                            option.showDrawerButtons =
-                                                option.showDrawerButtons.filter(
-                                                    (v) => v !== "qrcode",
-                                                );
-                                        }
-                                    }}
-                                />
-                                <span>QRコード</span>
-                            </label>
-                            <label class="radio-option">
-                                <input
-                                    type="checkbox"
-                                    value="resize"
-                                    checked={option.showDrawerButtons.includes(
-                                        "resize",
-                                    )}
-                                    on:change={(e) => {
-                                        const target =
-                                            e.target as HTMLInputElement | null;
-                                        if (target && target.checked) {
-                                            option.showDrawerButtons = [
-                                                ...option.showDrawerButtons,
-                                                "resize",
-                                            ];
-                                        } else if (target) {
-                                            option.showDrawerButtons =
-                                                option.showDrawerButtons.filter(
-                                                    (v) => v !== "resize",
-                                                );
-                                        }
-                                    }}
-                                />
-                                <span>リサイズ</span>
-                            </label>
-                            <label
-                                class="radio-option"
-                                style="margin-right:12px;"
-                            >
-                                <input
-                                    type="checkbox"
-                                    value="position-change"
-                                    checked={option.showDrawerButtons.includes(
-                                        "position-change",
-                                    )}
-                                    on:change={(e) => {
-                                        const target =
-                                            e.target as HTMLInputElement | null;
-                                        if (target && target.checked) {
-                                            option.showDrawerButtons = [
-                                                ...option.showDrawerButtons,
-                                                "position-change",
-                                            ];
-                                        } else if (target) {
-                                            option.showDrawerButtons =
-                                                option.showDrawerButtons.filter(
-                                                    (v) =>
-                                                        v !== "position-change",
-                                                );
-                                        }
-                                    }}
-                                />
-                                <span>位置切替</span>
-                            </label>
+                            {#each showDrawerButtonsOptions as opt}
+                                <label class="radio-option">
+                                    <input
+                                        type="checkbox"
+                                        value={opt.value}
+                                        checked={option.showDrawerButtons.includes(
+                                            opt.value,
+                                        )}
+                                        on:change={(e) => {
+                                            const target =
+                                                e.target as HTMLInputElement | null;
+                                            if (target && target.checked) {
+                                                option.showDrawerButtons = [
+                                                    ...option.showDrawerButtons,
+                                                    opt.value,
+                                                ];
+                                            } else if (target) {
+                                                option.showDrawerButtons =
+                                                    option.showDrawerButtons.filter(
+                                                        (v) => v !== opt.value,
+                                                    );
+                                            }
+                                        }}
+                                    />
+                                    <span>{opt.label}</span>
+                                </label>
+                            {/each}
                         </div>
                     </div>
                 </div>

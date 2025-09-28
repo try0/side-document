@@ -101,11 +101,20 @@
                 getStateKey(option.storageKeyPrefix),
             );
             if (savedState) {
-                isOpened = savedState.isOpen;
-
-                drawerPositionClass = savedState.drawerPosition;
-                toggleButtonPositionClass = savedState.toggleButtonPosition;
-                drawerWidthPx = savedState.drawerWidthPx;
+                if (!option.ignorePersistProps?.includes("isOpen")) {
+                    isOpened = savedState.isOpen;
+                }
+                if (!option.ignorePersistProps?.includes("drawerPosition")) {
+                    drawerPositionClass = savedState.drawerPosition;
+                }
+                if (!option.ignorePersistProps?.includes("drawerWidthPx")) {
+                    drawerWidthPx = savedState.drawerWidthPx;
+                }
+                if (
+                    !option.ignorePersistProps?.includes("toggleButtonPosition")
+                ) {
+                    toggleButtonPositionClass = savedState.toggleButtonPosition;
+                }
 
                 if (savedState.frameSrc) {
                     frameSrc = savedState.frameSrc;
@@ -363,13 +372,13 @@
         if (option.toggleButtonFollowsDrawerPosition) {
             // drawerPositionが"left"なら"bottom-left"、"right"なら"bottom-right"
             if (option.toggleButtonPosition?.startsWith("bottom")) {
-                toggleButtonPositionClass = drawerPositionClass === "left"
-                    ? "bottom-left"
-                    : "bottom-right";
+                toggleButtonPositionClass =
+                    drawerPositionClass === "left"
+                        ? "bottom-left"
+                        : "bottom-right";
             } else if (option.toggleButtonPosition?.startsWith("top")) {
-                toggleButtonPositionClass = drawerPositionClass === "left"
-                    ? "top-left"
-                    : "top-right";
+                toggleButtonPositionClass =
+                    drawerPositionClass === "left" ? "top-left" : "top-right";
             }
         }
     }

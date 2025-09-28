@@ -86,6 +86,14 @@ export interface SideDocumentOption {
      * トグルボタンの位置
      */
     persistState?: boolean;
+    /**
+     * persistStateがtrueの場合に、保存しないプロパティ
+     * 例えば、['isOpen']とすると、ドロワーの開閉状態は保存されない
+     */
+    ignorePersistProps?: ('isOpen' | 'drawerPosition' | 'drawerWidthPx' | 'toggleButtonPosition')[];
+    /**
+     * ローカルストレージのキーのプレフィックス
+     */
     storageKeyPrefix?: string;
 }
 
