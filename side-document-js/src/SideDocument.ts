@@ -112,6 +112,10 @@ export class SideDocument {
          * ローカルストレージのキーのプレフィックス
          */
         storageKeyPrefix: 'sd',
+        /**
+         * ポップオーバーとして表示するか
+         */
+        renderAsPopover: false,
     });
 
 

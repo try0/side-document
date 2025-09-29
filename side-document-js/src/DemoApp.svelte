@@ -92,6 +92,11 @@
             }
         }
 
+        if (option.renderAsPopover !== preOption.renderAsPopover) {
+            upd = true;
+            refresh = true;
+        }
+
         if (
             JSON.stringify(option.ignorePersistProps) !==
             JSON.stringify(preOption.ignorePersistProps)
@@ -569,6 +574,39 @@
                                 <input
                                     type="checkbox"
                                     bind:checked={option.persistState}
+                                />
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="renderAsPopover" class="setting-row">
+                        <div class="setting-label">
+                            <code>renderAsPopover</code>
+                            <div class="label-description">
+                                <a
+                                    href="https://developer.mozilla.org/ja/docs/Web/API/HTMLElement/showPopover"
+                                    target="_blank">ポップオーバー</a
+                                >として<a
+                                    href="https://developer.mozilla.org/ja/docs/Glossary/Top_layer"
+                                    target="_blank">Top layer</a
+                                >で表示する
+                            </div>
+                        </div>
+                        <template data-sd-document>
+                            <div style="padding: 10px;">
+                                <h3 data-sd-link-target="#renderAsPopover">
+                                    renderAsPopover
+                                </h3>
+                                <p>
+                                    Drawerをポップオーバーとして表示するかどうかを設定します。
+                                </p>
+                            </div>
+                        </template>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input
+                                    type="checkbox"
+                                    bind:checked={option.renderAsPopover}
                                 />
                                 <span class="toggle-slider"></span>
                             </label>

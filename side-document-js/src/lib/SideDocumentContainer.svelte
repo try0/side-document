@@ -2,12 +2,9 @@
     import { onDestroy, onMount, setContext } from "svelte";
 
     import SideDocumentDrawer from "./SideDocumentDrawer.svelte";
-    import type {
-        SideDocumentOption,
-    } from "../types";
-    import { str } from "./i18n";
+    import type { SideDocumentOption } from "../types";
     import RelatedElementEffect from "./RelatedElementEffect.svelte";
-
+    import ToggleButton from "./ToggleButton.svelte";
 
     /**
      * 初期オプション値
@@ -24,8 +21,28 @@
      * コンテナー内のルート要素
      */
     let containerRootElement: HTMLDivElement | null = $state(null);
+    /**
+     * Drawerのラッパー要素
+     * popover属性を持つ場合がある
+     */
+    let drawerWrapperElement: HTMLDivElement | null = $state(null);
 
     let effectTargetElements: HTMLElement[] = $state([]);
+
+
+    $effect(() => {
+        if (isOpened) {
+            if (option.renderAsPopover) {
+                drawerWrapperElement?.showPopover();
+            }
+        } else {
+            setTimeout(() => {
+                if (!isPinned) {
+                    drawerWrapperElement?.hidePopover();
+                }
+            }, 320);
+        }
+    });
 
     /**
      * トグルボタンの位置クラス
@@ -47,7 +64,6 @@
         const position = option.toggleButtonPosition || "bottom-right";
         return position;
     });
-
 
     /**
      * トグルボタンのツールチップ位置
@@ -79,6 +95,11 @@
      * ドキュメントのDrawerの状態を管理するためのコンテキスト
      */
     let isOpened: boolean = $state(false);
+
+    /**
+     * Drawerがピン留めされているかどうか
+     */
+    let isPinned: boolean = $state(false);
 
     // svelte-ignore non_reactive_update
     let documentDrawer: SideDocumentDrawer;
@@ -114,11 +135,7 @@
      * Drawerの表示状態を切り替えます。
      */
     export function toggleDrawer() {
-        if (isOpened) {
-            documentDrawer.close();
-        } else {
-            documentDrawer.open();
-        }
+        isOpened = !isOpened;
     }
 
     /**
@@ -211,140 +228,51 @@
         ></RelatedElementEffect>
     {/each}
 
-    <!-- ドキュメント　メインコンポーネント -->
+    <!-- Drawerのラッパー要素 popoverの場合あり-->
+    <div
+        bind:this={drawerWrapperElement}
+        {...option.renderAsPopover ? { popover: "manual" } : {}}
+    >
 
-    <SideDocumentDrawer
-        bind:this={documentDrawer}
-        {containerRootElement}
-        bind:isOpened
-        {drawerId}
-        bind:toggleButtonPositionClass
-    />
+        <SideDocumentDrawer
+            bind:this={documentDrawer}
+            {containerRootElement}
+            bind:isOpened
+            bind:isPinned
+            {drawerId}
+            bind:toggleButtonPositionClass
+        />
 
-    {#if isVisibleToggleButton}
+        {#if isVisibleToggleButton && isOpened}
+            <!-- トグルボタン popoverを考慮して内部にも設置-->
+            <div>
+                <ToggleButton
+                    bind:isOpened
+                    bind:toggleButtonPositionClass
+                    bind:toggleButtonTooltipPosition
+                    bind:option
+                    {drawerId}
+                    {toggleDrawer}
+                />
+            </div>
+        {/if}
+    </div>
+    {#if isVisibleToggleButton && !isOpened}
+                <!-- トグルボタン -->
         <div>
-            <!-- トグルボタン -->
-            <button
-                type="button"
-                class="sd-toggle-button {toggleButtonPositionClass}"
-                data-sd-c-tooltip={isOpened
-                    ? str(option.i18nText, "toggleButtonCloseTooltip")
-                    : str(option.i18nText, "toggleButtonOpenTooltip")}
-                data-sd-c-tooltip-position={toggleButtonTooltipPosition}
-                on:click={toggleDrawer}
-                aria-label={isOpened
-                    ? str(option.i18nText, "toggleButtonCloseTooltip")
-                    : str(option.i18nText, "toggleButtonOpenTooltip")}
-                aria-expanded={isOpened}
-                aria-controls={drawerId}
-            >
-                {#if isOpened}
-                    <svg
-                        class="sd-toggle-button-icon"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18 17.94 6M18 18 6.06 6"
-                        />
-                    </svg>
-                {:else}
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="sd-toggle-button-icon"
-                        aria-hidden="true"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        ><path
-                            stroke="none"
-                            d="M0 0h24v24H0z"
-                            fill="none"
-                        /><path
-                            d="M8 8a3.5 3 0 0 1 3.5 -3h1a3.5 3 0 0 1 3.5 3a3 3 0 0 1 -2 3a3 4 0 0 0 -2 4"
-                        /><path d="M12 19l0 .01" /></svg
-                    >
-                {/if}
-            </button>
+            <ToggleButton
+                bind:isOpened
+                bind:toggleButtonPositionClass
+                bind:toggleButtonTooltipPosition
+                bind:option
+                {drawerId}
+                {toggleDrawer}
+            />
         </div>
     {/if}
 </div>
 
 <style lang="postcss">
-    .sd-toggle-button {
-        position: fixed;
-        background: var(--sd-primary-color, #236ad4);
-        color: white;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: var(--sd-toggle-button-z-index, 1001);
-        border: var(--sd-primary-color, #236ad4);
-        padding: 0;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        transition: transform 0.12s cubic-bezier(0.4, 2, 0.6, 1);
-    }
-
-    /* 位置クラス */
-    .sd-toggle-button.top-left {
-        top: 25px;
-        left: 25px;
-    }
-
-    .sd-toggle-button.top-right {
-        top: 25px;
-        right: 25px;
-    }
-
-    .sd-toggle-button.bottom-left {
-        bottom: 25px;
-        left: 25px;
-    }
-
-    .sd-toggle-button.bottom-right {
-        bottom: 25px;
-        right: 25px;
-    }
-
-    .sd-toggle-button:active {
-        transform: scale(0.95);
-    }
-    .sd-toggle-button:hover {
-        background: color-mix(
-            in srgb,
-            var(--sd-primary-color, #236ad4) 90%,
-            #fff 10%
-        );
-        outline: 2px solid var(--sd-primary-color, #236ad4);
-        outline-offset: 2px;
-        box-shadow: 0 0 0 4px
-            color-mix(in srgb, var(--sd-primary-color, #236ad4) 30%, #fff 70%);
-    }
-
-    .sd-toggle-button-icon {
-        width: 28px;
-        height: 28px;
-        display: block;
-        stroke: white;
-        fill: none;
-    }
     :global([data-sd-c-tooltip]) {
         position: relative;
     }
@@ -456,5 +384,65 @@
 
     :global([data-sd-c-tooltip]):hover::before {
         opacity: 1;
+    }
+
+    dialog {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: auto;
+        bottom: auto;
+        margin: 0;
+        padding: 0;
+        width: auto;
+        height: auto;
+        background: none;
+        border: none;
+        box-shadow: none;
+        max-width: none;
+        max-height: none;
+        overflow: visible;
+    }
+    .sd-dialog-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        height: 100vh;
+        background: none;
+        border: none;
+        box-shadow: none;
+        max-width: none;
+        max-height: none;
+        overflow: visible;
+    }
+    .sd-dialog-backdrop {
+        position: fixed;
+        inset: 0;
+        background: transparent;
+        z-index: 0;
+    }
+    dialog::backdrop {
+        background: none !important;
+        pointer-events: none !important;
+    }
+    div[popover] {
+        position: fixed;
+        top: 0;
+        left: 0;
+        margin: 0;
+        padding: 0;
+        width: 0;
+        height: 0;
+        background: none;
+        border: none;
+        box-shadow: none;
+        max-width: none;
+        max-height: none;
+        overflow: visible;
     }
 </style>

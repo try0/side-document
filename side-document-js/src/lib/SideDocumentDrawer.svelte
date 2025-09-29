@@ -19,11 +19,13 @@
     let {
         containerRootElement,
         isOpened = $bindable(),
+        isPinned = $bindable(false),
         toggleButtonPositionClass = $bindable(),
         drawerId = "sd-drawer-panel",
     }: {
         containerRootElement: HTMLElement;
         isOpened: boolean;
+        isPinned: boolean;
         toggleButtonPositionClass:
             | "top-right"
             | "top-left"
@@ -37,18 +39,36 @@
      */
     $effect(() => {
         if (isOpened) {
-            drawerToggleClass = "open";
+            setTimeout(() => {
+                drawerToggleClass = "open";
+            }, 10);
         } else {
             drawerToggleClass = "close";
-
-            if (option.refreshFrameOnClose && isVisibleFrame) {
-                isVisibleFrame = false;
-                setTimeout(() => {
-                    isVisibleFrame = true;
-                }, 300);
+            if (option.refreshFrameOnClose) {
+                resetFrameSrc();
             }
         }
     });
+
+    /**
+     * iframeのsrcをリセットして再読み込みします。
+     */
+    function resetFrameSrc() {
+        if (!frameElement) {
+            return;
+        }
+
+        // iframeが存在する場合は、srcを一時的に空にしてから元に戻す
+        const prevSrc = frameElement.src;
+        setTimeout(() => {
+            // 一旦空にする
+            if (frameElement) frameElement.src = "about:blank";
+            setTimeout(() => {
+                // 元のURLに戻す
+                if (frameElement) frameElement.src = prevSrc;
+            }, 20);
+        }, 100);
+    }
 
     /**
      * 外側クリックで閉じる場合のイベントリスナー登録
@@ -62,7 +82,6 @@
     });
 
     let startRecordState: boolean = $state(option.persistState || false);
-    let isPinned: boolean = $state(false);
     let saveThrottleTimer: number | null = null;
     const SAVE_THROTTLE_MS = 500; // 0.5秒間隔で記録
 
@@ -105,6 +124,12 @@
             if (savedState) {
                 if (!option.ignorePersistProps?.includes("is-opened")) {
                     isOpened = savedState.isOpened;
+                    // レストア時は、delayの影響を避ける
+                    if (isOpened) {
+                        drawerToggleClass = "open";
+                    } else {
+                        drawerToggleClass = "close";
+                    }
                 }
                 if (!option.ignorePersistProps?.includes("drawer-position")) {
                     drawerPositionClass = savedState.drawerPosition;
@@ -126,9 +151,13 @@
                 if (!option.ignorePersistProps?.includes("is-pinned")) {
                     isPinned = !!savedState.isPinned;
                 }
-
                 if (isOpened && frameSrc) {
-                    isVisibleFrame = true;
+                    isVisibleFrame = false;
+
+                    // ちらつき抑制のため少し遅延して表示
+                    setTimeout(() => {
+                        isVisibleFrame = true;
+                    }, 200);
                 }
             }
         }
@@ -196,9 +225,7 @@
     /**
      * ドキュメントパネルのトグル状態
      */
-    let drawerToggleClass: "close" | "open" = $derived.by(() => {
-        return isOpened ? "open" : "close";
-    });
+    let drawerToggleClass: "close" | "open" = $state("close");
 
     /**
      * ドキュメントパネルの位置
@@ -779,20 +806,18 @@
 
         <!-- iframeコンテンツ -->
         {#if isVisibleFrame}
-            {#key frameSrc}
-                <iframe
-                    bind:this={frameElement}
-                    title={str(option.i18nText, "documentTitle")}
-                    src={frameSrc}
-                    loading="lazy"
-                    style="width: 100%; height: 100%; border: none; 
+            <iframe
+                bind:this={frameElement}
+                title={str(option.i18nText, "documentTitle")}
+                src={frameSrc}
+                loading="lazy"
+                style="width: 100%; height: 100%; border: none; 
                     {documentMode === 'iframe' ? '' : 'display: none;'}
                     {isResizing
-                        ? 'pointer-events: none; user-select: none;'
-                        : 'pointer-events: auto; user-select: auto;'}
+                    ? 'pointer-events: none; user-select: none;'
+                    : 'pointer-events: auto; user-select: auto;'}
                     "
-                ></iframe>
-            {/key}
+            ></iframe>
         {/if}
 
         <!-- ページ要素コンテンツ -->
@@ -1052,8 +1077,14 @@
                 <button
                     type="button"
                     class="sd-drawer-button"
-                    aria-label={str(option.i18nText, isPinned ? "unpinButtonTooltip" : "pinButtonTooltip")}
-                    data-sd-c-tooltip={str(option.i18nText, isPinned ? "unpinButtonTooltip" : "pinButtonTooltip")}
+                    aria-label={str(
+                        option.i18nText,
+                        isPinned ? "unpinButtonTooltip" : "pinButtonTooltip",
+                    )}
+                    data-sd-c-tooltip={str(
+                        option.i18nText,
+                        isPinned ? "unpinButtonTooltip" : "pinButtonTooltip",
+                    )}
                     data-sd-c-tooltip-position={drawerPositionClass === "left"
                         ? "right"
                         : "left"}

@@ -95,6 +95,10 @@ export interface SideDocumentOption {
      * ローカルストレージのキーのプレフィックス
      */
     storageKeyPrefix?: string;
+    /**
+     * ポップオーバーとして表示するか
+     */
+    renderAsPopover?: boolean;
 }
 
 export interface SideDocumentI18NText {
