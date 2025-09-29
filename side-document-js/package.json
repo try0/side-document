@@ -1,6 +1,6 @@
 {
     "name": "@try0/side-document",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "description": "Display the document in a drawer using an iframe.",
     "keywords": [
         "browser",
