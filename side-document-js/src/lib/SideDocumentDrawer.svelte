@@ -1145,14 +1145,16 @@
         background: #fff;
         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
         z-index: var(--sd-drawer-z-index, 1000);
-        will-change: transform;
         transform: translateZ(0);
         backface-visibility: hidden;
         -webkit-backface-visibility: hidden;
         overflow: hidden;
         transition:
-            left 0.3s ease,
-            right 0.3s ease;
+            left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+            right 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+            opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+            transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: left, right, opacity, transform;
     }
 
     .sd-drawer.right {
@@ -1167,25 +1169,23 @@
 
     .sd-drawer.left.open {
         left: 0;
+        opacity: 1;
+        transform: translateX(0);
     }
 
     .sd-drawer.right.open {
         right: 0;
+        opacity: 1;
+        transform: translateX(0);
     }
     .sd-drawer.left.close {
         left: calc(-1 * var(--drawer-width, 320px));
         opacity: 0;
-        transition:
-            left 0.3s ease,
-            opacity 0.3s ease;
         user-event: none;
     }
     .sd-drawer.right.close {
         right: calc(-1 * var(--drawer-width, 320px));
         opacity: 0;
-        transition:
-            right 0.3s ease,
-            opacity 0.3s ease;
         user-event: none;
     }
 
@@ -1219,8 +1219,10 @@
         opacity: 0;
         visibility: hidden;
         transition:
-            opacity 100ms ease-in-out 300ms,
-            visibility 0ms linear 300ms;
+            opacity 100ms ease-in-out 0.3s,
+            visibility 0ms linear 0.3s,
+            transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: opacity, visibility, transform;
     }
 
     .sd-drawer-button-container.open {
@@ -1231,9 +1233,6 @@
     .sd-drawer-button-container.close {
         opacity: 0;
         visibility: hidden;
-        transition:
-            opacity 100ms ease-in-out,
-            visibility 0ms linear 100ms;
     }
 
     .sd-drawer-button-container.left {
