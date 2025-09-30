@@ -69,6 +69,14 @@ export class SideDocument {
          */
         drawerWidthUnit: 'px',
         /**
+         * ドキュメントDrawerの最大幅
+         */
+        drawerMaxWidth: 2000,
+        /**
+         * ドキュメントDrawerの最小幅
+         */
+        drawerMinWidth: 100,
+        /**
          * ドキュメントDrawerのリサイズを可能にするか
          */
         resizable: true,
@@ -88,6 +96,10 @@ export class SideDocument {
          * プライマリカラー
          */
         primaryColor: '#236ad4',
+        /**
+         * QRコード画像の色
+         */
+        qrcodeImageColor: '#000000',
         /**
          * ドキュメントDrawerのz-index
          */
@@ -123,7 +135,11 @@ export class SideDocument {
         /**
          * ポップオーバー表示時にバックドロップを表示するか
          */
-        showBackdrop: false
+        showBackdrop: false,
+        /**
+         * 永続化対象外のプロパティ
+         */
+        ignorePersistProps: []
     });
 
 

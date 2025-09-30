@@ -15,7 +15,7 @@ export interface SideDocumentInternalOption {
     /**
     * トグルボタンの位置
     */
-    toggleButtonPosition?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+    toggleButtonPosition: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
     /**
      * トグルボタンがドキュメントのDrawerの位置に従うか
      */
@@ -23,7 +23,7 @@ export interface SideDocumentInternalOption {
     /**
      * ドキュメントのDrawerの位置
      */
-    drawerPosition?: 'left' | 'right';
+    drawerPosition: 'left' | 'right';
     /**
      * ドキュメントDrawerの初期幅
      */
@@ -31,15 +31,15 @@ export interface SideDocumentInternalOption {
     /**
      * ドキュメントDrawerの最大幅
      */
-    drawerMaxWidth?: number;
+    drawerMaxWidth: number;
     /**
      * ドキュメントDrawerの最小幅
      */
-    drawerMinWidth?: number;
+    drawerMinWidth: number;
     /**
      * ドキュメントDrawerの幅の単位
      */
-    drawerWidthUnit?: 'px' | '%';
+    drawerWidthUnit: 'px' | '%';
     /**
      * ドキュメントDrawerのリサイズを可能にするか
      */
@@ -59,19 +59,19 @@ export interface SideDocumentInternalOption {
     /**
      * プライマリカラー
      */
-    primaryColor?: string;
+    primaryColor: string;
     /**
      * QRコードのドットカラー
      */
-    qrcodeImageColor?: string;
+    qrcodeImageColor: string;
     /**
      * ドキュメントDrawerのz-index
      */
-    drawerZIndex?: number;
+    drawerZIndex: number;
     /**
      * トグルボタンのz-index
      */
-    toggleButtonZIndex?: number;
+    toggleButtonZIndex: number;
     /**
      * i18nテキスト
      */
@@ -90,11 +90,11 @@ export interface SideDocumentInternalOption {
      * persistStateがtrueの場合に、保存しないプロパティ
      * 例えば、['isOpen']とすると、ドロワーの開閉状態は保存されない
      */
-    ignorePersistProps?: ("is-opened" | "drawer-position" | "drawer-width-px" | "toggle-button-position" | "is-pinned")[];
+    ignorePersistProps: ("is-opened" | "drawer-position" | "drawer-width-px" | "toggle-button-position" | "is-pinned")[];
     /**
      * ローカルストレージのキーのプレフィックス
      */
-    storageKeyPrefix?: string;
+    storageKeyPrefix: string;
     /**
      * ポップオーバーとして表示するか
      */

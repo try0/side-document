@@ -176,50 +176,27 @@
      * ドロワーの幅
      */
     let drawerWidthPx = $derived.by(() => {
-        if (option.drawerWidthUnit) {
-            return calculateWidthToPx(
-                option.drawerWidth,
-                option.drawerWidthUnit,
-            );
-        }
-
-        return Math.max(option.drawerWidth || 320, 320);
+        return calculateWidthToPx(option.drawerWidth, option.drawerWidthUnit);
     });
 
     /**
      * ドロワーの最小サイズ
      */
     let drawerMinWidthPx = $derived.by(() => {
-        if (!option.drawerMinWidth) {
-            return 0;
-        }
-
-        if (option.drawerWidthUnit) {
-            return calculateWidthToPx(
-                option.drawerMinWidth,
-                option.drawerWidthUnit,
-            );
-        }
-
-        return Math.max(option.drawerMinWidth || 100, 100);
+        return calculateWidthToPx(
+            option.drawerMinWidth,
+            option.drawerWidthUnit,
+        );
     });
 
     /**
      * ドロワーの最大サイズ
      */
     let drawerMaxWidthPx = $derived.by(() => {
-        if (!option.drawerMaxWidth) {
-            return 2000;
-        }
-
-        if (option.drawerWidthUnit) {
-            return calculateWidthToPx(
-                option.drawerMaxWidth,
-                option.drawerWidthUnit,
-            );
-        }
-
-        return Math.max(option.drawerMaxWidth || 800, 800);
+        return calculateWidthToPx(
+            option.drawerMaxWidth,
+            option.drawerWidthUnit,
+        );
     });
 
     /**
@@ -301,9 +278,17 @@
      * 初期幅をpx単位に変換して取得します。
      */
     function calculateWidthToPx(width: number, unit: "px" | "%"): number {
-        if (!width) return unit === "px" ? 320 : 0.25 * windowWidth;
-        if (unit === "px") return Math.max(width, 100);
-        if (unit === "%") return Math.max((width * windowWidth) / 100, 100);
+        if (!width) {
+            return unit === "px" ? 320 : 0.25 * windowWidth;
+        }
+
+        if (unit === "px") {
+            return Math.max(width, 100);
+        }
+        if (unit === "%") {
+            return Math.max((width * windowWidth) / 100, 100);
+        }
+
         return 320;
     }
 
@@ -313,15 +298,15 @@
     function updateDrawerWidthPx() {
         drawerWidthPx = calculateWidthToPx(
             option.drawerWidth,
-            option.drawerWidthUnit ?? "px",
+            option.drawerWidthUnit,
         );
         drawerMinWidthPx = calculateWidthToPx(
-            option.drawerMinWidth ?? 100,
-            option.drawerWidthUnit ?? "px",
+            option.drawerMinWidth,
+            option.drawerWidthUnit,
         );
         drawerMaxWidthPx = calculateWidthToPx(
-            option.drawerMaxWidth ?? 800,
-            option.drawerWidthUnit ?? "px",
+            option.drawerMaxWidth,
+            option.drawerWidthUnit,
         );
     }
 
@@ -359,7 +344,10 @@
      * @param event マウスイベント
      */
     function onMouseMove(event: MouseEvent) {
-        if (!isResizing) return;
+        if (!isResizing) {
+            return;
+        }
+
         const dx = event.clientX - startX;
         if (drawerPositionClass === "left") {
             drawerWidthPx = startWidthPx + dx;
@@ -575,6 +563,11 @@
         }
     }
 
+    /**
+     * QRコード表示ボタンのクリックイベントハンドラ
+     *
+     * @param event
+     */
     async function onClickQRCode(
         event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
     ) {
@@ -604,6 +597,11 @@
         showQrCode = true;
     }
 
+    /**
+     * QRコード画像のDataURLを生成します。
+     *
+     * @param url
+     */
     async function generateQrCode(url: string): Promise<string> {
         let qrCodeImageColor =
             option.qrcodeImageColor || option.primaryColor || "#000";
@@ -619,7 +617,7 @@
 
     /**
      * QRコード画像をクリップボードにコピーします。
-     * 
+     *
      * @param _event
      */
     async function copyToClipboard(
@@ -641,7 +639,7 @@
 
     /**
      * QRコード画像をダウンロードします。
-     * 
+     *
      * @param _event
      */
     function downloadQrCodeImage(
@@ -658,7 +656,7 @@
 
     /**
      * ドキュメントパネルの幅を変更するボタンのクリックイベントハンドラ
-     * 
+     *
      * @param _event
      */
     function onClickResize(
@@ -671,14 +669,16 @@
         // 基本サイズ
         const baseWidth = calculateWidthToPx(
             option.drawerWidth,
-            option.drawerWidthUnit ?? "px",
+            option.drawerWidthUnit,
         );
         // 2段階の固定長追加サイズ
         const step1 = baseWidth + 150;
         const step2 = baseWidth + 300;
 
         // 現在の幅に応じて切り替え
-        if (drawerWidthPx < step1 - 10) {
+        if (drawerWidthPx < baseWidth - 10) {
+            drawerWidthPx = baseWidth;
+        } else if (drawerWidthPx < step1 - 10) {
             drawerWidthPx = step1;
         } else if (drawerWidthPx < step2 - 10) {
             drawerWidthPx = step2;
