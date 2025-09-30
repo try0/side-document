@@ -535,7 +535,7 @@
                 frameSrc = src;
                 isVisibleFrame = true;
                 resolve();
-            }, 0);
+            }, 10);
         });
     }
 

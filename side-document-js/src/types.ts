@@ -100,9 +100,15 @@ export interface SideDocumentInternalOption {
      */
     renderAsPopover: boolean;
     /**
+     * 非表示にするTop layer要素
+     */
+    closeTopLayerElements: ("dialog" | "popover")[];
+    /**
      * ポップオーバー表示時にバックドロップを表示するか
      */
     showBackdrop: boolean;
+
+    
 }
 
 export interface SideDocumentOption extends Partial<SideDocumentInternalOption> { }

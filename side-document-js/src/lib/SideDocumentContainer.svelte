@@ -12,8 +12,10 @@
     let {
         initOption,
         drawerId = "sd-drawer-panel",
-    }: { initOption: SideDocumentInternalOption; drawerId: string | undefined } =
-        $props();
+    }: {
+        initOption: SideDocumentInternalOption;
+        drawerId: string | undefined;
+    } = $props();
     let option = $state(initOption);
     setContext("option", option);
 
@@ -29,9 +31,9 @@
 
     let effectTargetElements: HTMLElement[] = $state([]);
 
-
     $effect(() => {
         if (isOpened) {
+            tryCloseTopLayerElements();
             if (option.renderAsPopover) {
                 drawerWrapperElement?.showPopover();
             }
@@ -43,6 +45,35 @@
             }, 320);
         }
     });
+
+    /**
+     * 最前面のダイアログやポップオーバーを閉じる
+     */
+    function tryCloseTopLayerElements():void {
+        try {
+            // dialog要素を閉じる
+            if (option.closeTopLayerElements.includes("dialog")) {
+                const dialogs = document.querySelectorAll("dialog");
+                dialogs.forEach((dialog) => {
+                    if (dialog.open) {
+                        dialog.close();
+                    }
+                });
+            }
+
+            // popover要素を閉じる
+            if (option.closeTopLayerElements.includes("popover")) {
+                const popovers = document.querySelectorAll("[popover]");
+                popovers.forEach((popover) => {
+                    if (popover instanceof HTMLDivElement && typeof popover.hidePopover === "function") {
+                        popover.hidePopover();
+                    }
+                });
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
     /**
      * トグルボタンの位置クラス
@@ -221,7 +252,9 @@
     style="
     --sd-primary-color: {option.primaryColor || '#d80000'};
     --sd-drawer-z-index: {option.drawerZIndex || 1000};
-    --sd-backdrop-z-index: {option.drawerZIndex ? option.drawerZIndex - 1 : 999};
+    --sd-backdrop-z-index: {option.drawerZIndex
+        ? option.drawerZIndex - 1
+        : 999};
     --sd-toggle-button-z-index: {option.toggleButtonZIndex || 1001};"
 >
     {#each effectTargetElements as effectTargetElement (effectTargetElement)}
@@ -234,7 +267,6 @@
         bind:this={drawerWrapperElement}
         {...option.renderAsPopover ? { popover: "manual" } : {}}
     >
-
         <SideDocumentDrawer
             bind:this={documentDrawer}
             {containerRootElement}
@@ -259,7 +291,7 @@
         {/if}
     </div>
     {#if isVisibleToggleButton && !isOpened}
-                <!-- トグルボタン -->
+        <!-- トグルボタン -->
         <div>
             <ToggleButton
                 bind:isOpened

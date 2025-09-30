@@ -99,7 +99,7 @@ export class SideDocument {
         /**
          * QRコード画像の色
          */
-        qrcodeImageColor: '#000000',
+        qrcodeImageColor: '#236ad4',
         /**
          * ドキュメントDrawerのz-index
          */
@@ -132,6 +132,10 @@ export class SideDocument {
          * ポップオーバーとして表示するか
          */
         renderAsPopover: false,
+        /**
+         * 非表示にするTop layer要素
+         */
+        closeTopLayerElements: [] as ("dialog" | "popover")[],
         /**
          * ポップオーバー表示時にバックドロップを表示するか
          */
