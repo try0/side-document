@@ -27,7 +27,7 @@ export interface SideDocumentOption {
     /**
      * ドキュメントDrawerの初期幅
      */
-    drawerWidth: number;
+    drawerWidth?: number;
     /**
      * ドキュメントDrawerの最大幅
      */
@@ -75,7 +75,7 @@ export interface SideDocumentOption {
     /**
      * i18nテキスト
      */
-    i18nText: SideDocumentI18NText;
+    i18nText?: SideDocumentI18NText;
     /**
      * ドキュメントDrawerのボタンを表示するか
      */
