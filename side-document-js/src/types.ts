@@ -99,6 +99,10 @@ export interface SideDocumentOption {
      * ポップオーバーとして表示するか
      */
     renderAsPopover?: boolean;
+    /**
+     * ポップオーバー表示時にバックドロップを表示するか
+     */
+    showBackdrop?: boolean;
 }
 
 export interface SideDocumentI18NText {

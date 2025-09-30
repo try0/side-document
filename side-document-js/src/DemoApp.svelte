@@ -97,6 +97,10 @@
             refresh = true;
         }
 
+        if (option.showBackdrop !== preOption.showBackdrop) {
+            upd = true;
+        }
+
         if (
             JSON.stringify(option.ignorePersistProps) !==
             JSON.stringify(preOption.ignorePersistProps)
@@ -730,6 +734,34 @@
                                     <span>{opt.label}</span>
                                 </label>
                             {/each}
+                        </div>
+                    </div>
+
+                    <div id="showBackdrop" class="setting-row">
+                        <div class="setting-label">
+                            <code>showBackdrop</code>
+                            <div class="label-description">
+                                Drawer表示時にバックグラウンドをグレーアウトする
+                            </div>
+                        </div>
+                        <template data-sd-document>
+                            <div style="padding: 10px;">
+                                <h3 data-sd-link-target="#showBackdrop">
+                                    showBackdrop
+                                </h3>
+                                <p>
+                                    Drawer表示時にバックグラウンドをグレーアウトするかどうかを設定します。
+                                </p>
+                            </div>
+                        </template>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input
+                                    type="checkbox"
+                                    bind:checked={option.showBackdrop}
+                                />
+                                <span class="toggle-slider"></span>
+                            </label>
                         </div>
                     </div>
                 </div>

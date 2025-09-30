@@ -689,6 +689,25 @@
     }
 </script>
 
+<!-- ドロワーのbackdrop（半透明グレー背景）を追加 -->
+{#if isOpened && option.showBackdrop}
+    <div
+        class="sd-drawer-backdrop"
+        style="
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.25);
+            z-index: var(--sd-backdrop-z-index, 999);
+            transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: {drawerToggleClass === 'open' ? 1 : 0};
+            pointer-events: {drawerToggleClass === 'open' ? 'auto' : 'none'};
+        "
+        on:click={() => {
+            if (option.closeOnOutsideClick && !isPinned) close();
+        }}
+    ></div>
+{/if}
+
 <div
     id={drawerId}
     class="sd-drawer {drawerToggleClass} {drawerPositionClass}"

@@ -116,6 +116,10 @@ export class SideDocument {
          * ポップオーバーとして表示するか
          */
         renderAsPopover: false,
+        /**
+         * ポップオーバー表示時にバックドロップを表示するか
+         */
+        showBackdrop: false
     });
 
 

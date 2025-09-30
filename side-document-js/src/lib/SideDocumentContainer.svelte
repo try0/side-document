@@ -221,6 +221,7 @@
     style="
     --sd-primary-color: {option.primaryColor || '#d80000'};
     --sd-drawer-z-index: {option.drawerZIndex || 1000};
+    --sd-backdrop-z-index: {option.drawerZIndex ? option.drawerZIndex - 1 : 999};
     --sd-toggle-button-z-index: {option.toggleButtonZIndex || 1001};"
 >
     {#each effectTargetElements as effectTargetElement (effectTargetElement)}
