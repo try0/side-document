@@ -3,7 +3,7 @@
 /**
  * オプション
  */
-export interface SideDocumentOption {
+export interface SideDocumentInternalOption {
     /**
      * コンテナセレクター
      */
@@ -11,7 +11,7 @@ export interface SideDocumentOption {
     /**
     * トグルボタンを有効にするか
     */
-    showToggleButton?: boolean | null;
+    showToggleButton: boolean;
     /**
     * トグルボタンの位置
     */
@@ -19,7 +19,7 @@ export interface SideDocumentOption {
     /**
      * トグルボタンがドキュメントのDrawerの位置に従うか
      */
-    toggleButtonFollowsDrawerPosition?: boolean;
+    toggleButtonFollowsDrawerPosition: boolean;
     /**
      * ドキュメントのDrawerの位置
      */
@@ -27,7 +27,7 @@ export interface SideDocumentOption {
     /**
      * ドキュメントDrawerの初期幅
      */
-    drawerWidth?: number;
+    drawerWidth: number;
     /**
      * ドキュメントDrawerの最大幅
      */
@@ -43,15 +43,15 @@ export interface SideDocumentOption {
     /**
      * ドキュメントDrawerのリサイズを可能にするか
      */
-    resizable?: boolean;
+    resizable: boolean;
     /**
      * ドキュメントDrawerを閉じたときにフレームをリフレッシュするか
      */
-    refreshFrameOnClose?: boolean;
+    refreshFrameOnClose: boolean;
     /**
      * ドキュメントDrawerを外部クリックで閉じるか
      */
-    closeOnOutsideClick?: boolean;
+    closeOnOutsideClick: boolean;
     /**
      * 初期ページのURL
      */
@@ -75,7 +75,7 @@ export interface SideDocumentOption {
     /**
      * i18nテキスト
      */
-    i18nText?: SideDocumentI18NText;
+    i18nText: SideDocumentI18NText;
     /**
      * ドキュメントDrawerのボタンを表示するか
      */
@@ -85,7 +85,7 @@ export interface SideDocumentOption {
      * ドロワーの開閉状態、位置、幅
      * トグルボタンの位置
      */
-    persistState?: boolean;
+    persistState: boolean;
     /**
      * persistStateがtrueの場合に、保存しないプロパティ
      * 例えば、['isOpen']とすると、ドロワーの開閉状態は保存されない
@@ -98,12 +98,14 @@ export interface SideDocumentOption {
     /**
      * ポップオーバーとして表示するか
      */
-    renderAsPopover?: boolean;
+    renderAsPopover: boolean;
     /**
      * ポップオーバー表示時にバックドロップを表示するか
      */
-    showBackdrop?: boolean;
+    showBackdrop: boolean;
 }
+
+export interface SideDocumentOption extends Partial<SideDocumentInternalOption> { }
 
 export interface SideDocumentI18NText {
     toggleButtonOpenTooltip: string;

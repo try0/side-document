@@ -1,6 +1,6 @@
 import { mount, unmount } from "svelte";
 import SideDocumentContainer from "./lib/SideDocumentContainer.svelte";
-import type { SideDocumentI18NText, SideDocumentOption } from "./types";
+import type { SideDocumentI18NText, SideDocumentInternalOption, SideDocumentOption } from "./types";
 import { getStateKey, remove } from "./lib/storage";
 
 /**
@@ -43,7 +43,7 @@ export class SideDocument {
     /**
      * デフォルトのオプション
      */
-    public static DEFAULT_OPTION: SideDocumentOption = Object.freeze({
+    public static DEFAULT_OPTION: SideDocumentInternalOption = Object.freeze({
         /**
          * コンテナセレクター
          */
@@ -105,6 +105,10 @@ export class SideDocument {
          */
         showDrawerButtons: ["close", "external-link", "qrcode", "resize", "position-change"] as ("close" | "external-link" | "position-change" | "qrcode" | "pin")[],
         /**
+         * トグルボタンがDrawerの位置に追従するか
+         */
+        toggleButtonFollowsDrawerPosition: false,
+        /**
          * 状態を記録するか
          */
         persistState: false,
@@ -125,7 +129,7 @@ export class SideDocument {
 
 
     container?: HTMLElement;
-    option: SideDocumentOption;
+    option: SideDocumentInternalOption;
     documentContainer: SideDocumentContainer | null = null;
 
     constructor(option?: SideDocumentOption) {

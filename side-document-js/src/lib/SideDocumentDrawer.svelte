@@ -1,7 +1,7 @@
 <script lang="ts">
     import { getContext, onDestroy, onMount } from "svelte";
     import type {
-        SideDocumentOption,
+        SideDocumentInternalOption,
         SideDocumentPersistedState,
     } from "../types";
     import { str } from "./i18n";
@@ -11,7 +11,7 @@
     /**
      * オプション
      */
-    const option: SideDocumentOption = getContext("option");
+    const option: SideDocumentInternalOption = getContext("option");
 
     /**
      * コンテナーからのプロパティ
@@ -392,10 +392,10 @@
     /**
      * ドキュメントパネルの位置を変更するボタンのクリックイベントハンドラ
      *
-     * @param event
+     * @param _event
      */
     function onChangeDrawerPosition(
-        event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
+        _event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
     ) {
         if (drawerPositionClass === "left") {
             drawerPositionClass = "right";
@@ -451,10 +451,10 @@
     /**
      * ドキュメントを新しいウィンドウで開くボタンのクリックイベントハンドラ
      *
-     * @param event
+     * @param _event
      */
     function onClickOpenInNewWindow(
-        event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
+        _event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
     ) {
         let urlToOpen = getOpenUrl();
         if (!urlToOpen) {
@@ -619,9 +619,11 @@
 
     /**
      * QRコード画像をクリップボードにコピーします。
+     * 
+     * @param _event
      */
     async function copyToClipboard(
-        event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
+        _event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
     ): Promise<void> {
         if (!qrCodeDataUrl) return;
         try {
@@ -639,9 +641,11 @@
 
     /**
      * QRコード画像をダウンロードします。
+     * 
+     * @param _event
      */
     function downloadQrCodeImage(
-        event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
+        _event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
     ) {
         if (!qrCodeDataUrl) return;
         const a = document.createElement("a");
@@ -654,9 +658,11 @@
 
     /**
      * ドキュメントパネルの幅を変更するボタンのクリックイベントハンドラ
+     * 
+     * @param _event
      */
     function onClickResize(
-        event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
+        _event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
     ) {
         if (!option.resizable) {
             return;

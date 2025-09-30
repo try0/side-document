@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { SideDocumentOption } from "../types";
+    import type { SideDocumentInternalOption } from "../types";
     import { str } from "./i18n";
 
     let {
@@ -14,7 +14,7 @@
         toggleDrawer: () => void;
         toggleButtonPositionClass: string;
         toggleButtonTooltipPosition: string;
-        option: SideDocumentOption;
+        option: SideDocumentInternalOption;
         drawerId: string;
     } = $props();
 </script>

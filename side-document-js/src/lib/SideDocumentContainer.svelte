@@ -2,7 +2,7 @@
     import { onDestroy, onMount, setContext } from "svelte";
 
     import SideDocumentDrawer from "./SideDocumentDrawer.svelte";
-    import type { SideDocumentOption } from "../types";
+    import type { SideDocumentInternalOption } from "../types";
     import RelatedElementEffect from "./RelatedElementEffect.svelte";
     import ToggleButton from "./ToggleButton.svelte";
 
@@ -12,7 +12,7 @@
     let {
         initOption,
         drawerId = "sd-drawer-panel",
-    }: { initOption: SideDocumentOption; drawerId: string | undefined } =
+    }: { initOption: SideDocumentInternalOption; drawerId: string | undefined } =
         $props();
     let option = $state(initOption);
     setContext("option", option);
@@ -126,7 +126,7 @@
      *
      * @param updOption
      */
-    export function updateOption(updOption: SideDocumentOption) {
+    export function updateOption(updOption: SideDocumentInternalOption) {
         // オプションを更新
         Object.assign(option, updOption);
     }
