@@ -7,6 +7,7 @@
     import { str } from "./i18n";
     import QRCode from "qrcode";
     import { getStateKey, load, save } from "./storage";
+    import { fade } from "svelte/transition";
 
     /**
      * オプション
@@ -750,7 +751,7 @@
     <div style="width: 100%; height: 100%; border: none; ">
         <!-- ページURLのQRコード画像 -->
         {#if showQrCode && qrCodeDataUrl}
-            <div class="sd-qr-code-popup sd-qr-popup-active">
+            <div class="sd-qr-code-popup sd-qr-popup-active" transition:fade={{ duration: 100 }}>
                 <img
                     src={qrCodeDataUrl}
                     alt="QRCode"
