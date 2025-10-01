@@ -505,9 +505,7 @@
      */
     export function open(url?: string) {
         if (url) {
-            documentMode = "iframe";
-            isVisibleFrame = true;
-            frameSrc = url;
+            setFrameSrc(url);
         } else {
             isVisibleFrame = documentMode === "iframe";
         }
