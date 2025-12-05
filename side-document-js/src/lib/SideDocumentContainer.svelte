@@ -34,13 +34,19 @@
     $effect(() => {
         if (isOpened) {
             tryCloseTopLayerElements();
-            if (option.renderAsPopover) {
-                drawerWrapperElement?.showPopover();
+            if (option.renderAsPopover && drawerWrapperElement) {
+                drawerWrapperElement.showPopover();
             }
         } else {
             setTimeout(() => {
                 if (!isPinned) {
-                    drawerWrapperElement?.hidePopover();
+                    if (
+                        option.renderAsPopover &&
+                        drawerWrapperElement &&
+                        typeof drawerWrapperElement.hidePopover === "function"
+                    ) {
+                        drawerWrapperElement.hidePopover();
+                    }
                 }
             }, 320);
         }
@@ -49,7 +55,7 @@
     /**
      * 最前面のダイアログやポップオーバーを閉じる
      */
-    function tryCloseTopLayerElements():void {
+    function tryCloseTopLayerElements(): void {
         try {
             // dialog要素を閉じる
             if (option.closeTopLayerElements.includes("dialog")) {
@@ -65,7 +71,10 @@
             if (option.closeTopLayerElements.includes("popover")) {
                 const popovers = document.querySelectorAll("[popover]");
                 popovers.forEach((popover) => {
-                    if (popover instanceof HTMLDivElement && typeof popover.hidePopover === "function") {
+                    if (
+                        popover instanceof HTMLDivElement &&
+                        typeof popover.hidePopover === "function"
+                    ) {
                         popover.hidePopover();
                     }
                 });
