@@ -212,7 +212,7 @@ export class SideDocument {
                 initOption: this.option,
                 drawerId: undefined
             },
-        });
+        }) as SideDocumentContainer;
 
         // 初期化完了まで待機
         await new Promise<void>((resolve) => {
