@@ -134,16 +134,17 @@
         border-radius: 6px;
         opacity: 0;
         transition:
-            opacity 0.18s ease,
-            top 0.12s ease,
-            left 0.12s ease,
-            width 0.12s ease,
-            height 0.12s ease;
+            opacity 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
+            top 0.15s cubic-bezier(0.25, 0.1, 0.25, 1),
+            left 0.15s cubic-bezier(0.25, 0.1, 0.25, 1),
+            width 0.15s cubic-bezier(0.25, 0.1, 0.25, 1),
+            height 0.15s cubic-bezier(0.25, 0.1, 0.25, 1);
         z-index: var(--sd-drawer-z-index, 2147482000);
+        will-change: opacity, top, left, width, height;
     }
 
     .sd-related-effect.pulse {
-        animation: sd-related-pulse 1.2s ease-out infinite;
+        animation: sd-related-pulse 1.2s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
     }
 
     @keyframes sd-related-pulse {

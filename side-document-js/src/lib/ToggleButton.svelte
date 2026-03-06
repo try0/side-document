@@ -88,7 +88,12 @@
         border: var(--sd-primary-color, #236ad4);
         padding: 0;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        transition: transform 0.12s cubic-bezier(0.4, 2, 0.6, 1);
+        transition:
+            transform 0.15s cubic-bezier(0.25, 0.1, 0.25, 1),
+            background 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
+            box-shadow 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+        will-change: transform;
+        backface-visibility: hidden;
     }
 
     /* 位置クラス */

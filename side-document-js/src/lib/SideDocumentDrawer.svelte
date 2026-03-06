@@ -1169,48 +1169,44 @@
         background: #fff;
         box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
         z-index: var(--sd-drawer-z-index, 1000);
-        transform: translateZ(0);
         backface-visibility: hidden;
         -webkit-backface-visibility: hidden;
         overflow: hidden;
+        contain: layout style paint;
         transition:
-            left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-            right 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-            opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-            transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        will-change: left, right, opacity, transform;
+            opacity 0.35s cubic-bezier(0.25, 0.1, 0.25, 1),
+            transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+        will-change: opacity, transform;
     }
 
     .sd-drawer.right {
-        right: -320px;
+        right: 0;
         left: auto;
     }
 
     .sd-drawer.left {
-        left: -320px;
+        left: 0;
         right: auto;
     }
 
     .sd-drawer.left.open {
-        left: 0;
         opacity: 1;
-        transform: translateX(0);
+        transform: translateX(0) translateZ(0);
     }
 
     .sd-drawer.right.open {
-        right: 0;
         opacity: 1;
-        transform: translateX(0);
+        transform: translateX(0) translateZ(0);
     }
     .sd-drawer.left.close {
-        left: calc(-1 * var(--drawer-width, 320px));
         opacity: 0;
-        user-event: none;
+        transform: translateX(-100%) translateZ(0);
+        pointer-events: none;
     }
     .sd-drawer.right.close {
-        right: calc(-1 * var(--drawer-width, 320px));
         opacity: 0;
-        user-event: none;
+        transform: translateX(100%) translateZ(0);
+        pointer-events: none;
     }
 
     .sd-divider {
@@ -1243,9 +1239,9 @@
         opacity: 0;
         visibility: hidden;
         transition:
-            opacity 100ms ease-in-out 0.3s,
-            visibility 0ms linear 0.3s,
-            transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity 150ms ease-in-out 0.35s,
+            visibility 0ms linear 0.35s,
+            transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
         will-change: opacity, visibility, transform;
     }
 
@@ -1311,11 +1307,11 @@
     }
     .sd-drawer-button svg.rotate-90 {
         transform: rotate(90deg);
-        transition: transform 0.2s;
+        transition: transform 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
     .sd-drawer-button svg.rotate-270 {
         transform: rotate(270deg);
-        transition: transform 0.2s;
+        transition: transform 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
     .sd-panel-hidden {
         visibility: hidden;
@@ -1354,9 +1350,10 @@
         cursor: pointer;
         box-shadow: 0 2px 4px #0002;
         transition:
-            background 0.15s ease,
-            box-shadow 0.15s ease,
-            transform 0.1s;
+            background 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
+            box-shadow 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
+            transform 0.15s cubic-bezier(0.25, 0.1, 0.25, 1);
+        will-change: transform;
     }
 
     :global(.sd-link-button) svg {
@@ -1386,7 +1383,7 @@
         justify-content: center;
         top: 2rem;
         left: 50%;
-        transform: translateX(-50%) scale(0.8);
+        transform: translateX(-50%) scale(0.9) translateZ(0);
         background: #fff;
         border: 1px solid #e2e2e2;
         box-shadow: 0 4px 12px #0002;
@@ -1396,14 +1393,15 @@
         text-align: center;
         opacity: 0;
         transition:
-            opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-            transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity 0.25s cubic-bezier(0.25, 0.1, 0.25, 1),
+            transform 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
         pointer-events: none;
         max-width: 350px;
+        will-change: opacity, transform;
     }
     .sd-qr-popup-active {
         opacity: 1;
-        transform: translateX(-50%) scale(1);
+        transform: translateX(-50%) scale(1) translateZ(0);
         pointer-events: auto;
     }
     .sd-qr-code-url {

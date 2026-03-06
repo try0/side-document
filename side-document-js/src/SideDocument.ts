@@ -209,7 +209,8 @@ export class SideDocument {
         this.documentContainer = mount(SideDocumentContainer, {
             target: this.container.shadowRoot ? this.container.shadowRoot : this.container,
             props: {
-                initOption: this.option
+                initOption: this.option,
+                drawerId: undefined
             },
         });
 
@@ -383,6 +384,17 @@ export class SideDocument {
         }
     }
 
+    // public findFrameSrc() {
+    //     const srcHolders = document.querySelectorAll('[data-sd-frame-src]');
+    //     for (let i = 0; i < srcHolders.length; i++) {
+    //         const holder = srcHolders[i];
+    //         const src = holder.getAttribute('data-sd-frame-src');
+    //         if (src) {
+    //             this.setFrameSrc(src || "");
+    //             break;
+    //         }
+    //     }
+    // }
 }
 
 

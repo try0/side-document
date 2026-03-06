@@ -48,7 +48,7 @@
                         drawerWrapperElement.hidePopover();
                     }
                 }
-            }, 320);
+            }, 350);
         }
     });
 
