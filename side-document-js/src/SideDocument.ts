@@ -143,7 +143,11 @@ export class SideDocument {
         /**
          * 永続化対象外のプロパティ
          */
-        ignorePersistProps: []
+        ignorePersistProps: [],
+        onOpen: undefined,
+        onClose: undefined,
+        onResize: undefined,
+        onPositionChange: undefined,
     });
 
 

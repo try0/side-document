@@ -36,16 +36,21 @@
         "build": "vite build",
         "build:lib": "cross-env BUILD_LIB=true vite build",
         "preview": "vite preview",
-        "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
+        "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
+        "test": "vitest run",
+        "test:watch": "vitest"
     },
     "devDependencies": {
         "@sveltejs/adapter-static": "^3.0.8",
         "@sveltejs/vite-plugin-svelte": "^6.0.0",
+        "@testing-library/jest-dom": "^6.9.1",
         "@tsconfig/svelte": "^5.0.4",
         "@types/qrcode": "^1.5.5",
+        "@vitest/browser": "^4.1.1",
         "autoprefixer": "^10.4.21",
         "cross-env": "^10.0.0",
         "cssnano": "^7.1.0",
+        "happy-dom": "^20.8.8",
         "postcss": "^8.5.6",
         "postcss-extend-rule": "^4.0.0",
         "postcss-load-config": "^6.0.1",
@@ -53,8 +58,9 @@
         "svelte": "^5.35.5",
         "svelte-check": "^4.2.2",
         "typescript": "~5.8.3",
+        "vite": "^7.0.4",
         "vite-plugin-dts": "^4.5.4",
-        "vite": "^7.0.4"
+        "vitest": "^4.1.1"
     },
     "browserslist": [
         "last 2 version",

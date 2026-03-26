@@ -376,6 +376,8 @@
             frameElement.style.userSelect = "auto";
             frameElement.style.opacity = "1";
         }
+
+        option.onResize?.(drawerWidthPx);
     }
 
     /**
@@ -404,6 +406,8 @@
                     drawerPositionClass === "left" ? "top-left" : "top-right";
             }
         }
+
+        option.onPositionChange?.(drawerPositionClass);
     }
 
     function getOpenUrl(): string | null {
@@ -511,6 +515,7 @@
         }
 
         isOpened = true;
+        option.onOpen?.(url ?? frameSrc);
     }
 
     /**
@@ -518,6 +523,7 @@
      */
     export function close() {
         isOpened = false;
+        option.onClose?.();
     }
 
     /**

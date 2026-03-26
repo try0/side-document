@@ -1,9 +1,30 @@
 
+/**
+ * コールバック
+ */
+export interface SideDocumentCallbacks {
+    /**
+     * ドロワーが開いたときに呼ばれる
+     */
+    onOpen?: (src: string | null | undefined) => void;
+    /**
+     * ドロワーが閉じたときに呼ばれる
+     */
+    onClose?: () => void;
+    /**
+     * ドロワーの幅が変更されたときに呼ばれる（リサイズ完了時）
+     */
+    onResize?: (widthPx: number) => void;
+    /**
+     * ドロワーの表示位置が変更されたときに呼ばれる
+     */
+    onPositionChange?: (position: 'left' | 'right') => void;
+}
 
 /**
  * オプション
  */
-export interface SideDocumentInternalOption {
+export interface SideDocumentInternalOption extends SideDocumentCallbacks {
     /**
      * コンテナセレクター
      */
