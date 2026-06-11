@@ -75,7 +75,7 @@
 <style lang="postcss">
         .sd-toggle-button {
         position: fixed;
-        background: var(--sd-primary-color, #236ad4);
+        background-color: var(--sd-primary-color, #236ad4);
         color: white;
         width: 50px;
         height: 50px;
@@ -87,12 +87,22 @@
         z-index: var(--sd-toggle-button-z-index, 1001);
         border: var(--sd-primary-color, #236ad4);
         padding: 0;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+        box-shadow:
+            0 2px 8px rgba(0, 0, 0, 0.15),
+            0 0 0 0
+                color-mix(
+                    in srgb,
+                    var(--sd-primary-color, #236ad4) 30%,
+                    transparent
+                );
         transition:
             transform 0.15s cubic-bezier(0.25, 0.1, 0.25, 1),
-            background 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
-            box-shadow 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
-        will-change: transform;
+            background-color 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
+            box-shadow 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
+            outline-color 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+        will-change: transform, box-shadow;
         backface-visibility: hidden;
     }
 
@@ -121,15 +131,20 @@
         transform: scale(0.95);
     }
     .sd-toggle-button:hover {
-        background: color-mix(
+        background-color: color-mix(
             in srgb,
             var(--sd-primary-color, #236ad4) 90%,
             #fff 10%
         );
-        outline: 2px solid var(--sd-primary-color, #236ad4);
-        outline-offset: 2px;
-        box-shadow: 0 0 0 4px
-            color-mix(in srgb, var(--sd-primary-color, #236ad4) 30%, #fff 70%);
+        outline-color: var(--sd-primary-color, #236ad4);
+        box-shadow:
+            0 2px 8px rgba(0, 0, 0, 0.15),
+            0 0 0 4px
+                color-mix(
+                    in srgb,
+                    var(--sd-primary-color, #236ad4) 30%,
+                    transparent
+                );
     }
 
     .sd-toggle-button-icon {

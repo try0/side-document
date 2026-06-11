@@ -285,9 +285,12 @@
             bind:toggleButtonPositionClass
         />
 
-        {#if isVisibleToggleButton && isOpened}
+        {#if isVisibleToggleButton && option.renderAsPopover}
             <!-- トグルボタン popoverを考慮して内部にも設置-->
-            <div>
+            <div
+                class:sd-toggle-button-host-hidden={!isOpened}
+                aria-hidden={!isOpened}
+            >
                 <ToggleButton
                     bind:isOpened
                     bind:toggleButtonPositionClass
@@ -299,7 +302,7 @@
             </div>
         {/if}
     </div>
-    {#if isVisibleToggleButton && !isOpened}
+    {#if isVisibleToggleButton}
         <!-- トグルボタン -->
         <div>
             <ToggleButton
@@ -315,6 +318,11 @@
 </div>
 
 <style lang="postcss">
+    .sd-toggle-button-host-hidden {
+        visibility: hidden;
+        pointer-events: none;
+    }
+
     :global([data-sd-c-tooltip]) {
         position: relative;
     }
