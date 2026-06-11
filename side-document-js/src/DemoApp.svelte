@@ -1,8 +1,310 @@
 <script lang="ts">
-    import { onDestroy, onMount } from "svelte";
+    import { onDestroy, onMount, tick } from "svelte";
     import { SideDocument } from "./SideDocument";
+    import type {
+        SideDocumentI18NText,
+        SideDocumentInternalOption,
+    } from "./types";
 
     // 開発用Appコンポーネント
+
+    type DemoLanguage = "ja" | "en";
+    type IgnorePersistProp =
+        SideDocumentInternalOption["ignorePersistProps"][number];
+    type DrawerButton = SideDocumentInternalOption["showDrawerButtons"][number];
+
+    const DEMO_OPTION_STORAGE_KEY = "demoAppOption";
+    const DEMO_LANGUAGE_STORAGE_KEY = "demoAppLanguage";
+    const DEMO_OPTION_STORAGE_VERSION = 2;
+
+    type DemoSavedOption = Partial<SideDocumentInternalOption> & {
+        demoOptionStorageVersion?: number;
+    };
+
+    const sideDocumentI18nText: Record<DemoLanguage, SideDocumentI18NText> = {
+        ja: SideDocument.DEFAULT_I18N_TEXT,
+        en: {
+            toggleButtonOpenTooltip: "Open",
+            toggleButtonCloseTooltip: "Close",
+            closeButtonTooltip: "Close",
+            externalLinkTooltip: "Open in new tab",
+            positionChangeButtonTooltip: "Change position",
+            qrcodeButtonTooltip: "Show QR code",
+            pinButtonTooltip: "Pin",
+            unpinButtonTooltip: "Unpin",
+            qrcodeCloseButton: "Close",
+            qrcodeDownloadButtonTooltip: "Download image",
+            qrcodeCopyButtonTooltip: "Copy image",
+            qrcodeCopySuccessMessage: "Copied",
+            qrcodeCopyErrorMessage: "Copy failed",
+            resizeBarTooltip: "Resize",
+            documentTitle: "Document",
+        },
+    };
+
+    const demoI18n = {
+        ja: {
+            title: "Side Document サンプル",
+            languageLabel: "言語",
+            reset: "リセット",
+            pageElementTab: "ページ要素",
+            pageElementDoc:
+                "ページからdata-sd-documentアトリビュートを持つ要素を、Drawerコンテンツとして設定できます。",
+            settingsTitle: "設定",
+            functionsTitle: "機能",
+            toggleButtonGroup: "トグルボタン",
+            drawerGroup: "ドロワー",
+            behaviorGroup: "動作",
+            stylingGroup: "スタイル",
+            drawerControlGroup: "ドロワー操作",
+            showToggleButtonLabel: "表示する",
+            showToggleButtonDocLine1:
+                "トグルボタンを表示するかどうかを設定します。",
+            showToggleButtonDocLine2:
+                "トグルボタンはDrawerの開閉を切り替えるためのボタンです。",
+            toggleButtonPositionLabel: "ボタンの位置",
+            toggleButtonPositionDocPrefix: "トグルボタンの位置を設定します。",
+            toggleButtonPositionDocSuffix:
+                "が有効な場合、Drawerの位置に応じて自動的に位置が調整されます。",
+            toggleButtonFollowsDrawerPositionLabel:
+                "Drawer位置にトグルボタン位置を追従させる",
+            toggleButtonFollowsDrawerPositionDoc:
+                "Drawer位置にトグルボタン位置を追従させるかどうかを設定します。",
+            drawerPositionLabel: "Drawerの位置",
+            drawerPositionDocLine1: "Drawerの位置を設定します。",
+            drawerPositionDocLine2:
+                "Drawerは画面の左または右に表示されます。",
+            drawerWidthLabel: "初期サイズ",
+            drawerWidthDoc: "Drawerの初期サイズを設定します。",
+            drawerWidthUnitLabel: "初期サイズの単位",
+            drawerWidthUnitDoc: "Drawerの初期サイズの単位を設定します。",
+            drawerMinWidthLabel: "最小サイズ",
+            drawerMinWidthDoc:
+                "ドロワーの最小サイズを設定します。リサイズ時に適用されます。",
+            drawerMaxWidthLabel: "最大サイズ",
+            drawerMaxWidthDoc:
+                "ドロワーの最大サイズを設定します。リサイズ時に適用されます。",
+            resizableLabel: "リサイズを有効にする",
+            resizableDoc: "Drawerのリサイズを有効にするかどうかを設定します。",
+            persistStateLabel: "状態を保存する",
+            persistStateDoc: "Drawerの状態を保存するかどうかを設定します。",
+            renderAsPopoverBefore: "",
+            popoverLink: "ポップオーバー",
+            renderAsPopoverMiddle: "として",
+            renderAsPopoverAfter: "で表示する",
+            renderAsPopoverDoc:
+                "Drawerをポップオーバーとして表示するかどうかを設定します。",
+            ignorePersistPropsLabel: "保存しないプロパティ",
+            ignorePersistPropsDoc:
+                "Drawerの状態を保存しないプロパティを設定します。",
+            defaultSrcLabel: "デフォルトドキュメントURL",
+            defaultSrcDoc: "Drawerに表示するデフォルトurlを指定します。",
+            showDrawerButtonsLabel: "ドロワー内に表示するボタン",
+            showDrawerButtonsDoc: "Drawer操作用のボタンを設定します。",
+            showBackdropLabel:
+                "Drawer表示時にバックグラウンドをグレーアウトする",
+            showBackdropDoc:
+                "Drawer表示時にバックグラウンドをグレーアウトするかどうかを設定します。",
+            closeOnOutsideClickLabel: "外部クリックで閉じる",
+            closeOnOutsideClickDoc:
+                "ドロワー外をクリックしたときにドロワーを閉じるかどうかを設定します。",
+            refreshFrameOnCloseLabel: "ドロワーを閉じた時にiframeを再読み込み",
+            refreshFrameOnCloseDocLine1:
+                "ドロワーを閉じた際にiframeの内容を再読み込みするかどうかを設定します。",
+            refreshFrameOnCloseDocLine2:
+                "iframe内でのインタラクティブな変更を元に戻したい場合に有効化します。",
+            primaryColorLabel: "プライマリカラー",
+            qrcodeImageColorLabel: "QRコードの画像カラー",
+            openDrawerDescription: "Drawerを開く",
+            closeDrawerDescription: "Drawerを閉じる",
+            toggleDrawerDescription: "Drawerを切り替える",
+            left: "左",
+            right: "右",
+            topLeft: "左上",
+            topRight: "右上",
+            bottomLeft: "左下",
+            bottomRight: "右下",
+            isOpened: "開閉状態",
+            drawerWidthPx: "Drawer幅(px)",
+            drawerPosition: "Drawer位置",
+            toggleButtonPosition: "トグルボタン位置",
+            isPinned: "ピン留め状態",
+            close: "閉じる",
+            externalLink: "外部リンク",
+            qrcode: "QRコード",
+            resize: "リサイズ",
+            positionChange: "位置切替",
+            pin: "ピン留め",
+        },
+        en: {
+            title: "Side Document Example",
+            languageLabel: "Language",
+            reset: "Reset",
+            pageElementTab: "Page element",
+            pageElementDoc:
+                "Elements with the data-sd-document attribute can be used as Drawer content.",
+            settingsTitle: "Settings",
+            functionsTitle: "Functions",
+            toggleButtonGroup: "Toggle Button",
+            drawerGroup: "Drawer",
+            behaviorGroup: "Behavior",
+            stylingGroup: "Styling",
+            drawerControlGroup: "Drawer Control",
+            showToggleButtonLabel: "Show",
+            showToggleButtonDocLine1:
+                "Configure whether the toggle button is shown.",
+            showToggleButtonDocLine2:
+                "The toggle button opens and closes the Drawer.",
+            toggleButtonPositionLabel: "Button position",
+            toggleButtonPositionDocPrefix:
+                "Configure the toggle button position.",
+            toggleButtonPositionDocSuffix:
+                "is enabled, the position is adjusted automatically from the Drawer position.",
+            toggleButtonFollowsDrawerPositionLabel:
+                "Follow the Drawer position",
+            toggleButtonFollowsDrawerPositionDoc:
+                "Configure whether the toggle button follows the Drawer position.",
+            drawerPositionLabel: "Drawer position",
+            drawerPositionDocLine1: "Configure the Drawer position.",
+            drawerPositionDocLine2:
+                "The Drawer is displayed on the left or right side of the screen.",
+            drawerWidthLabel: "Initial size",
+            drawerWidthDoc: "Configure the initial Drawer size.",
+            drawerWidthUnitLabel: "Initial size unit",
+            drawerWidthUnitDoc: "Configure the unit for the initial Drawer size.",
+            drawerMinWidthLabel: "Minimum size",
+            drawerMinWidthDoc:
+                "Configure the minimum Drawer size. It is applied while resizing.",
+            drawerMaxWidthLabel: "Maximum size",
+            drawerMaxWidthDoc:
+                "Configure the maximum Drawer size. It is applied while resizing.",
+            resizableLabel: "Enable resizing",
+            resizableDoc: "Configure whether the Drawer can be resized.",
+            persistStateLabel: "Persist state",
+            persistStateDoc: "Configure whether the Drawer state is saved.",
+            renderAsPopoverBefore: "Show as ",
+            popoverLink: "Popover",
+            renderAsPopoverMiddle: " in the ",
+            renderAsPopoverAfter: "",
+            renderAsPopoverDoc:
+                "Configure whether the Drawer is displayed as a popover.",
+            ignorePersistPropsLabel: "Properties not saved",
+            ignorePersistPropsDoc:
+                "Configure which Drawer state properties should not be saved.",
+            defaultSrcLabel: "Default document URL",
+            defaultSrcDoc: "Specify the default URL displayed in the Drawer.",
+            showDrawerButtonsLabel: "Buttons shown in the Drawer",
+            showDrawerButtonsDoc:
+                "Configure the buttons used to control the Drawer.",
+            showBackdropLabel: "Dim the background while the Drawer is open",
+            showBackdropDoc:
+                "Configure whether the background is dimmed while the Drawer is open.",
+            closeOnOutsideClickLabel: "Close on outside click",
+            closeOnOutsideClickDoc:
+                "Configure whether the Drawer closes when clicking outside it.",
+            refreshFrameOnCloseLabel: "Reload iframe when the Drawer closes",
+            refreshFrameOnCloseDocLine1:
+                "Configure whether iframe content is reloaded when the Drawer closes.",
+            refreshFrameOnCloseDocLine2:
+                "Enable this when you want to reset interactive changes inside the iframe.",
+            primaryColorLabel: "Primary color",
+            qrcodeImageColorLabel: "QR code image color",
+            openDrawerDescription: "Open the Drawer",
+            closeDrawerDescription: "Close the Drawer",
+            toggleDrawerDescription: "Toggle the Drawer",
+            left: "Left",
+            right: "Right",
+            topLeft: "Top left",
+            topRight: "Top right",
+            bottomLeft: "Bottom left",
+            bottomRight: "Bottom right",
+            isOpened: "Open state",
+            drawerWidthPx: "Drawer width (px)",
+            drawerPosition: "Drawer position",
+            toggleButtonPosition: "Toggle button position",
+            isPinned: "Pinned state",
+            close: "Close",
+            externalLink: "External link",
+            qrcode: "QR code",
+            resize: "Resize",
+            positionChange: "Change position",
+            pin: "Pin",
+        },
+    } as const;
+
+    function getInitialLanguage(): DemoLanguage {
+        const savedLanguage = localStorage.getItem(DEMO_LANGUAGE_STORAGE_KEY);
+        if (savedLanguage === "ja" || savedLanguage === "en") {
+            return savedLanguage;
+        }
+        return navigator.language.toLowerCase().startsWith("ja") ? "ja" : "en";
+    }
+
+    function getSampleSrc(language: DemoLanguage): string {
+        return `./sample.html?lang=${language}`;
+    }
+
+    function isSampleSrc(src: string | null | undefined): boolean {
+        return !src || /^\.\/sample\.html(?:\?.*)?$/.test(src);
+    }
+
+    function createInitialOption(): SideDocumentInternalOption {
+        const initialOption = Object.assign({}, SideDocument.DEFAULT_OPTION);
+        initialOption.defaultSrc = getSampleSrc(language);
+        initialOption.qrcodeImageColor = initialOption.primaryColor;
+
+        const savedOption = loadOption();
+        if (savedOption) {
+            Object.assign(initialOption, savedOption);
+        }
+        if (isSampleSrc(initialOption.defaultSrc)) {
+            initialOption.defaultSrc = getSampleSrc(language);
+        }
+        initialOption.i18nText = sideDocumentI18nText[language];
+
+        return initialOption;
+    }
+
+    function applyLanguage(nextLanguage: DemoLanguage): void {
+        document.documentElement.lang = nextLanguage;
+        localStorage.setItem(DEMO_LANGUAGE_STORAGE_KEY, nextLanguage);
+
+        let shouldUpdateApp = false;
+        if (isSampleSrc(option.defaultSrc)) {
+            const nextSampleSrc = getSampleSrc(nextLanguage);
+            if (option.defaultSrc !== nextSampleSrc) {
+                option.defaultSrc = nextSampleSrc;
+                app.setFrameSrc(nextSampleSrc);
+                shouldUpdateApp = true;
+            }
+        }
+        if (option.i18nText !== sideDocumentI18nText[nextLanguage]) {
+            option.i18nText = sideDocumentI18nText[nextLanguage];
+            shouldUpdateApp = true;
+        }
+        if (shouldUpdateApp) {
+            app.update(option);
+        }
+    }
+
+    async function changeLanguage(event: Event): Promise<void> {
+        const target = event.target as HTMLSelectElement | null;
+        const nextLanguage: DemoLanguage =
+            target?.value === "en" ? "en" : "ja";
+
+        if (language === nextLanguage) {
+            return;
+        }
+        language = nextLanguage;
+        await tick();
+        applyLanguage(nextLanguage);
+        if (contentType === "page-element") {
+            app.setDrawerContent();
+        }
+    }
+
+    let language: DemoLanguage = $state(getInitialLanguage());
+    let t = $derived(demoI18n[language]);
 
     let contentType: "iframe" | "page-element" = $state("iframe");
     $effect(() => {
@@ -17,14 +319,12 @@
         }
     });
 
-    let option = $state(Object.assign({}, SideDocument.DEFAULT_OPTION));
-    option.defaultSrc = "./sample.html"; // 初期ページURLを設定
-    option.qrcodeImageColor = option.primaryColor; // QRコードのドットカラーを設定
-    loadOption();
+    let option = $state(createInitialOption());
     let app = new SideDocument(option);
 
     let updatingId: number | null = null;
     let preOption = $state(Object.assign({}, SideDocument.DEFAULT_OPTION));
+
     $effect(() => {
         let refresh = false;
         let upd = false;
@@ -72,6 +372,10 @@
         }
 
         if (option.defaultSrc !== preOption.defaultSrc) {
+            upd = true;
+        }
+
+        if (option.i18nText !== preOption.i18nText) {
             upd = true;
         }
 
@@ -136,29 +440,61 @@
     });
 
     function saveOption() {
-        localStorage.setItem("demoAppOption", JSON.stringify(option, null, 2));
+        const {
+            i18nText: _i18nText,
+            showToggleButton: _showToggleButton,
+            ...savedOption
+        } = option;
+        localStorage.setItem(
+            DEMO_OPTION_STORAGE_KEY,
+            JSON.stringify(
+                {
+                    ...savedOption,
+                    demoOptionStorageVersion: DEMO_OPTION_STORAGE_VERSION,
+                },
+                null,
+                2,
+            ),
+        );
     }
 
-    function loadOption() {
-        const v = localStorage.getItem("demoAppOption");
+    function loadOption(): Partial<SideDocumentInternalOption> | null {
+        const v = localStorage.getItem(DEMO_OPTION_STORAGE_KEY);
         if (v) {
             try {
-                const obj = JSON.parse(v);
-                option = Object.assign({}, SideDocument.DEFAULT_OPTION, obj);
+                const savedOption = JSON.parse(v) as DemoSavedOption;
+                if (
+                    savedOption.demoOptionStorageVersion !==
+                    DEMO_OPTION_STORAGE_VERSION
+                ) {
+                    localStorage.removeItem(DEMO_OPTION_STORAGE_KEY);
+                    return null;
+                }
+                const {
+                    demoOptionStorageVersion: _demoOptionStorageVersion,
+                    ...rest
+                } = savedOption;
+                rest.showToggleButton = true;
+                return rest;
             } catch (e) {
                 console.error(e);
             }
         }
+        return null;
     }
 
     function resetOption() {
         option = Object.assign({}, SideDocument.DEFAULT_OPTION);
-        option.defaultSrc = "./sample.html"; // 初期ページURLを設定
+        option.defaultSrc = getSampleSrc(language); // 初期ページURLを設定
         option.qrcodeImageColor = option.primaryColor; // QRコードのドットカラーを設定
+        option.i18nText = sideDocumentI18nText[language];
         saveOption();
     }
 
     onMount(async () => {
+        document.documentElement.lang = language;
+        localStorage.setItem(DEMO_LANGUAGE_STORAGE_KEY, language);
+        option.showToggleButton = true;
         preOption = Object.assign({}, option);
         await app.render();
     });
@@ -166,46 +502,62 @@
     onDestroy(() => {});
 
     // トグルボタン位置のオプション
-    const positionOptions = [
-        { value: "top-left", label: "左上" },
-        { value: "top-right", label: "右上" },
-        { value: "bottom-left", label: "左下" },
-        { value: "bottom-right", label: "右下" },
-    ];
+    let positionOptions = $derived.by(() => [
+        { value: "top-left", label: t.topLeft },
+        { value: "top-right", label: t.topRight },
+        { value: "bottom-left", label: t.bottomLeft },
+        { value: "bottom-right", label: t.bottomRight },
+    ]);
 
     // 記録無効プロパティー
-    const ignorePersistPropsOptions = [
-        { value: "is-opened", label: "開閉状態" },
-        { value: "drawer-width-px", label: "Drawer幅(px)" },
-        { value: "drawer-position", label: "Drawer位置" },
-        { value: "toggle-button-position", label: "トグルボタン位置" },
-        { value: "is-pinned", label: "ピン留め状態" },
-    ];
+    let ignorePersistPropsOptions = $derived.by(
+        (): { value: IgnorePersistProp; label: string }[] => [
+            { value: "is-opened", label: t.isOpened },
+            { value: "drawer-width-px", label: t.drawerWidthPx },
+            { value: "drawer-position", label: t.drawerPosition },
+            { value: "toggle-button-position", label: t.toggleButtonPosition },
+            { value: "is-pinned", label: t.isPinned },
+        ],
+    );
 
     // ドロワーボタン
-    const showDrawerButtonsOptions = [
-        { value: "close", label: "閉じる" },
-        { value: "external-link", label: "外部リンク" },
-        { value: "qrcode", label: "QRコード" },
-        { value: "resize", label: "リサイズ" },
-        { value: "position-change", label: "位置切替" },
-        { value: "pin", label: "ピン留め" },
-    ];
+    let showDrawerButtonsOptions = $derived.by(
+        (): { value: DrawerButton; label: string }[] => [
+            { value: "close", label: t.close },
+            { value: "external-link", label: t.externalLink },
+            { value: "qrcode", label: t.qrcode },
+            { value: "resize", label: t.resize },
+            { value: "position-change", label: t.positionChange },
+            { value: "pin", label: t.pin },
+        ],
+    );
 </script>
 
 <main class="app-container">
     <div style="display:flex; align-items: center; gap: 0.5rem; padding-bottom: 0.5rem;">
-        <h1 style="flex:1;">Side Document Example</h1>
-        <a href="https://github.com/try0/side-document"
+        <h1 style="flex:1;">{t.title}</h1>
+        <a href="https://github.com/try0/side-document" aria-label="GitHub"
             ><img
                 src="data:image/svg+xml,%3csvg%20width='98'%20height='96'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20fill-rule='evenodd'%20clip-rule='evenodd'%20d='M48.854%200C21.839%200%200%2022%200%2049.217c0%2021.756%2013.993%2040.172%2033.405%2046.69%202.427.49%203.316-1.059%203.316-2.362%200-1.141-.08-5.052-.08-9.127-13.59%202.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015%204.934.326%207.523%205.052%207.523%205.052%204.367%207.496%2011.404%205.378%2014.235%204.074.404-3.178%201.699-5.378%203.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283%200-5.378%201.94-9.778%205.014-13.2-.485-1.222-2.184-6.275.486-13.038%200%200%204.125-1.304%2013.426%205.052a46.97%2046.97%200%200%201%2012.214-1.63c4.125%200%208.33.571%2012.213%201.63%209.302-6.356%2013.427-5.052%2013.427-5.052%202.67%206.763.97%2011.816.485%2013.038%203.155%203.422%205.015%207.822%205.015%2013.2%200%2018.905-11.404%2023.06-22.324%2024.283%201.78%201.548%203.316%204.481%203.316%209.126%200%206.6-.08%2011.897-.08%2013.526%200%201.304.89%202.853%203.316%202.364%2019.412-6.52%2033.405-24.935%2033.405-46.691C97.707%2022%2075.788%200%2048.854%200z'%20fill='%2324292f'/%3e%3c/svg%3e"
+                alt=""
                 style="height: 2rem;width: 2rem;"
             /></a
         >
     </div>
     <div style="padding: 0.5rem 0; display: flex; gap: 0.5rem;">
         <div style="flex: auto"></div>
-        <button on:click={resetOption} class="button-base">リセット</button>
+        <label class="language-control">
+            <span>{t.languageLabel}</span>
+            <select
+                value={language}
+                on:change={changeLanguage}
+                aria-label={t.languageLabel}
+            >
+                <option value="ja">日本語</option>
+                <option value="en">English</option>
+            </select>
+        </label>
+        <button on:click={resetOption} class="button-base">{t.reset}</button>
     </div>
 
     <div class="container">
@@ -222,13 +574,13 @@
                 class:tab-active={contentType === "page-element"}
                 on:click={() => (contentType = "page-element")}
             >
-                ページ要素
+                {t.pageElementTab}
             </button>
             <template data-sd-document>
                 <div style="padding: 10px;">
                     <h1>setDrawerContent()</h1>
                     <p>
-                        ページからdata-sd-documentアトリビュートを持つ要素を、Drawerコンテンツとして設定できます。
+                        {t.pageElementDoc}
                     </p>
                 </div>
             </template>
@@ -236,17 +588,19 @@
 
         <!-- 左側：設定パネル -->
         <div class="settings-panel">
-            <h2 class="panel-title">Settings</h2>
+            <h2 class="panel-title">{t.settingsTitle}</h2>
 
             <!-- トグルボタン設定 -->
             <div class="setting-group">
-                <div class="setting-header">Toggle Button</div>
+                <div class="setting-header">{t.toggleButtonGroup}</div>
 
                 <div class="setting-content">
                     <div id="showToggleButton" class="setting-row">
                         <div class="setting-label">
                             <code>showToggleButton</code>
-                            <div class="label-description">表示する</div>
+                            <div class="label-description">
+                                {t.showToggleButtonLabel}
+                            </div>
                         </div>
                         <template data-sd-document>
                             <div style="padding: 10px;">
@@ -254,9 +608,9 @@
                                     showToggleButton
                                 </h3>
                                 <p>
-                                    トグルボタンを表示するかどうかを設定します。
+                                    {t.showToggleButtonDocLine1}
                                     <br />
-                                    トグルボタンはDrawerの開閉を切り替えるためのボタンです。
+                                    {t.showToggleButtonDocLine2}
                                 </p>
                             </div>
                         </template>
@@ -274,7 +628,9 @@
                     <div id="toggleButtonPosition" class="setting-row">
                         <div class="setting-label">
                             <code>toggleButtonPosition</code>
-                            <div class="label-description">ボタンの位置</div>
+                            <div class="label-description">
+                                {t.toggleButtonPositionLabel}
+                            </div>
                         </div>
                         <template data-sd-document>
                             <div style="padding: 10px;">
@@ -282,12 +638,12 @@
                                     toggleButtonPosition
                                 </h3>
                                 <p>
-                                    トグルボタンの位置を設定します。
+                                    {t.toggleButtonPositionDocPrefix}
                                     <span
                                         data-sd-link-target="#toggleButtonFollowsDrawerPosition"
                                         >toggleButtonFollowsDrawerPosition</span
                                     >
-                                    が有効な場合、Drawerの位置に応じて自動的に位置が調整されます。
+                                    {t.toggleButtonPositionDocSuffix}
                                     <br />
                                 </p>
                             </div>
@@ -314,7 +670,7 @@
                         <div class="setting-label">
                             <code>toggleButtonFollowsDrawerPosition</code>
                             <div class="label-description">
-                                Drawer位置にトグルボタン位置を追従させる
+                                {t.toggleButtonFollowsDrawerPositionLabel}
                             </div>
                         </div>
                         <template data-sd-document>
@@ -325,7 +681,7 @@
                                     toggleButtonFollowsDrawerPosition
                                 </h3>
                                 <p>
-                                    Drawer位置にトグルボタン位置を追従させるかどうかを設定します。
+                                    {t.toggleButtonFollowsDrawerPositionDoc}
                                 </p>
                             </div>
                         </template>
@@ -346,13 +702,15 @@
 
             <!-- ドロワー設定 -->
             <div class="setting-group">
-                <div class="setting-header">Drawer</div>
+                <div class="setting-header">{t.drawerGroup}</div>
 
                 <div class="setting-content">
                     <div id="drawerPosition" class="setting-row">
                         <div class="setting-label">
                             <code>drawerPosition</code>
-                            <div class="label-description">Drawerの位置</div>
+                            <div class="label-description">
+                                {t.drawerPositionLabel}
+                            </div>
                         </div>
                         <template data-sd-document>
                             <div style="padding: 10px;">
@@ -360,9 +718,9 @@
                                     drawerPosition
                                 </h3>
                                 <p>
-                                    Drawerの位置を設定します。
+                                    {t.drawerPositionDocLine1}
                                     <br />
-                                    Drawerは画面の左または右に表示されます。
+                                    {t.drawerPositionDocLine2}
                                 </p>
                             </div>
                         </template>
@@ -374,7 +732,7 @@
                                     value="left"
                                     bind:group={option.drawerPosition}
                                 />
-                                <span>左</span>
+                                <span>{t.left}</span>
                             </label>
                             <label class="radio-option">
                                 <input
@@ -383,7 +741,7 @@
                                     value="right"
                                     bind:group={option.drawerPosition}
                                 />
-                                <span>右</span>
+                                <span>{t.right}</span>
                             </label>
                         </div>
                     </div>
@@ -391,14 +749,16 @@
                     <div id="drawerWidth" class="setting-row">
                         <div class="setting-label">
                             <code>drawerWidth</code>
-                            <div class="label-description">初期サイズ</div>
+                            <div class="label-description">
+                                {t.drawerWidthLabel}
+                            </div>
                         </div>
                         <template data-sd-document>
                             <div style="padding: 10px;">
                                 <h3 data-sd-link-target="#drawerWidth">
                                     drawerWidth
                                 </h3>
-                                <p>Drawerの初期サイズを設定します。</p>
+                                <p>{t.drawerWidthDoc}</p>
                             </div>
                         </template>
                         <div class="setting-control size-input-group">
@@ -423,7 +783,7 @@
                         <div class="setting-label">
                             <code>drawerWidthUnit</code>
                             <div class="label-description">
-                                初期サイズの単位
+                                {t.drawerWidthUnitLabel}
                             </div>
                         </div>
                         <template data-sd-document>
@@ -431,7 +791,7 @@
                                 <h3 data-sd-link-target="#drawerWidthUnit">
                                     drawerWidthUnit
                                 </h3>
-                                <p>Drawerの初期サイズの単位を設定します。</p>
+                                <p>{t.drawerWidthUnitDoc}</p>
                             </div>
                         </template>
                         <div class="setting-control unit-selector">
@@ -469,7 +829,9 @@
                     <div id="drawerMinWidth" class="setting-row">
                         <div class="setting-label">
                             <code>drawerMinWidth</code>
-                            <div class="label-description">最小サイズ</div>
+                            <div class="label-description">
+                                {t.drawerMinWidthLabel}
+                            </div>
                         </div>
                         <template data-sd-document>
                             <div style="padding: 10px;">
@@ -477,7 +839,7 @@
                                     drawerMinWidth
                                 </h3>
                                 <p>
-                                    ドロワーの最小サイズを設定します。リサイズ時に適用されます。
+                                    {t.drawerMinWidthDoc}
                                 </p>
                             </div>
                         </template>
@@ -502,7 +864,9 @@
                     <div id="drawerMaxWidth" class="setting-row">
                         <div class="setting-label">
                             <code>drawerMaxWidth</code>
-                            <div class="label-description">最大サイズ</div>
+                            <div class="label-description">
+                                {t.drawerMaxWidthLabel}
+                            </div>
                         </div>
                         <template data-sd-document>
                             <div style="padding: 10px;">
@@ -510,7 +874,7 @@
                                     drawerMaxWidth
                                 </h3>
                                 <p>
-                                    ドロワーの最大サイズを設定します。リサイズ時に適用されます。
+                                    {t.drawerMaxWidthDoc}
                                 </p>
                             </div>
                         </template>
@@ -535,7 +899,7 @@
                         <div class="setting-label">
                             <code>resizable</code>
                             <div class="label-description">
-                                リサイズを有効にする
+                                {t.resizableLabel}
                             </div>
                         </div>
                         <template data-sd-document>
@@ -544,7 +908,7 @@
                                     resizable
                                 </h3>
                                 <p>
-                                    Drawerのリサイズを有効にするかどうかを設定します。
+                                    {t.resizableDoc}
                                 </p>
                             </div>
                         </template>
@@ -561,7 +925,9 @@
                     <div id="persistState" class="setting-row">
                         <div class="setting-label">
                             <code>persistState</code>
-                            <div class="label-description">状態を保存する</div>
+                            <div class="label-description">
+                                {t.persistStateLabel}
+                            </div>
                         </div>
                         <template data-sd-document>
                             <div style="padding: 10px;">
@@ -569,7 +935,7 @@
                                     persistState
                                 </h3>
                                 <p>
-                                    Drawerの状態を保存するかどうかを設定します。
+                                    {t.persistStateDoc}
                                 </p>
                             </div>
                         </template>
@@ -587,13 +953,14 @@
                         <div class="setting-label">
                             <code>renderAsPopover</code>
                             <div class="label-description">
+                                {t.renderAsPopoverBefore}
                                 <a
                                     href="https://developer.mozilla.org/ja/docs/Web/API/HTMLElement/showPopover"
-                                    target="_blank">ポップオーバー</a
-                                >として<a
+                                    target="_blank">{t.popoverLink}</a
+                                >{t.renderAsPopoverMiddle}<a
                                     href="https://developer.mozilla.org/ja/docs/Glossary/Top_layer"
                                     target="_blank">Top layer</a
-                                >で表示する
+                                >{t.renderAsPopoverAfter}
                             </div>
                         </div>
                         <template data-sd-document>
@@ -602,7 +969,7 @@
                                     renderAsPopover
                                 </h3>
                                 <p>
-                                    Drawerをポップオーバーとして表示するかどうかを設定します。
+                                    {t.renderAsPopoverDoc}
                                 </p>
                             </div>
                         </template>
@@ -620,7 +987,7 @@
                         <div class="setting-label">
                             <code>ignorePersistProps</code>
                             <div class="label-description">
-                                保存しないプロパティ
+                                {t.ignorePersistPropsLabel}
                             </div>
                         </div>
                         <template data-sd-document>
@@ -629,7 +996,7 @@
                                     ignorePersistProps
                                 </h3>
                                 <p>
-                                    Drawerの状態を保存しないプロパティを設定します。
+                                    {t.ignorePersistPropsDoc}
                                 </p>
                             </div>
                         </template>
@@ -669,7 +1036,7 @@
                         <div class="setting-label">
                             <code>defaultSrc</code>
                             <div class="label-description">
-                                デフォルトドキュメントURL
+                                {t.defaultSrcLabel}
                             </div>
                         </div>
                         <template data-sd-document>
@@ -678,7 +1045,7 @@
                                     defaultSrc
                                 </h3>
                                 <p>
-                                    Drawerに表示するデフォルトurlを指定します。
+                                    {t.defaultSrcDoc}
                                 </p>
                             </div>
                         </template>
@@ -695,7 +1062,7 @@
                         <div class="setting-label">
                             <code>showDrawerButtons</code>
                             <div class="label-description">
-                                ドロワー内に表示するボタン
+                                {t.showDrawerButtonsLabel}
                             </div>
                         </div>
                         <template data-sd-document>
@@ -703,7 +1070,7 @@
                                 <h3 data-sd-link-target="#showDrawerButtons">
                                     showDrawerButtons
                                 </h3>
-                                <p>Drawer操作用のボタンを設定します。</p>
+                                <p>{t.showDrawerButtonsDoc}</p>
                             </div>
                         </template>
                         <div class="setting-control">
@@ -741,7 +1108,7 @@
                         <div class="setting-label">
                             <code>showBackdrop</code>
                             <div class="label-description">
-                                Drawer表示時にバックグラウンドをグレーアウトする
+                                {t.showBackdropLabel}
                             </div>
                         </div>
                         <template data-sd-document>
@@ -750,7 +1117,7 @@
                                     showBackdrop
                                 </h3>
                                 <p>
-                                    Drawer表示時にバックグラウンドをグレーアウトするかどうかを設定します。
+                                    {t.showBackdropDoc}
                                 </p>
                             </div>
                         </template>
@@ -769,14 +1136,14 @@
 
             <!-- 動作設定 -->
             <div class="setting-group">
-                <div class="setting-header">Behavior</div>
+                <div class="setting-header">{t.behaviorGroup}</div>
 
                 <div class="setting-content">
                     <div id="closeOnOutsideClick" class="setting-row">
                         <div class="setting-label">
                             <code>closeOnOutsideClick</code>
                             <div class="label-description">
-                                外部クリックで閉じる
+                                {t.closeOnOutsideClickLabel}
                             </div>
                         </div>
                         <template data-sd-document>
@@ -785,7 +1152,7 @@
                                     closeOnOutsideClick
                                 </h3>
                                 <p>
-                                    ドロワー外をクリックしたときにドロワーを閉じるかどうかを設定します。
+                                    {t.closeOnOutsideClickDoc}
                                 </p>
                             </div>
                         </template>
@@ -803,7 +1170,7 @@
                         <div class="setting-label">
                             <code>refreshFrameOnClose</code>
                             <div class="label-description">
-                                ドロワーを閉じた時にiframeを再読み込み
+                                {t.refreshFrameOnCloseLabel}
                             </div>
                         </div>
                         <template data-sd-document>
@@ -812,8 +1179,8 @@
                                     refreshFrameOnClose
                                 </h3>
                                 <p>
-                                    ドロワーを閉じた際にiframeの内容を再読み込みするかどうかを設定します。
-                                    iframe内でのインタラクティブな変更を元に戻したい場合に有効化します。
+                                    {t.refreshFrameOnCloseDocLine1}
+                                    {t.refreshFrameOnCloseDocLine2}
                                 </p>
                             </div>
                         </template>
@@ -832,14 +1199,14 @@
 
             <!-- スタイリング設定 -->
             <div class="setting-group">
-                <div class="setting-header">Styling</div>
+                <div class="setting-header">{t.stylingGroup}</div>
 
                 <div class="setting-content">
                     <div id="primaryColor" class="setting-row">
                         <div class="setting-label">
                             <code>primaryColor</code>
                             <div class="label-description">
-                                プライマリカラー
+                                {t.primaryColorLabel}
                             </div>
                         </div>
                         <div class="setting-control color-picker-control">
@@ -860,7 +1227,7 @@
                         <div class="setting-label">
                             <code>qrcodeImageColor</code>
                             <div class="label-description">
-                                QRコードの画像カラー
+                                {t.qrcodeImageColorLabel}
                             </div>
                         </div>
                         <div class="setting-control color-picker-control">
@@ -883,10 +1250,10 @@
 
         <!-- 右側：機能パネル -->
         <div class="functions-panel">
-            <h2 class="panel-title">Functions</h2>
+            <h2 class="panel-title">{t.functionsTitle}</h2>
 
             <div class="function-group">
-                <div class="function-header">Drawer Control</div>
+                <div class="function-header">{t.drawerControlGroup}</div>
 
                 <div class="function-content">
                     <button
@@ -894,7 +1261,9 @@
                         on:click={() => app.openDrawer()}
                     >
                         <div class="function-name">openDrawer()</div>
-                        <div class="function-description">Drawerを開く</div>
+                        <div class="function-description">
+                            {t.openDrawerDescription}
+                        </div>
                     </button>
 
                     <button
@@ -902,7 +1271,9 @@
                         on:click={() => app.closeDrawer()}
                     >
                         <div class="function-name">closeDrawer()</div>
-                        <div class="function-description">Drawerを閉じる</div>
+                        <div class="function-description">
+                            {t.closeDrawerDescription}
+                        </div>
                     </button>
 
                     <button
@@ -911,7 +1282,7 @@
                     >
                         <div class="function-name">toggleDrawer()</div>
                         <div class="function-description">
-                            Drawerを切り替える
+                            {t.toggleDrawerDescription}
                         </div>
                     </button>
                 </div>
@@ -1082,6 +1453,22 @@
     .unit-selector {
         display: flex;
         gap: 15px;
+    }
+
+    .language-control {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: #555;
+        font-size: 0.9rem;
+    }
+
+    .language-control select {
+        padding: 0.25rem 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background: #fff;
+        color: #222;
     }
 
     /* トグルスイッチ */

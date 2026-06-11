@@ -7,10 +7,44 @@
     <title>Side Document Example</title>
     <script src="https://unpkg.com/@try0/side-document@latest/dist/side-document.umd.js"></script>
     <script>
+        const sideDocumentI18nText = {
+            ja: undefined,
+            en: {
+                toggleButtonOpenTooltip: "Open",
+                toggleButtonCloseTooltip: "Close",
+                closeButtonTooltip: "Close",
+                externalLinkTooltip: "Open in new tab",
+                positionChangeButtonTooltip: "Change position",
+                qrcodeButtonTooltip: "Show QR code",
+                pinButtonTooltip: "Pin",
+                unpinButtonTooltip: "Unpin",
+                qrcodeCloseButton: "Close",
+                qrcodeDownloadButtonTooltip: "Download image",
+                qrcodeCopyButtonTooltip: "Copy image",
+                qrcodeCopySuccessMessage: "Copied",
+                qrcodeCopyErrorMessage: "Copy failed",
+                resizeBarTooltip: "Resize",
+                documentTitle: "Document"
+            }
+        };
+
+        function resolveLanguage() {
+            const lang = new URLSearchParams(location.search).get("lang") || localStorage.getItem("demoAppLanguage");
+            return lang === "en" ? "en" : "ja";
+        }
+
         document.addEventListener("DOMContentLoaded", async () => {
-            const sd = await SideDocument.initialize({
+            const language = resolveLanguage();
+            document.documentElement.lang = language;
+            const option = {
                 persistState: true,
-                defaultSrc: "./sample.html",
+                defaultSrc: `./sample.html?lang=${language}`,
+            };
+            if (sideDocumentI18nText[language]) {
+                option.i18nText = sideDocumentI18nText[language];
+            }
+            const sd = await SideDocument.initialize({
+                ...option,
             });
             sd.openDrawer("https://example.com/");
         });

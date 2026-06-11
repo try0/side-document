@@ -5,6 +5,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Side Document Example</title>
+    <script>
+        const sampleI18n = {
+            ja: {
+                title: "Side Document Example",
+                heading: "サンプルページ",
+                subheading: "サンプル見出し",
+                description: "操作方法などのドキュメントを表示。"
+            },
+            en: {
+                title: "Side Document Example",
+                heading: "Sample page",
+                subheading: "Sample heading",
+                description: "Display documentation such as usage instructions."
+            }
+        };
+
+        function resolveLanguage() {
+            const lang = new URLSearchParams(location.search).get("lang") || localStorage.getItem("demoAppLanguage");
+            return lang === "en" ? "en" : "ja";
+        }
+
+        const sampleLanguage = resolveLanguage();
+        const sampleText = sampleI18n[sampleLanguage];
+        document.documentElement.lang = sampleLanguage;
+        document.title = sampleText.title;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll("[data-i18n]").forEach((element) => {
+                const key = element.getAttribute("data-i18n");
+                if (key && sampleText[key]) {
+                    element.textContent = sampleText[key];
+                }
+            });
+        });
+    </script>
 
     <style>
         body {
@@ -30,11 +65,11 @@
 
 <body>
     <div>
-        <h1>サンプルページ</h1>
+        <h1 data-i18n="heading">サンプルページ</h1>
         <div>
-            <h2>サンプル見出し</h2>
+            <h2 data-i18n="subheading">サンプル見出し</h2>
             <div>
-                <p>操作方法などのドキュメントを表示。</p>
+                <p data-i18n="description">操作方法などのドキュメントを表示。</p>
             </div>
         </div>
     </div>
